@@ -4,27 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kalimat | كلمات - الواحة الفكرية العالمية</title>
+    
+    <!-- إعدادات أيقونة التطبيق على شاشة الجوال والـ Favicon -->
+    <link rel="icon" type="image/jpeg" href="URL_IMAGE_HERE">
+    <link rel="apple-touch-icon" href="URL_IMAGE_HERE">
+    <meta name="theme-color" content="#2c3e50">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="كلمات">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- إعدادات تطبيق الويب التقدمي (PWA) مع اعتماد صورة الريشة الفخمة حصرياً -->
-    <meta name="theme-color" content="#2980b9">
-    <link rel="manifest" href="data:application/manifest+json;charset=utf-8,{
-        %22name%22: %22Kalimat | كلمات%22,
-        %22short_name%22: %22كلمات%22,
-        %22start_url%22: %22.%22,
-        %22display%22: %22standalone%22,
-        %22background_color%22: %22%23ffffff%22,
-        %22theme_color%22: %22%232980b9%22,
-        %22icons%22: [{
-            %22src%22: %22https://i.ibb.co/3ykS00fW/feather-clean.jpg%22,
-            %22sizes%22: %22512x512%22,
-            %22type%22: %22image/jpeg%22,
-            %22purpose%22: %22any maskable%22
-        }]
-    }">
-    <link rel="icon" type="image/jpeg" href="https://i.ibb.co/3ykS00fW/feather-clean.jpg">
-    <link rel="apple-touch-icon" href="https://i.ibb.co/3ykS00fW/feather-clean.jpg">
-
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -251,7 +241,6 @@
             <div id="search-results-dropdown"></div>
         </div>
         <div class="header-actions">
-            <div class="action-icon-btn" id="install-app-btn" title="تثبيت التطبيق على الجوال" style="display:none; background: var(--success-color); color: white;"><i class="fa-solid fa-download"></i></div>
             <div class="action-icon-btn" id="theme-toggle-btn" title="المظهر"><i class="fa-solid fa-moon" id="theme-icon"></i></div>
             <div class="action-icon-btn" id="settings-open-btn" title="الإعدادات"><i class="fa-solid fa-gear"></i></div>
             <img src="" id="header-user-avatar" class="user-avatar-img" alt="بروفايل">
@@ -409,29 +398,6 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-
-        // تفعيل التثبيت كتطبيق جوال (PWA)
-        let deferredPrompt;
-        const installBtn = document.getElementById('install-app-btn');
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installBtn.style.display = 'flex';
-        });
-
-        installBtn.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    installBtn.style.display = 'none';
-                }
-                deferredPrompt = null;
-            } else {
-                alert("يمكنك تثبيت التطبيق مباشرة من خيارات متصفح هاتفك (إضافة إلى الشاشة الرئيسية / Add to Home Screen).");
-            }
-        });
 
         let isSignUpMode = false;
         let currentUserData = { name: "باحث عن المعرفة", email: "", uid: "", bio: "باحث عن المعرفة في واحة كلمات الفكرية", avatar: "" };
@@ -901,7 +867,7 @@
         });
 
         document.getElementById('modal-save-btn').addEventListener('click', async () => {
-            const newName = document.getElementById('modal-edit-name').value.text?.trim() || document.getElementById('modal-edit-name').value.trim();
+            const newName = document.getElementById('modal-edit-name').value.trim();
             const newEmail = document.getElementById('modal-edit-email').value.trim();
             const newBio = document.getElementById('modal-edit-bio').value.trim();
 
@@ -975,10 +941,10 @@
         });
 
         function switchTab(tabName) {
-            document.querySelectorAll('.view-section').forEach.call(document.querySelectorAll('.view-section'), el => el.classList.remove('active'));
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
             
-            const targetTab = document.getElementById('tab-' + tabName);
+            , const targetTab = document.getElementById('tab-' + tabName);
             if(targetTab) targetTab.classList.add('active');
             
             const targetNav = document.getElementById('nav-' + tabName);
@@ -992,7 +958,7 @@
         document.getElementById('menu-chat-btn').addEventListener('click', () => switchTab('chat'));
         document.getElementById('nav-friends').addEventListener('click', () => switchTab('friends'));
         document.getElementById('nav-notifications').addEventListener('click', () => switchTab('notifications'));
-        document.getElementById('nav-menu').addEventListener('click', () => switchTagMenu('menu'));
+        document.getElementById('nav-menu').addEventListener('click', () => switchTab('menu'));
 
         document.getElementById('logout-btn').addEventListener('click', async () => {
             await signOut(auth);
