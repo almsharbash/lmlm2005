@@ -6,9 +6,9 @@
     <title>Kalimat | كلمات - الواحة الفكرية العالمية</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- إعدادات تطبيق الويب التقدمي (PWA) مع الشعار الجديد -->
+    <!-- إعدادات تطبيق الويب التقدمي (PWA) مع شعار الريشة المدمج -->
     <meta name="theme-color" content="#2980b9">
-    <link rel="apple-touch-icon" href="1790540900121.jpg">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232980b9'/><path d='M30 75 C30 75 25 40 50 25 C75 40 70 75 70 75 Z' fill='%23ffffff'/><path d='M50 25 L50 75' stroke='%232980b9' stroke-width='3'/></svg>">
     <link rel="manifest" href="data:application/manifest+json;charset=utf-8,{
         %22name%22: %22Kalimat | كلمات%22,
         %22short_name%22: %22كلمات%22,
@@ -17,9 +17,9 @@
         %22background_color%22: %22%23f7f9fa%22,
         %22theme_color%22: %22%232980b9%22,
         %22icons%22: [{
-            %22src%22: %221000228211_3.jpg%22,
+            %22src%22: %22data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232980b9'/><path d='M30 75 C30 75 25 40 50 25 C75 40 70 75 70 75 Z' fill='%23ffffff'/><path d='M50 25 L50 75' stroke='%232980b9' stroke-width='3'/></svg>%22,
             %22sizes%22: %22512x512%22,
-            %22type%22: %22image/jpeg%22
+            %22type%22: %22image/svg+xml%22
         }]
     }">
 
@@ -80,7 +80,7 @@
             border-bottom: 1px solid var(--border-color); gap: 8px;
         }
         .logo { font-size: 22px; font-weight: 900; color: var(--accent-color); cursor: pointer; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-        .logo img { width: 32px; height: 32px; border-radius: 8px; object-fit: cover; }
+        .logo svg, .logo img { width: 32px; height: 32px; border-radius: 8px; }
         
         .search-container { position: relative; flex: 1; max-width: 180px; }
         .search-box {
@@ -197,7 +197,13 @@
     <!-- شاشة تسجيل الدخول / إنشاء حساب -->
     <div id="auth-screen">
         <div class="auth-card">
-            <h1><img src="1000228211_3.jpg" alt="Logo" style="width:36px; height:36px; border-radius:8px;"> كلمات</h1>
+            <h1>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" style="width:36px; height:36px; border-radius:8px; vertical-align:middle;">
+                    <rect width="100" height="100" rx="20" fill="#2980b9"/>
+                    <path d="M30 75 C30 75 25 40 50 25 C75 40 70 75 70 75 Z" fill="#ffffff"/>
+                    <path d="M50 25 L50 75" stroke="#2980b9" stroke-width="3"/>
+                </svg> كلمات
+            </h1>
             <div class="auth-subtitle">«دائماً هناك كلمات لا يجيد كتابتها القلم تغوص في قعر النفس ولا تطفو»</div>
             
             <input type="text" id="auth-name" class="auth-input" placeholder="الاسم الكامل (مطلوب عند التسجيل الجديد)" style="display:none;">
@@ -237,7 +243,11 @@
 
     <header>
         <div class="logo" id="logo-main-btn">
-            <img src="1000228211_3.jpg" alt="Logo"> كلمات
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" style="width:32px; height:32px; border-radius:8px;">
+                <rect width="100" height="100" rx="20" fill="#2980b9"/>
+                <path d="M30 75 C30 75 25 40 50 25 C75 40 70 75 70 75 Z" fill="#ffffff"/>
+                <path d="M50 25 L50 75" stroke="#2980b9" stroke-width="3"/>
+            </svg> كلمات
         </div>
         <div class="search-container">
             <div class="search-box">
@@ -259,7 +269,12 @@
         <div id="tab-home" class="view-section active">
             <div class="wisdom-card">
                 <div class="wisdom-card-header">
-                    <h4><img src="1000228211_3.jpg" style="width:20px; height:20px; border-radius:4px; vertical-align:middle;"> ومضة معرفية اليوم</h4>
+                    <h4>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" style="width:20px; height:20px; border-radius:4px; vertical-align:middle;">
+                            <rect width="100" height="100" rx="20" fill="#ffffff"/>
+                            <path d="M30 75 C30 75 25 40 50 25 C75 40 70 75 70 75 Z" fill="#2980b9"/>
+                        </svg> ومضة معرفية اليوم
+                    </h4>
                 </div>
                 <p>«دائماً هناك كلمات لا يجيد كتابتها القلم تغوص في قعر النفس ولا تطفو»</p>
             </div>
@@ -363,10 +378,15 @@
         <div class="nav-item" id="nav-chat" title="الصالونات الفكرية"><i class="fa-brands fa-facebook-messenger nav-icon"></i></div>
         <div class="nav-item" id="nav-friends" title="الرفقاء"><i class="fa-solid fa-users nav-icon"></i></div>
         <div class="nav-item" id="nav-notifications" title="الإشعارات"><i class="fa-solid fa-bolt nav-icon"></i></div>
-        <div class="nav-item" id="nav-menu" title="الخزانة"><img src="1000228211_3.jpg" style="width:24px; height:24px; border-radius:50%; object-fit:cover;"></div>
+        <div class="nav-item" id="nav-menu" title="الخزانة">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" style="width:24px; height:24px; border-radius:50%; vertical-align:middle;">
+                <rect width="100" height="100" rx="50" fill="#2980b9"/>
+                <path d="M35 70 C35 70 30 40 50 25 C70 40 65 70 65 70 Z" fill="#ffffff"/>
+            </svg>
+        </div>
     </nav>
 
-    <!-- الجافاسكريبت المحدث والمدعوم بالمزامنة السحابية -->
+    <!-- الجافاسكريبت المدعوم بالمزامنة السحابية -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -409,6 +429,8 @@
         let currentUserData = { name: "باحث عن المعرفة", email: "", uid: "", bio: "باحث عن المعرفة في واحة كلمات الفكرية", avatar: "" };
         let selectedMediaData = { url: "", type: "" };
         let newAvatarBase64 = "";
+
+        const defaultFeatherAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='50' fill='%232980b9'/><path d='M35 70 C35 70 30 40 50 25 C70 40 65 70 65 70 Z' fill='%23ffffff'/></svg>";
 
         function compressImage(file, maxWidth = 400, maxHeight = 400, quality = 0.7) {
             return new Promise((resolve) => {
@@ -491,14 +513,13 @@
                 if (isSignUpMode) {
                     const res = await createUserWithEmailAndPassword(auth, email, password);
                     await updateProfile(res.user, { displayName: name });
-                    const defaultAvatar = "1000228211_3.jpg";
                     
                     await setDoc(doc(db, "users", res.user.uid), {
                         uid: res.user.uid,
                         name: name,
                         email: email,
                         bio: "باحث عن المعرفة في واحة كلمات الفكرية",
-                        avatar: defaultAvatar
+                        avatar: defaultFeatherAvatar
                     });
                     alert("تم إنشاء حسابك الحقيقي والانضمام بنجاح!");
                 } else {
@@ -528,11 +549,11 @@
                     currentUserData.name = data.name || user.displayName || "باحث";
                     currentUserData.email = data.email || user.email;
                     currentUserData.bio = data.bio || "باحث عن المعرفة في واحة كلمات الفكرية";
-                    currentUserData.avatar = data.avatar || "1000228211_3.jpg";
+                    currentUserData.avatar = data.avatar || defaultFeatherAvatar;
                 } else {
                     currentUserData.name = user.displayName || user.email.split('@')[0];
                     currentUserData.email = user.email;
-                    currentUserData.avatar = "1000228211_3.jpg";
+                    currentUserData.avatar = defaultFeatherAvatar;
                     await setDoc(userDocRef, currentUserData);
                 }
                 updateUIAvatarAndNames();
@@ -569,7 +590,7 @@
                     const notifDiv = document.createElement('div');
                     notifDiv.style.cssText = "display: flex; gap: 10px; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 10px;";
                     notifDiv.innerHTML = `
-                        <img src="${n.senderAvatar || '1000228211_3.jpg'}" class="user-avatar-img" style="width: 32px; height: 32px;" alt="صورة">
+                        <img src="${n.senderAvatar || defaultFeatherAvatar}" class="user-avatar-img" style="width: 32px; height: 32px;" alt="صورة">
                         <div><p style="font-size: 13px;"><b>${n.senderName}:</b> ${n.text}</p><span style="font-size: 11px; color: var(--text-secondary);">${n.time || 'منذ قليل'}</span></div>
                     `;
                     notifList.appendChild(notifDiv);
@@ -579,7 +600,7 @@
                         reqDiv.style.cssText = "display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-color);";
                         reqDiv.innerHTML = `
                             <div style="display: flex; align-items: center; gap: 10px;">
-                                <img src="${n.senderAvatar || '1000228211_3.jpg'}" class="user-avatar-img" style="width: 40px; height: 40px;">
+                                <img src="${n.senderAvatar || defaultFeatherAvatar}" class="user-avatar-img" style="width: 40px; height: 40px;">
                                 <div>
                                     <div style="font-weight: bold; font-size: 14px;">${n.senderName}</div>
                                     <div style="font-size: 11px; color: var(--text-secondary);">${n.text}</div>
@@ -613,7 +634,7 @@
                     count++;
                     const div = document.createElement('div');
                     div.className = 'search-result-item';
-                    div.innerHTML = `<img src="${u.avatar || '1000228211_3.jpg'}" class="user-avatar-img" style="width: 26px; height: 26px;"> <span>${u.name}</span>`;
+                    div.innerHTML = `<img src="${u.avatar || defaultFeatherAvatar}" class="user-avatar-img" style="width: 26px; height: 26px;"> <span>${u.name}</span>`;
                     div.addEventListener('click', () => {
                         searchResultsDropdown.style.display = 'none';
                         globalSearchInput.value = '';
@@ -629,7 +650,7 @@
         async function openUserProfile(targetUser) {
             document.getElementById('profile-view-name').innerText = targetUser.name;
             document.getElementById('profile-view-email').innerText = targetUser.email || "scholar@kalimat.com";
-            document.getElementById('profile-view-avatar').src = targetUser.avatar || "1000228211_3.jpg";
+            document.getElementById('profile-view-avatar').src = targetUser.avatar || defaultFeatherAvatar;
             document.getElementById('profile-view-bio').innerText = targetUser.bio || "باحث عن المعرفة في واحة كلمات الفكرية";
 
             const actionContainer = document.getElementById('profile-action-container');
@@ -686,10 +707,10 @@
                     postCard.innerHTML = `
                         <div class="post-header">
                             <div class="post-user-info">
-                                <img src="${targetUser.avatar || '1000228211_3.jpg'}" class="user-avatar-img" style="width: 35px; height: 35px;">
+                                <img src="${targetUser.avatar || defaultFeatherAvatar}" class="user-avatar-img" style="width: 35px; height: 35px;">
                                 <div>
                                     <div class="post-author-name">${targetUser.name}</div>
-                                    <div class="post-meta-info"><span>${p.timeStr || 'منذ قليل'}</span> • <span class="post-category-tag"><img src="1000228211_3.jpg" style="width:12px; height:12px; border-radius:2px; vertical-align:middle;"> فكرة</span></div>
+                                    <div class="post-meta-info"><span>${p.timeStr || 'منذ قليل'}</span> • <span class="post-category-tag"><i class="fa-solid fa-feather" style="font-size:10px;"></i> فكرة</span></div>
                                 </div>
                             </div>
                         </div>
@@ -706,13 +727,12 @@
         function openChatWithUser(targetUser) {
             switchTab('chat');
             const chatList = document.getElementById('chat-rooms-list');
-            
             const chatId = currentUserData.uid < targetUser.uid ? `${currentUserData.uid}_${targetUser.uid}` : `${targetUser.uid}_${currentUserData.uid}`;
 
             chatList.innerHTML = `
                 <div class="card" style="padding: 12px;">
                     <div style="font-weight: bold; margin-bottom: 8px; color: var(--accent-color); display:flex; align-items:center; gap:8px;">
-                        <img src="${targetUser.avatar || '1000228211_3.jpg'}" class="user-avatar-img" style="width:30px; height:30px;">
+                        <img src="${targetUser.avatar || defaultFeatherAvatar}" class="user-avatar-img" style="width:30px; height:30px;">
                         محادثة حية مع: ${targetUser.name}
                     </div>
                     <div id="direct-chat-messages" style="height: 220px; overflow-y: auto; background: var(--bg-color); padding: 10px; border-radius: 6px; margin-bottom: 10px; font-size: 13px; border: 1px solid var(--border-color);">
@@ -797,7 +817,7 @@
                 const post = docSnap.data();
                 const postId = docSnap.id;
                 const isMyPost = post.uid === currentUserData.uid;
-                const authorAvatar = post.avatar || "1000228211_3.jpg";
+                const authorAvatar = post.avatar || defaultFeatherAvatar;
                 const likesCount = post.likes ? Object.keys(post.likes).length : 0;
                 const userHasLiked = post.likes && post.likes[currentUserData.uid];
 
@@ -811,9 +831,7 @@
                                 <div class="post-author-name">${post.author || 'باحث معرفي'}</div>
                                 <div class="post-meta-info">
                                     <span>${post.timeStr || 'منذ قليل'}</span> • 
-                                    <span class="post-category-tag">
-                                        <img src="1000228211_3.jpg" style="width:14px; height:14px; border-radius:3px; vertical-align:middle;"> فكرة
-                                    </span>
+                                    <span class="post-category-tag"><i class="fa-solid fa-feather" style="font-size:10px;"></i> فكرة</span>
                                 </div>
                             </div>
                         </div>
@@ -875,7 +893,7 @@
                     const item = document.createElement('div');
                     item.className = 'comment-item';
                     item.innerHTML = `
-                        <img src="${c.avatar || '1000228211_3.jpg'}" class="user-avatar-img" style="width: 28px; height: 28px;" alt="صورة">
+                        <img src="${c.avatar || defaultFeatherAvatar}" class="user-avatar-img" style="width: 28px; height: 28px;" alt="صورة">
                         <div class="comment-bubble">
                             <div style="font-weight: bold; font-size: 12px; color: var(--accent-color);">${c.authorName}</div>
                             <div style="font-size: 13px;">${c.text}</div>
@@ -996,7 +1014,7 @@
             document.getElementById('modal-edit-name').value = currentUserData.name;
             document.getElementById('modal-edit-email').value = currentUserData.email;
             document.getElementById('modal-edit-bio').value = currentUserData.bio;
-            document.getElementById('modal-preview-avatar').src = currentUserData.avatar || "1000228211_3.jpg";
+            document.getElementById('modal-preview-avatar').src = currentUserData.avatar || defaultFeatherAvatar;
             newAvatarBase64 = "";
             document.getElementById('edit-profile-modal').style.display = 'flex';
         }
