@@ -371,7 +371,7 @@
         <div class="nav-item" id="nav-menu" title="الخزانة"><i class="fa-solid fa-feather-pointed nav-icon"></i></div>
     </nav>
 
-    <!-- ربط Firebase وتفعيل المصادقة والتبديل السلس وسحابة البيانات -->
+    <!-- ربط Firebase ومعالجة اختيار الصور والتحويل الآمن بين الحسابات -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, updateEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -419,7 +419,6 @@
         const authSubmitBtn = document.getElementById('auth-submit-btn');
         const authNameInput = document.getElementById('auth-name');
 
-        // تفعيل النقر المباشر والواضح للتبديل بين تسجيل الدخول وإنشاء الحساب
         authSwitchText.addEventListener('click', () => {
             isSignUpMode = !isSignUpMode;
             if (isSignUpMode) {
@@ -467,8 +466,10 @@
                 document.getElementById('auth-screen').style.display = 'none';
             } catch (error) {
                 let errorMsg = error.message;
-                if(error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-                    errorMsg = "البريد الإلكتروني غير مسجل أو كلمة المرور غير صحيحة. انضم للواحة بإنشاء حساب جديد!";
+                if(error.code === 'auth/email-already-in-use') {
+                    errorMsg = "البريد الإلكتروني مستخدم مسبقاً! يرجى الضغط على 'لديك حساب بالفعل؟ سجل دخولك' لتسجيل الدخول.";
+                } else if(error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    errorMsg = "البريد الإلكتروني غير مسجل أو كلمة المرور غير صحيحة.";
                 }
                 alert("تعذر الاتصال:\n\n" + errorMsg);
             } finally {
@@ -511,7 +512,7 @@
             document.getElementById('new-post-text').placeholder = `شارك فكرة، يا ${currentUserData.name}...`;
         }
 
-        // محرك البحث الحقيقي في السحابة
+        // محرك البحث السحابي الحقيقي
         const globalSearchInput = document.getElementById('global-search-input');
         const searchResultsDropdown = document.getElementById('search-results-dropdown');
 
@@ -545,7 +546,6 @@
             searchResultsDropdown.style.display = count > 0 ? 'block' : 'none';
         });
 
-        // فتح بروفايل أي مستخدم ورؤية منشوراته وزر المتابعة
         async function openUserProfile(targetUser) {
             document.getElementById('profile-view-name').innerText = targetUser.name;
             document.getElementById('profile-view-email').innerText = targetUser.email || "scholar@kalimat.com";
@@ -601,7 +601,7 @@
             switchTab('profile');
         }
 
-        // اختيار صورة البروفايل من المعرض
+        // تفعيل اختيار وتغيير صورة البروفايل من المعرض بسلاسة تامة
         document.getElementById('modal-pick-avatar-btn').addEventListener('click', () => {
             document.getElementById('modal-avatar-file').click();
         });
