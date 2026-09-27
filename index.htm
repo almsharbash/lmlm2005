@@ -6,9 +6,9 @@
     <title>Kalimat | كلمات - الواحة الفكرية العالمية</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- إعدادات تطبيق الويب التقدمي (PWA) مع شعار الريشة المدمج -->
+    <!-- إعدادات تطبيق الويب التقدمي (PWA) مع الشعار الجديد المخصص -->
     <meta name="theme-color" content="#2980b9">
-    <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232980b9'/><path d='M30 75 C30 75 25 40 50 25 C75 40 70 75 70 75 Z' fill='%23ffffff'/><path d='M50 25 L50 75' stroke='%232980b9' stroke-width='3'/></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 50'><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-weight='900' font-size='28' fill='%232980b9'>كلمات</text></svg>">
     <link rel="manifest" href="data:application/manifest+json;charset=utf-8,{
         %22name%22: %22Kalimat | كلمات%22,
         %22short_name%22: %22كلمات%22,
@@ -17,7 +17,7 @@
         %22background_color%22: %22%23f7f9fa%22,
         %22theme_color%22: %22%232980b9%22,
         %22icons%22: [{
-            %22src%22: %22data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232980b9'/><path d='M30 75 C30 75 25 40 50 25 C75 40 70 75 70 75 Z' fill='%23ffffff'/><path d='M50 25 L50 75' stroke='%232980b9' stroke-width='3'/></svg>%22,
+            %22src%22: %22data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232980b9'/><text x='50%' y='55%' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-weight='900' font-size='38' fill='%23ffffff'>ك</text></svg>%22,
             %22sizes%22: %22512x512%22,
             %22type%22: %22image/svg+xml%22
         }]
@@ -79,8 +79,10 @@
             display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.05); z-index: 100;
             border-bottom: 1px solid var(--border-color); gap: 8px;
         }
-        .logo { font-size: 22px; font-weight: 900; color: var(--accent-color); cursor: pointer; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-        .logo svg, .logo img { width: 32px; height: 32px; border-radius: 8px; }
+        
+        /* تنسيق اللوغو الجديد: عبارة "كلمات" باللون الأزرق ببنط عريض وفاخر */
+        .logo { font-size: 24px; font-weight: 900; color: var(--accent-color); cursor: pointer; display: flex; align-items: center; gap: 8px; flex-shrink: 0; letter-spacing: -0.5px; }
+        .logo svg { height: 32px; width: auto; }
         
         .search-container { position: relative; flex: 1; max-width: 180px; }
         .search-box {
@@ -198,11 +200,10 @@
     <div id="auth-screen">
         <div class="auth-card">
             <h1>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" style="width:36px; height:36px; border-radius:8px; vertical-align:middle;">
-                    <rect width="100" height="100" rx="20" fill="#2980b9"/>
-                    <path d="M30 75 C30 75 25 40 50 25 C75 40 70 75 70 75 Z" fill="#ffffff"/>
-                    <path d="M50 25 L50 75" stroke="#2980b9" stroke-width="3"/>
-                </svg> كلمات
+                <!-- الشعار النصي الأزرق -->
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 40" style="height:36px; width:auto; vertical-align:middle;">
+                    <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="Arial, sans-serif" font-weight="900" font-size="28" fill="#2980b9">كلمات</text>
+                </svg>
             </h1>
             <div class="auth-subtitle">«دائماً هناك كلمات لا يجيد كتابتها القلم تغوص في قعر النفس ولا تطفو»</div>
             
@@ -242,12 +243,11 @@
     </div>
 
     <header>
-        <div class="logo" id="logo-main-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" style="width:32px; height:32px; border-radius:8px;">
-                <rect width="100" height="100" rx="20" fill="#2980b9"/>
-                <path d="M30 75 C30 75 25 40 50 25 C75 40 70 75 70 75 Z" fill="#ffffff"/>
-                <path d="M50 25 L50 75" stroke="#2980b9" stroke-width="3"/>
-            </svg> كلمات
+        <!-- اللوغو الرئيسي في شريط التنقل العلوي -->
+        <div class="logo" id="logo-main-btn" title="منصة كلمات">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40" style="height:30px; width:auto;">
+                <text x="0" y="30" font-family="Arial, sans-serif" font-weight="900" font-size="28" fill="#2980b9">كلمات</text>
+            </svg>
         </div>
         <div class="search-container">
             <div class="search-box">
@@ -270,10 +270,7 @@
             <div class="wisdom-card">
                 <div class="wisdom-card-header">
                     <h4>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" style="width:20px; height:20px; border-radius:4px; vertical-align:middle;">
-                            <rect width="100" height="100" rx="20" fill="#ffffff"/>
-                            <path d="M30 75 C30 75 25 40 50 25 C75 40 70 75 70 75 Z" fill="#2980b9"/>
-                        </svg> ومضة معرفية اليوم
+                        <i class="fa-solid fa-feather-pointed" style="font-size: 16px;"></i> ومضة معرفية اليوم
                     </h4>
                 </div>
                 <p>«دائماً هناك كلمات لا يجيد كتابتها القلم تغوص في قعر النفس ولا تطفو»</p>
@@ -378,12 +375,7 @@
         <div class="nav-item" id="nav-chat" title="الصالونات الفكرية"><i class="fa-brands fa-facebook-messenger nav-icon"></i></div>
         <div class="nav-item" id="nav-friends" title="الرفقاء"><i class="fa-solid fa-users nav-icon"></i></div>
         <div class="nav-item" id="nav-notifications" title="الإشعارات"><i class="fa-solid fa-bolt nav-icon"></i></div>
-        <div class="nav-item" id="nav-menu" title="الخزانة">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" style="width:24px; height:24px; border-radius:50%; vertical-align:middle;">
-                <rect width="100" height="100" rx="50" fill="#2980b9"/>
-                <path d="M35 70 C35 70 30 40 50 25 C70 40 65 70 65 70 Z" fill="#ffffff"/>
-            </svg>
-        </div>
+        <div class="nav-item" id="nav-menu" title="الخزانة"><i class="fa-solid fa-feather-pointed nav-icon"></i></div>
     </nav>
 
     <!-- الجافاسكريبت المدعوم بالمزامنة السحابية -->
