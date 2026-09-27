@@ -179,7 +179,7 @@
 </head>
 <body data-theme="light">
 
-    <!-- شاشة تسجيل الدخول / إنشاء حساب -->
+    <!-- شاشة تسجيل الدخول / إنشاء حساب متكاملة -->
     <div id="auth-screen">
         <div class="auth-card">
             <h1><i class="fa-solid fa-feather-pointed" style="color: var(--accent-color);"></i> كلمات</h1>
@@ -318,7 +318,7 @@
                 <div id="notifications-list" style="margin-top: 15px;">
                     <div style="display: flex; gap: 10px; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
                         <div class="action-icon-btn" style="background: var(--accent-color); color: #fff;"><i class="fa-solid fa-feather-pointed"></i></div>
-                        <div><p style="font-size: 13px;"><b>منصة كلمات:</b> أشرقت شمس الواحة الفكرية بنجاح تام!</p><span style="font-size: 11px; color: var(--text-secondary);">الآن</span></div>
+                        <div><p style="font-size: 13px;"><b>منصة كلمات:</b> أشرقت شمس الواحة الفكرية العالمية!</p><span style="font-size: 11px; color: var(--text-secondary);">الآن</span></div>
                     </div>
                 </div>
             </div>
@@ -371,7 +371,7 @@
         <div class="nav-item" id="nav-menu" title="الخزانة"><i class="fa-solid fa-feather-pointed nav-icon"></i></div>
     </nav>
 
-    <!-- ربط Firebase وتفعيل المنصة التفاعلية السحابية الشاملة -->
+    <!-- ربط Firebase وتفعيل المصادقة والتبديل السلس وسحابة البيانات -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, updateEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -419,6 +419,7 @@
         const authSubmitBtn = document.getElementById('auth-submit-btn');
         const authNameInput = document.getElementById('auth-name');
 
+        // تفعيل النقر المباشر والواضح للتبديل بين تسجيل الدخول وإنشاء الحساب
         authSwitchText.addEventListener('click', () => {
             isSignUpMode = !isSignUpMode;
             if (isSignUpMode) {
@@ -451,7 +452,6 @@
                     await updateProfile(res.user, { displayName: name });
                     const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2980b9&color=fff`;
                     
-                    // حفظ بيانات المستخدم في السحابة ليظهر في البحث والعالم
                     await setDoc(doc(db, "users", res.user.uid), {
                         uid: res.user.uid,
                         name: name,
@@ -483,7 +483,6 @@
                 authScreen.style.display = 'none';
                 currentUserData.uid = user.uid;
                 
-                // جلب بيانات المستخدم من سحابة Firestore
                 const userDocRef = doc(db, "users", user.uid);
                 const userDocSnap = await getDoc(userDocRef);
                 
@@ -512,7 +511,7 @@
             document.getElementById('new-post-text').placeholder = `شارك فكرة، يا ${currentUserData.name}...`;
         }
 
-        // محرك البحث الحقيقي الفعّال في سحابة المستخدمين
+        // محرك البحث الحقيقي في السحابة
         const globalSearchInput = document.getElementById('global-search-input');
         const searchResultsDropdown = document.getElementById('search-results-dropdown');
 
@@ -546,7 +545,7 @@
             searchResultsDropdown.style.display = count > 0 ? 'block' : 'none';
         });
 
-        // فتح بروفايل أي مستخدم آخر وتصفح منشوراته مع زر طلب صداقة / متابعة
+        // فتح بروفايل أي مستخدم ورؤية منشوراته وزر المتابعة
         async function openUserProfile(targetUser) {
             document.getElementById('profile-view-name').innerText = targetUser.name;
             document.getElementById('profile-view-email').innerText = targetUser.email || "scholar@kalimat.com";
@@ -568,7 +567,6 @@
                 };
             }
 
-            // جلب منشورات هذا المستخدم فقط
             const userFeed = document.getElementById('user-profile-posts-feed');
             userFeed.innerHTML = `<div class="card" style="text-align: center;"><i class="fa-solid fa-spinner fa-spin"></i> جاري تحميل منشورات الباحث...</div>`;
             
@@ -603,7 +601,7 @@
             switchTab('profile');
         }
 
-        // رفع صورة البروفايل الشخصي من المعرض
+        // اختيار صورة البروفايل من المعرض
         document.getElementById('modal-pick-avatar-btn').addEventListener('click', () => {
             document.getElementById('modal-avatar-file').click();
         });
@@ -810,7 +808,7 @@
         document.getElementById('modal-save-btn').addEventListener('click', async () => {
             const newName = document.getElementById('modal-edit-name').value.trim();
             const newEmail = document.getElementById('modal-edit-email').value.trim();
-            const newBio = document.getElementById('modal-edit-bio'].value.trim();
+            const newBio = document.getElementById('modal-edit-bio').value.trim();
 
             if(!newName || !newEmail) { alert('الاسم والبريد الإلكتروني مطلوبان!'); return; }
 
@@ -825,7 +823,6 @@
                     currentUserData.avatar = newAvatarBase64;
                 }
 
-                // تحديث بيانات المستخدم في السحابة لترى عالمياً
                 await setDoc(doc(db, "users", currentUserData.uid), currentUserData, { merge: true });
                 
                 updateUIAvatarAndNames();
