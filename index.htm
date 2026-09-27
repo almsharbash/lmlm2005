@@ -17,7 +17,7 @@
         %22background_color%22: %22%23f7f9fa%22,
         %22theme_color%22: %22%232980b9%22,
         %22icons%22: [{
-            %22src%22: %221790525023930.jpg%22,
+            %22src%22: %221000228211_3.jpg%22,
             %22sizes%22: %22512x512%22,
             %22type%22: %22image/jpeg%22
         }]
@@ -197,7 +197,7 @@
     <!-- شاشة تسجيل الدخول / إنشاء حساب -->
     <div id="auth-screen">
         <div class="auth-card">
-            <h1><img src="1790525023930.jpg" alt="Logo" style="width:36px; height:36px; border-radius:8px;"> كلمات</h1>
+            <h1><img src="1000228211_3.jpg" alt="Logo" style="width:36px; height:36px; border-radius:8px;"> كلمات</h1>
             <div class="auth-subtitle">«دائماً هناك كلمات لا يجيد كتابتها القلم تغوص في قعر النفس ولا تطفو»</div>
             
             <input type="text" id="auth-name" class="auth-input" placeholder="الاسم الكامل (مطلوب عند التسجيل الجديد)" style="display:none;">
@@ -237,7 +237,7 @@
 
     <header>
         <div class="logo" id="logo-main-btn">
-            <img src="1790525023930.jpg" alt="Logo"> كلمات
+            <img src="1000228211_3.jpg" alt="Logo"> كلمات
         </div>
         <div class="search-container">
             <div class="search-box">
@@ -259,7 +259,7 @@
         <div id="tab-home" class="view-section active">
             <div class="wisdom-card">
                 <div class="wisdom-card-header">
-                    <h4><img src="1790525023930.jpg" style="width:20px; height:20px; border-radius:4px; vertical-align:middle;"> ومضة معرفية اليوم</h4>
+                    <h4><img src="1000228211_3.jpg" style="width:20px; height:20px; border-radius:4px; vertical-align:middle;"> ومضة معرفية اليوم</h4>
                 </div>
                 <p>«دائماً هناك كلمات لا يجيد كتابتها القلم تغوص في قعر النفس ولا تطفو»</p>
             </div>
@@ -363,7 +363,7 @@
         <div class="nav-item" id="nav-chat" title="الصالونات الفكرية"><i class="fa-brands fa-facebook-messenger nav-icon"></i></div>
         <div class="nav-item" id="nav-friends" title="الرفقاء"><i class="fa-solid fa-users nav-icon"></i></div>
         <div class="nav-item" id="nav-notifications" title="الإشعارات"><i class="fa-solid fa-bolt nav-icon"></i></div>
-        <div class="nav-item" id="nav-menu" title="الخزانة"><img src="1790525023930.jpg" style="width:24px; height:24px; border-radius:50%; object-fit:cover;"></div>
+        <div class="nav-item" id="nav-menu" title="الخزانة"><img src="1000228211_3.jpg" style="width:24px; height:24px; border-radius:50%; object-fit:cover;"></div>
     </nav>
 
     <!-- الجافاسكريبت المحدث والمدعوم بالمزامنة السحابية -->
@@ -491,7 +491,7 @@
                 if (isSignUpMode) {
                     const res = await createUserWithEmailAndPassword(auth, email, password);
                     await updateProfile(res.user, { displayName: name });
-                    const defaultAvatar = "1790525023930.jpg";
+                    const defaultAvatar = "1000228211_3.jpg";
                     
                     await setDoc(doc(db, "users", res.user.uid), {
                         uid: res.user.uid,
@@ -528,11 +528,11 @@
                     currentUserData.name = data.name || user.displayName || "باحث";
                     currentUserData.email = data.email || user.email;
                     currentUserData.bio = data.bio || "باحث عن المعرفة في واحة كلمات الفكرية";
-                    currentUserData.avatar = data.avatar || "1790525023930.jpg";
+                    currentUserData.avatar = data.avatar || "1000228211_3.jpg";
                 } else {
                     currentUserData.name = user.displayName || user.email.split('@')[0];
                     currentUserData.email = user.email;
-                    currentUserData.avatar = "1790525023930.jpg";
+                    currentUserData.avatar = "1000228211_3.jpg";
                     await setDoc(userDocRef, currentUserData);
                 }
                 updateUIAvatarAndNames();
@@ -569,7 +569,7 @@
                     const notifDiv = document.createElement('div');
                     notifDiv.style.cssText = "display: flex; gap: 10px; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 10px;";
                     notifDiv.innerHTML = `
-                        <img src="${n.senderAvatar || '1790525023930.jpg'}" class="user-avatar-img" style="width: 32px; height: 32px;" alt="صورة">
+                        <img src="${n.senderAvatar || '1000228211_3.jpg'}" class="user-avatar-img" style="width: 32px; height: 32px;" alt="صورة">
                         <div><p style="font-size: 13px;"><b>${n.senderName}:</b> ${n.text}</p><span style="font-size: 11px; color: var(--text-secondary);">${n.time || 'منذ قليل'}</span></div>
                     `;
                     notifList.appendChild(notifDiv);
@@ -579,7 +579,7 @@
                         reqDiv.style.cssText = "display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-color);";
                         reqDiv.innerHTML = `
                             <div style="display: flex; align-items: center; gap: 10px;">
-                                <img src="${n.senderAvatar || '1790525023930.jpg'}" class="user-avatar-img" style="width: 40px; height: 40px;">
+                                <img src="${n.senderAvatar || '1000228211_3.jpg'}" class="user-avatar-img" style="width: 40px; height: 40px;">
                                 <div>
                                     <div style="font-weight: bold; font-size: 14px;">${n.senderName}</div>
                                     <div style="font-size: 11px; color: var(--text-secondary);">${n.text}</div>
@@ -613,7 +613,7 @@
                     count++;
                     const div = document.createElement('div');
                     div.className = 'search-result-item';
-                    div.innerHTML = `<img src="${u.avatar || '1790525023930.jpg'}" class="user-avatar-img" style="width: 26px; height: 26px;"> <span>${u.name}</span>`;
+                    div.innerHTML = `<img src="${u.avatar || '1000228211_3.jpg'}" class="user-avatar-img" style="width: 26px; height: 26px;"> <span>${u.name}</span>`;
                     div.addEventListener('click', () => {
                         searchResultsDropdown.style.display = 'none';
                         globalSearchInput.value = '';
@@ -629,7 +629,7 @@
         async function openUserProfile(targetUser) {
             document.getElementById('profile-view-name').innerText = targetUser.name;
             document.getElementById('profile-view-email').innerText = targetUser.email || "scholar@kalimat.com";
-            document.getElementById('profile-view-avatar').src = targetUser.avatar || "1790525023930.jpg";
+            document.getElementById('profile-view-avatar').src = targetUser.avatar || "1000228211_3.jpg";
             document.getElementById('profile-view-bio').innerText = targetUser.bio || "باحث عن المعرفة في واحة كلمات الفكرية";
 
             const actionContainer = document.getElementById('profile-action-container');
@@ -686,10 +686,10 @@
                     postCard.innerHTML = `
                         <div class="post-header">
                             <div class="post-user-info">
-                                <img src="${targetUser.avatar || '1790525023930.jpg'}" class="user-avatar-img" style="width: 35px; height: 35px;">
+                                <img src="${targetUser.avatar || '1000228211_3.jpg'}" class="user-avatar-img" style="width: 35px; height: 35px;">
                                 <div>
                                     <div class="post-author-name">${targetUser.name}</div>
-                                    <div class="post-meta-info"><span>${p.timeStr || 'منذ قليل'}</span> • <span class="post-category-tag"><img src="1790525023930.jpg" style="width:12px; height:12px; border-radius:2px; vertical-align:middle;"> فكرة</span></div>
+                                    <div class="post-meta-info"><span>${p.timeStr || 'منذ قليل'}</span> • <span class="post-category-tag"><img src="1000228211_3.jpg" style="width:12px; height:12px; border-radius:2px; vertical-align:middle;"> فكرة</span></div>
                                 </div>
                             </div>
                         </div>
@@ -712,7 +712,7 @@
             chatList.innerHTML = `
                 <div class="card" style="padding: 12px;">
                     <div style="font-weight: bold; margin-bottom: 8px; color: var(--accent-color); display:flex; align-items:center; gap:8px;">
-                        <img src="${targetUser.avatar || '1790525023930.jpg'}" class="user-avatar-img" style="width:30px; height:30px;">
+                        <img src="${targetUser.avatar || '1000228211_3.jpg'}" class="user-avatar-img" style="width:30px; height:30px;">
                         محادثة حية مع: ${targetUser.name}
                     </div>
                     <div id="direct-chat-messages" style="height: 220px; overflow-y: auto; background: var(--bg-color); padding: 10px; border-radius: 6px; margin-bottom: 10px; font-size: 13px; border: 1px solid var(--border-color);">
@@ -797,7 +797,7 @@
                 const post = docSnap.data();
                 const postId = docSnap.id;
                 const isMyPost = post.uid === currentUserData.uid;
-                const authorAvatar = post.avatar || "1790525023930.jpg";
+                const authorAvatar = post.avatar || "1000228211_3.jpg";
                 const likesCount = post.likes ? Object.keys(post.likes).length : 0;
                 const userHasLiked = post.likes && post.likes[currentUserData.uid];
 
@@ -812,7 +812,7 @@
                                 <div class="post-meta-info">
                                     <span>${post.timeStr || 'منذ قليل'}</span> • 
                                     <span class="post-category-tag">
-                                        <img src="1790525023930.jpg" style="width:14px; height:14px; border-radius:3px; vertical-align:middle;"> فكرة
+                                        <img src="1000228211_3.jpg" style="width:14px; height:14px; border-radius:3px; vertical-align:middle;"> فكرة
                                     </span>
                                 </div>
                             </div>
@@ -875,7 +875,7 @@
                     const item = document.createElement('div');
                     item.className = 'comment-item';
                     item.innerHTML = `
-                        <img src="${c.avatar || '1790525023930.jpg'}" class="user-avatar-img" style="width: 28px; height: 28px;" alt="صورة">
+                        <img src="${c.avatar || '1000228211_3.jpg'}" class="user-avatar-img" style="width: 28px; height: 28px;" alt="صورة">
                         <div class="comment-bubble">
                             <div style="font-weight: bold; font-size: 12px; color: var(--accent-color);">${c.authorName}</div>
                             <div style="font-size: 13px;">${c.text}</div>
@@ -996,7 +996,7 @@
             document.getElementById('modal-edit-name').value = currentUserData.name;
             document.getElementById('modal-edit-email').value = currentUserData.email;
             document.getElementById('modal-edit-bio').value = currentUserData.bio;
-            document.getElementById('modal-preview-avatar').src = currentUserData.avatar || "1790525023930.jpg";
+            document.getElementById('modal-preview-avatar').src = currentUserData.avatar || "1000228211_3.jpg";
             newAvatarBase64 = "";
             document.getElementById('edit-profile-modal').style.display = 'flex';
         }
@@ -1068,7 +1068,7 @@
                 textInput.value = '';
                 selectedMediaData = { url: "", type: "" };
                 document.getElementById('media-preview-container').style.display = 'none';
-            } else (error) {
+            } catch (error) {
                 alert("حدث خطأ أثناء نشر الفكرة.");
             } finally {
                 const publishBtn = document.getElementById('publish-post-btn');
