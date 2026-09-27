@@ -6,6 +6,22 @@
     <title>Kalimat | كلمات - الواحة الفكرية العالمية</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- إعدادات تطبيق الويب التقدمي (PWA) لتثبيت المنصة على الجوال -->
+    <meta name="theme-color" content="#2980b9">
+    <link rel="manifest" href="data:application/manifest+json;charset=utf-8,{
+        %22name%22: %22Kalimat | كلمات%22,
+        %22short_name%22: %22كلمات%22,
+        %22start_url%22: %22.%22,
+        %22display%22: %22standalone%22,
+        %22background_color%22: %22%23f7f9fa%22,
+        %22theme_color%22: %22%232980b9%22,
+        %22icons%22: [{
+            %22src%22: %22https://ui-avatars.com/api/?name=%D9%83&background=2980b9&color=fff&size=512%22,
+            %22sizes%22: %22512x512%22,
+            %22type%22: %22image/png%22
+        }]
+    }">
+
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -232,6 +248,7 @@
             <div id="search-results-dropdown"></div>
         </div>
         <div class="header-actions">
+            <div class="action-icon-btn" id="install-app-btn" title="تثبيت التطبيق على الجوال" style="display:none; background: var(--success-color); color: white;"><i class="fa-solid fa-download"></i></div>
             <div class="action-icon-btn" id="theme-toggle-btn" title="المظهر"><i class="fa-solid fa-moon" id="theme-icon"></i></div>
             <div class="action-icon-btn" id="settings-open-btn" title="الإعدادات"><i class="fa-solid fa-gear"></i></div>
             <img src="" id="header-user-avatar" class="user-avatar-img" alt="بروفايل">
@@ -389,6 +406,29 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+
+        // تفعيل التثبيت كتطبيق جوال (PWA)
+        let deferredPrompt;
+        const installBtn = document.getElementById('install-app-btn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'flex';
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    installBtn.style.display = 'none';
+                }
+                deferredPrompt = null;
+            } else {
+                alert("يمكنك تثبيت التطبيق مباشرة من خيارات متصفح هاتفك (إضافة إلى الشاشة الرئيسية / Add to Home Screen).");
+            }
+        });
 
         let isSignUpMode = false;
         let currentUserData = { name: "باحث عن المعرفة", email: "", uid: "", bio: "باحث عن المعرفة في واحة كلمات الفكرية", avatar: "" };
@@ -858,7 +898,7 @@
         });
 
         document.getElementById('modal-save-btn').addEventListener('click', async () => {
-            const newName = document.getElementById('modal-edit-name').value.trim();
+            const newName = document.getElementById('modal-edit-name').value.text?.trim() || document.getElementById('modal-edit-name').value.trim();
             const newEmail = document.getElementById('modal-edit-email').value.trim();
             const newBio = document.getElementById('modal-edit-bio').value.trim();
 
