@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kalimat | كلمات - الواحة الفكرية العالمية</title>
     
-    <!-- إعدادات أيقونة التطبيق والـ PWA -->
+    <!-- إعدادات أيقونة التطبيق والـ PWA باستخدام الريشة -->
     <link rel="icon" type="image/jpeg" href="https://i.ibb.co/6R2v9G2/1000228192-3.jpg">
     <link rel="apple-touch-icon" href="https://i.ibb.co/6R2v9G2/1000228192-3.jpg">
     <meta name="theme-color" content="#2c3e50">
@@ -13,7 +13,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="كلمات">
 
-    <!-- ربط ملف الـ Manifest الديناميكي للتحويل إلى تطبيق قابل للتثبيت والحذف -->
+    <!-- ربط ملف الـ Manifest الديناميكي -->
     <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22Kalimat%20%7C%20%D9%83%D9%84%D9%85%D8%A7%D8%AA%22%2C%22short_name%22%3A%22%D9%83%D9%84%D9%85%D8%A7%D8%AA%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f7f9fa%22%2C%22theme_color%22%3A%22%232c3e50%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fi.ibb.co%2F6R2v9G2%2F1000228192-3.jpg%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fjpeg%22%7D%5D%7D">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -57,7 +57,7 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; border: 1px solid var(--border-color);
             margin: auto;
         }
-        .auth-card h1 { color: var(--accent-color); margin-bottom: 8px; font-size: 26px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .auth-card h1 { color: var(--accent-color); margin-bottom: 8px; font-size: 24px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .auth-subtitle { font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5; }
         .auth-input {
             width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color);
@@ -74,7 +74,9 @@
             display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.05); z-index: 100;
             border-bottom: 1px solid var(--border-color); gap: 8px;
         }
-        .logo { font-size: 22px; font-weight: 900; color: var(--accent-color); cursor: pointer; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        /* تعديل الشعار ليحتوي على الريشة المجهزة بدل النصوص التقليدية */
+        .logo { font-size: 18px; font-weight: 900; color: var(--accent-color); cursor: pointer; display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+        .logo img { width: 34px; height: 34px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border-color); box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
         
         .search-container { position: relative; flex: 1; max-width: 180px; }
         .search-box {
@@ -194,7 +196,7 @@
     <!-- شاشة تسجيل الدخول / إنشاء حساب -->
     <div id="auth-screen">
         <div class="auth-card">
-            <h1><img src="https://i.ibb.co/6R2v9G2/1000228192-3.jpg" style="width: 32px; height: 32px; border-radius: 8px; object-fit: cover;"> كلمات</h1>
+            <h1><img src="https://i.ibb.co/6R2v9G2/1000228192-3.jpg" style="width: 34px; height: 34px; border-radius: 8px; object-fit: cover;"> كلمات</h1>
             <div class="auth-subtitle">«دائماً هناك كلمات لا يجيد كتابتها القلم تغوص في قعر النفس ولا تطفو»</div>
             
             <input type="text" id="auth-name" class="auth-input" placeholder="الاسم الكامل (مطلوب عند التسجيل الجديد)" style="display:none;">
@@ -232,9 +234,10 @@
         </div>
     </div>
 
+    <!-- رأس الصفحة مع شعار الريشة المجهز -->
     <header>
         <div class="logo" id="logo-main-btn">
-            <img src="https://i.ibb.co/6R2v9G2/1000228192-3.jpg" style="width: 28px; height: 28px; border-radius: 6px; object-fit: cover;"> كلمات
+            <img src="https://i.ibb.co/6R2v9G2/1000228192-3.jpg" alt="شعار الريشة"> كلمات
         </div>
         <div class="search-container">
             <div class="search-box">
@@ -336,7 +339,7 @@
             </div>
         </div>
 
-        <!-- 5. الخزانة (مع زر التثبيت الفوري للتطبيق وحذفه متى شئت) -->
+        <!-- 5. الخزانة -->
         <div id="tab-menu" class="view-section">
             <div class="card">
                 <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
@@ -347,7 +350,6 @@
                     </div>
                 </div>
                 <ul class="menu-list">
-                    <!-- زر التثبيت الفوري على شاشة الجوال -->
                     <li class="menu-item" id="install-app-btn" style="background: rgba(41, 128, 185, 0.1); border-radius: 8px; margin-bottom: 8px;"><i class="fa-solid fa-mobile-screen-button" style="color: var(--accent-color); font-size: 18px;"></i> تثبيت التطبيق على الشاشة الرئيسية</li>
                     <li class="menu-item" id="menu-settings-btn"><i class="fa-solid fa-gear" style="color: var(--accent-color);"></i> إعدادات الهوية والمعلومات</li>
                     <li class="menu-item" id="menu-chat-btn"><i class="fa-brands fa-facebook-messenger" style="color: #2980b9;"></i> الصالونات الفكرية والرسائل</li>
@@ -357,7 +359,7 @@
             </div>
         </div>
 
-        <!-- 6. البروفايل الشخصي أو بروفايل أي مستخدم يتم زيارته -->
+        <!-- 6. البروفايل الشخصي -->
         <div id="tab-profile" class="view-section">
             <div class="card" style="text-align: center; padding: 25px;">
                 <img src="" id="profile-view-avatar" class="user-avatar-img" style="width: 75px; height: 75px; font-size: 30px; margin: 0 auto 10px auto;" alt="صورة">
@@ -384,7 +386,7 @@
         <div class="nav-item" id="nav-menu" title="الخزانة"><i class="fa-solid fa-feather-pointed nav-icon"></i></div>
     </nav>
 
-    <!-- ربط Firebase وتفعيل المنصة العالمية المتكاملة تلقائياً -->
+    <!-- سكربت التشغيل السحابي Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, updateEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -404,7 +406,6 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // تفعيل محفز التثبيت للتطبيق (PWA Install Prompt)
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
@@ -545,7 +546,6 @@
             document.getElementById('new-post-text').placeholder = `شارك فكرة، يا ${currentUserData.name}...`;
         }
 
-        // محرك البحث السحابي الحقيقي
         const globalSearchInput = document.getElementById('global-search-input');
         const searchResultsDropdown = document.getElementById('search-results-dropdown');
 
@@ -634,7 +634,6 @@
             switchTab('profile');
         }
 
-        // اختيار وضغط صورة البروفايل تلقائياً وحفظها سحابياً
         document.getElementById('modal-pick-avatar-btn').addEventListener('click', () => {
             document.getElementById('modal-avatar-file').click();
         });
@@ -670,7 +669,6 @@
             reader.readAsDataURL(file);
         });
 
-        // الاستماع لمنشورات الخلاصة العالمية
         const q = query(collection(db, "posts"), orderBy("time", "desc"));
         onSnapshot(q, (snapshot) => {
             const feedContainer = document.getElementById('posts-feed');
@@ -823,7 +821,6 @@
             document.getElementById('post-media-file').click();
         });
 
-        // ضغط وسائط المنشورات وحفظها بشكل دائم
         document.getElementById('post-media-file').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
