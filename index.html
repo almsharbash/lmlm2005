@@ -194,7 +194,7 @@
         </div>
     </div>
 
-    <!-- نافذة إعدادات الملف الشخصي مع تصغير وضغط الصورة تلقائياً لتجنب خطأ الحجم -->
+    <!-- نافذة إعدادات الملف الشخصي مع ضغط الصور تلقائياً -->
     <div id="edit-profile-modal">
         <div class="modal-card">
             <h3>إعدادات الهوية والمعلومات</h3>
@@ -278,10 +278,10 @@
                 <h3>الصالونات الفكرية (المحادثات)</h3>
                 <div style="margin-top: 10px;">
                     <div class="chat-list-item">
-                        <div class="user-avatar-img" style="background: var(--accent-color);">أ</div>
+                        <div class="user-avatar-img" style="background: var(--accent-color);"><i class="fa-solid fa-feather-pointed"></i></div>
                         <div style="flex: 1;">
                             <div style="font-weight: bold; font-size: 14px;">صالون كلمات الفكري</div>
-                            <div style="font-size: 12px; color: var(--text-secondary);">مرحباً بك في الواحة الفكرية!</div>
+                            <div style="font-size: 12px; color: var(--text-secondary);">مرحباً بك في الواحة الفكرية العالمية!</div>
                         </div>
                         <span style="font-size: 10px; color: var(--accent-color); font-weight: bold;">نشط</span>
                     </div>
@@ -351,7 +351,6 @@
                 <p id="profile-view-email" style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;"></p>
                 <p id="profile-view-bio" style="color: var(--text-secondary); font-size: 13px; margin-top: 8px; margin-bottom: 15px;">باحث عن المعرفة في واحة كلمات الفكرية</p>
                 
-                <!-- زر طلب المتابعة / الصداقة -->
                 <div id="profile-action-container" style="display: none; margin-bottom: 15px;">
                     <button class="btn-publish" id="follow-user-btn" style="padding: 6px 20px; font-size: 13px;">+ متابعة / طلب صداقة</button>
                 </div>
@@ -371,7 +370,7 @@
         <div class="nav-item" id="nav-menu" title="الخزانة"><i class="fa-solid fa-feather-pointed nav-icon"></i></div>
     </nav>
 
-    <!-- ربط Firebase وتفعيل ضغط الصور التلقائي وحفظ البيانات في السحابة -->
+    <!-- ربط Firebase وتفعيل المنصة العالمية المتكاملة تلقائياً -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, updateEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -601,7 +600,7 @@
             switchTab('profile');
         }
 
-        // معالجة اختيار وضغط صورة البروفايل تلقائياً لتجنب أي أخطاء في السحابة
+        // اختيار وضغط صورة البروفايل تلقائياً
         document.getElementById('modal-pick-avatar-btn').addEventListener('click', () => {
             document.getElementById('modal-avatar-file').click();
         });
