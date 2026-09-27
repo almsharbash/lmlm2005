@@ -4,20 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kalimat | كلمات - الواحة الفكرية العالمية</title>
-    
-    <!-- إعدادات أيقونة التطبيق والـ PWA باستخدام الريشة -->
-    <link rel="icon" type="image/jpeg" href="https://i.ibb.co/6R2v9G2/1000228192-3.jpg">
-    <link rel="apple-touch-icon" href="https://i.ibb.co/6R2v9G2/1000228192-3.jpg">
-    <meta name="theme-color" content="#2c3e50">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="كلمات">
-
-    <!-- ربط ملف الـ Manifest الديناميكي -->
-    <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22Kalimat%20%7C%20%D9%83%D9%84%D9%85%D8%A7%D8%AA%22%2C%22short_name%22%3A%22%D9%83%D9%84%D9%85%D8%A7%D8%AA%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f7f9fa%22%2C%22theme_color%22%3A%22%232c3e50%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fi.ibb.co%2F6R2v9G2%2F1000228192-3.jpg%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fjpeg%22%7D%5D%7D">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- إعدادات تطبيق الويب التقدمي (PWA) لتثبيت المنصة على الجوال -->
+    <meta name="theme-color" content="#2980b9">
+    <link rel="manifest" href="data:application/manifest+json;charset=utf-8,{
+        %22name%22: %22Kalimat | كلمات%22,
+        %22short_name%22: %22كلمات%22,
+        %22start_url%22: %22.%22,
+        %22display%22: %22standalone%22,
+        %22background_color%22: %22%23f7f9fa%22,
+        %22theme_color%22: %22%232980b9%22,
+        %22icons%22: [{
+            %22src%22: %22https://ui-avatars.com/api/?name=%D9%83&background=2980b9&color=fff&size=512%22,
+            %22sizes%22: %22512x512%22,
+            %22type%22: %22image/png%22
+        }]
+    }">
+
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -57,7 +61,7 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; border: 1px solid var(--border-color);
             margin: auto;
         }
-        .auth-card h1 { color: var(--accent-color); margin-bottom: 8px; font-size: 24px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .auth-card h1 { color: var(--accent-color); margin-bottom: 8px; font-size: 26px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .auth-subtitle { font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5; }
         .auth-input {
             width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color);
@@ -74,9 +78,7 @@
             display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.05); z-index: 100;
             border-bottom: 1px solid var(--border-color); gap: 8px;
         }
-        /* تعديل الشعار ليحتوي على الريشة المجهزة بدل النصوص التقليدية */
-        .logo { font-size: 18px; font-weight: 900; color: var(--accent-color); cursor: pointer; display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-        .logo img { width: 34px; height: 34px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border-color); box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+        .logo { font-size: 22px; font-weight: 900; color: var(--accent-color); cursor: pointer; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
         
         .search-container { position: relative; flex: 1; max-width: 180px; }
         .search-box {
@@ -196,7 +198,7 @@
     <!-- شاشة تسجيل الدخول / إنشاء حساب -->
     <div id="auth-screen">
         <div class="auth-card">
-            <h1><img src="https://i.ibb.co/6R2v9G2/1000228192-3.jpg" style="width: 34px; height: 34px; border-radius: 8px; object-fit: cover;"> كلمات</h1>
+            <h1><i class="fa-solid fa-feather-pointed" style="color: var(--accent-color);"></i> كلمات</h1>
             <div class="auth-subtitle">«دائماً هناك كلمات لا يجيد كتابتها القلم تغوص في قعر النفس ولا تطفو»</div>
             
             <input type="text" id="auth-name" class="auth-input" placeholder="الاسم الكامل (مطلوب عند التسجيل الجديد)" style="display:none;">
@@ -234,10 +236,9 @@
         </div>
     </div>
 
-    <!-- رأس الصفحة مع شعار الريشة المجهز -->
     <header>
         <div class="logo" id="logo-main-btn">
-            <img src="https://i.ibb.co/6R2v9G2/1000228192-3.jpg" alt="شعار الريشة"> كلمات
+            <i class="fa-solid fa-feather-pointed"></i> كلمات
         </div>
         <div class="search-container">
             <div class="search-box">
@@ -247,6 +248,7 @@
             <div id="search-results-dropdown"></div>
         </div>
         <div class="header-actions">
+            <div class="action-icon-btn" id="install-app-btn" title="تثبيت التطبيق على الجوال" style="display:none; background: var(--success-color); color: white;"><i class="fa-solid fa-download"></i></div>
             <div class="action-icon-btn" id="theme-toggle-btn" title="المظهر"><i class="fa-solid fa-moon" id="theme-icon"></i></div>
             <div class="action-icon-btn" id="settings-open-btn" title="الإعدادات"><i class="fa-solid fa-gear"></i></div>
             <img src="" id="header-user-avatar" class="user-avatar-img" alt="بروفايل">
@@ -350,7 +352,6 @@
                     </div>
                 </div>
                 <ul class="menu-list">
-                    <li class="menu-item" id="install-app-btn" style="background: rgba(41, 128, 185, 0.1); border-radius: 8px; margin-bottom: 8px;"><i class="fa-solid fa-mobile-screen-button" style="color: var(--accent-color); font-size: 18px;"></i> تثبيت التطبيق على الشاشة الرئيسية</li>
                     <li class="menu-item" id="menu-settings-btn"><i class="fa-solid fa-gear" style="color: var(--accent-color);"></i> إعدادات الهوية والمعلومات</li>
                     <li class="menu-item" id="menu-chat-btn"><i class="fa-brands fa-facebook-messenger" style="color: #2980b9;"></i> الصالونات الفكرية والرسائل</li>
                     <li class="menu-item" id="menu-welcome-btn"><i class="fa-solid fa-feather-pointed" style="color: var(--success-color);"></i> فلسفة منصة كلمات</li>
@@ -359,7 +360,7 @@
             </div>
         </div>
 
-        <!-- 6. البروفايل الشخصي -->
+        <!-- 6. البروفايل الشخصي أو بروفايل أي مستخدم يتم زيارته -->
         <div id="tab-profile" class="view-section">
             <div class="card" style="text-align: center; padding: 25px;">
                 <img src="" id="profile-view-avatar" class="user-avatar-img" style="width: 75px; height: 75px; font-size: 30px; margin: 0 auto 10px auto;" alt="صورة">
@@ -386,7 +387,7 @@
         <div class="nav-item" id="nav-menu" title="الخزانة"><i class="fa-solid fa-feather-pointed nav-icon"></i></div>
     </nav>
 
-    <!-- سكربت التشغيل السحابي Firebase -->
+    <!-- ربط Firebase وتفعيل المنصة العالمية المتكاملة تلقائياً -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, updateEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -406,22 +407,26 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // تفعيل التثبيت كتطبيق جوال (PWA)
         let deferredPrompt;
+        const installBtn = document.getElementById('install-app-btn');
+
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
+            installBtn.style.display = 'flex';
         });
 
-        document.getElementById('install-app-btn').addEventListener('click', async () => {
+        installBtn.addEventListener('click', async () => {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 const { outcome } = await deferredPrompt.userChoice;
                 if (outcome === 'accepted') {
-                    console.log('تم قبول تثبيت تطبيق كلمات');
+                    installBtn.style.display = 'none';
                 }
                 deferredPrompt = null;
             } else {
-                alert("لتثبيت التطبيق على جهازك أو إعادة تثبيته:\n\n• إذا كنت تستخدم متصفح كروم (أندرويد)، اضغط على خيارات المتصفح (النقاط الثلاث) ثم اختر 'إضافة إلى الشاشة الرئيسية' أو 'تثبيت التطبيق'. يمكنك حذفه في أي وقت من إعدادات هاتفك أو من الشاشة الرئيسية مباشرة.\n• إذا كنت تستخدم سفاري (آيفون)، اضغط على زر المشاركة (Share) ثم اختر 'إضافة إلى الصفحة الرئيسية' (Add to Home Screen).");
+                alert("يمكنك تثبيت التطبيق مباشرة من خيارات متصفح هاتفك (إضافة إلى الشاشة الرئيسية / Add to Home Screen).");
             }
         });
 
@@ -546,6 +551,7 @@
             document.getElementById('new-post-text').placeholder = `شارك فكرة، يا ${currentUserData.name}...`;
         }
 
+        // محرك البحث السحابي الحقيقي
         const globalSearchInput = document.getElementById('global-search-input');
         const searchResultsDropdown = document.getElementById('search-results-dropdown');
 
@@ -634,6 +640,7 @@
             switchTab('profile');
         }
 
+        // اختيار وضغط صورة البروفايل تلقائياً وحفظها سحابياً
         document.getElementById('modal-pick-avatar-btn').addEventListener('click', () => {
             document.getElementById('modal-avatar-file').click();
         });
@@ -669,6 +676,7 @@
             reader.readAsDataURL(file);
         });
 
+        // الاستماع لمنشورات الخلاصة العالمية
         const q = query(collection(db, "posts"), orderBy("time", "desc"));
         onSnapshot(q, (snapshot) => {
             const feedContainer = document.getElementById('posts-feed');
@@ -821,6 +829,7 @@
             document.getElementById('post-media-file').click();
         });
 
+        // ضغط وسائط المنشورات وحفظها بشكل دائم
         document.getElementById('post-media-file').addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
@@ -889,7 +898,7 @@
         });
 
         document.getElementById('modal-save-btn').addEventListener('click', async () => {
-            const newName = document.getElementById('modal-edit-name').value.trim();
+            const newName = document.getElementById('modal-edit-name').value.text?.trim() || document.getElementById('modal-edit-name').value.trim();
             const newEmail = document.getElementById('modal-edit-email').value.trim();
             const newBio = document.getElementById('modal-edit-bio').value.trim();
 
@@ -949,6 +958,17 @@
             } catch (error) {
                 alert("حدث خطأ أثناء نشر الفكرة.");
             }
+        });
+
+        document.querySelectorAll('.accept-friend-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.target.closest('.friend-request-card').innerHTML = `<div style="color: var(--success-color); font-weight: bold; font-size: 13px;"><i class="fa-solid fa-check"></i> تم قبول الرفيق بنجاح</div>`;
+            });
+        });
+        document.querySelectorAll('.reject-friend-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.target.closest('.friend-request-card').remove();
+            });
         });
 
         function switchTab(tabName) {
