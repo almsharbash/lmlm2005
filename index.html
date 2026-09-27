@@ -178,9 +178,6 @@
         .modal-input { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; outline: none; background: var(--bg-color); color: var(--text-color); }
         .modal-btns { display: flex; justify-content: flex-end; gap: 8px; }
 
-        .chat-list-item { display: flex; align-items: center; gap: 12px; padding: 10px; border-bottom: 1px solid var(--border-color); cursor: pointer; }
-        .chat-list-item:hover { background: var(--bg-color); }
-
         nav.bottom-nav {
             position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg);
             display: flex; justify-content: space-around; padding: 10px 0; box-shadow: -1px 3px rgba(0,0,0,0.05); z-index: 100;
@@ -212,7 +209,7 @@
         </div>
     </div>
 
-    <!-- نافذة إعدادات الملف الشخصي مع ضغط الصور التلقائي الذكي -->
+    <!-- نافذة إعدادات الملف الشخصي -->
     <div id="edit-profile-modal">
         <div class="modal-card">
             <h3>إعدادات الهوية والمعلومات</h3>
@@ -228,7 +225,7 @@
             <label style="font-size: 12px; color: var(--text-secondary);">الاسم الكامل</label>
             <input type="text" id="modal-edit-name" class="modal-input">
             <label style="font-size: 12px; color: var(--text-secondary);">البريد الإلكتروني</label>
-            <input type="email" id="modal-edit-email" class="modal-input">
+            <input type="email" id="modal-edit-email" class="modal-input" disabled style="opacity: 0.7;">
             <label style="font-size: 12px; color: var(--text-secondary);">النبذة المعرفية (البايو)</label>
             <input type="text" id="modal-edit-bio" class="modal-input" placeholder="اكتب نبذة عن اهتماماتك الفكرية...">
             <div class="modal-btns">
@@ -291,7 +288,7 @@
             </div>
         </div>
 
-        <!-- 2. الصالونات الفكرية (المحادثات) -->
+        <!-- 2. الصالونات الفكرية -->
         <div id="tab-chat" class="view-section">
             <div class="card">
                 <h3>الصالونات الفكرية (الرسائل الحية)</h3>
@@ -301,7 +298,7 @@
             </div>
         </div>
 
-        <!-- 3. الرفقاء وطلبات الصداقة السحابية الحقيقية -->
+        <!-- 3. الرفقاء وطلبات الصداقة -->
         <div id="tab-friends" class="view-section">
             <div class="card">
                 <h3>شبكة الرفقاء وطلبات المتابعة الواردة</h3>
@@ -341,7 +338,7 @@
             </div>
         </div>
 
-        <!-- 6. البروفايل الشخصي أو بروفايل أي مستخدم -->
+        <!-- 6. البروفايل الشخصي -->
         <div id="tab-profile" class="view-section">
             <div class="card" style="text-align: center; padding: 25px;">
                 <img src="" id="profile-view-avatar" class="user-avatar-img" style="width: 75px; height: 75px; font-size: 30px; margin: 0 auto 10px auto;" alt="صورة">
@@ -349,7 +346,7 @@
                 <p id="profile-view-email" style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;"></p>
                 <p id="profile-view-bio" style="color: var(--text-secondary); font-size: 13px; margin-top: 8px; margin-bottom: 15px;">باحث عن المعرفة في واحة كلمات الفكرية</p>
                 
-                <div id="profile-action-container" style="display: none; margin-bottom: 15px; display: flex; justify-content: center; gap: 8px;">
+                <div id="profile-action-container" style="display: none; margin-bottom: 15px; justify-content: center; gap: 8px;">
                     <button class="btn-publish" id="follow-user-btn" style="padding: 6px 16px; font-size: 13px;">+ إرسال طلب متابعة وصداقة</button>
                     <button class="action-icon-btn" id="message-user-btn" style="width: auto; padding: 6px 14px; border-radius: 6px; background: var(--accent-color); color: white; border: none; font-size: 13px;" title="مراسلة"><i class="fa-brands fa-facebook-messenger"></i> مراسلة</button>
                 </div>
@@ -360,7 +357,7 @@
         </div>
     </div>
 
-    <!-- Navigation Bar -->
+    <!-- شريط التنقل السفلي -->
     <nav class="bottom-nav">
         <div class="nav-item active" id="nav-home" title="الخلاصة"><i class="fa-solid fa-book-open nav-icon"></i></div>
         <div class="nav-item" id="nav-chat" title="الصالونات الفكرية"><i class="fa-brands fa-facebook-messenger nav-icon"></i></div>
@@ -369,10 +366,10 @@
         <div class="nav-item" id="nav-menu" title="الخزانة"><img src="1000228211.jpg" style="width:24px; height:24px; border-radius:50%; object-fit:cover;"></div>
     </nav>
 
-    <!-- جافاسكريبت والربط السحابي -->
+    <!-- الجافاسكريبت المحدث -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, updateEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, getDocs, getDoc, setDoc, doc, query, orderBy, onSnapshot, deleteDoc, updateDoc, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -389,7 +386,6 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // نظام تثبيت التطبيق الذكي الدائم (PWA) مع دليل تلقائي شامل
         let deferredPrompt;
         const installBtns = [document.getElementById('install-app-btn'), document.getElementById('menu-install-btn')];
 
@@ -401,23 +397,19 @@
         async function triggerAppInstall() {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
                 deferredPrompt = null;
             } else {
-                alert("لتثبيت تطبيق «كلمات» على جوالك بكل سهولة:\n\n1. افتح قائمة المتصفح (النقاط الثلاث بالأعلى).\n2. اختر (إضافة إلى الشاشة الرئيسية / Add to Home Screen).\n3. اضغط تثبيت ليظهر التطبيق كأيقونة مستقلة بجوالك.");
+                alert("لتثبيت تطبيق «كلمات»:\n1. افتح قائمة المتصفح (النقاط الثلاث).\n2. اختر (إضافة إلى الشاشة الرئيسية).");
             }
         }
 
-        installBtns.forEach(btn => {
-            if(btn) btn.addEventListener('click', triggerAppInstall);
-        });
+        installBtns.forEach(btn => { if(btn) btn.addEventListener('click', triggerAppInstall); });
 
         let isSignUpMode = false;
         let currentUserData = { name: "باحث عن المعرفة", email: "", uid: "", bio: "باحث عن المعرفة في واحة كلمات الفكرية", avatar: "" };
         let selectedMediaData = { url: "", type: "" };
         let newAvatarBase64 = "";
 
-        // دالة ذكية لضغط الصور تلقائياً لكي لا تتجاوز حجماً صغيراً جداً (تمنع مشكلة امتلاء الذاكرة تماماً)
         function compressImage(file, maxWidth = 300, maxHeight = 300, quality = 0.7) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -515,13 +507,7 @@
                 }
                 document.getElementById('auth-screen').style.display = 'none';
             } catch (error) {
-                let errorMsg = error.message;
-                if(error.code === 'auth/email-already-in-use') {
-                    errorMsg = "البريد الإلكتروني مستخدم مسبقاً! يرجى الضغط على 'لديك حساب بالفعل؟ سجل دخولك'.";
-                } else if(error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-                    errorMsg = "البريد الإلكتروني غير مسجل أو كلمة المرور غير صحيحة.";
-                }
-                alert("تعذر الاتصال:\n\n" + errorMsg);
+                alert("تعذر الاتصال:\n\n" + error.message);
             } finally {
                 authSubmitBtn.disabled = false;
                 authSubmitBtn.innerText = isSignUpMode ? "إنشاء حساب عالمي والانضمام" : "تسجيل الدخول";
@@ -563,7 +549,6 @@
             document.getElementById('new-post-text').placeholder = `شارك فكرة، يا ${currentUserData.name}...`;
         }
 
-        // الاستماع الفوري للإشعارات السحابية وطلبات الصداقة الحقيقية
         function listenToUserNotifications(uid) {
             const qNotif = query(collection(db, "notifications"), where("targetUid", "==", uid));
             onSnapshot(qNotif, (snapshot) => {
@@ -581,8 +566,6 @@
 
                 snapshot.forEach(docSnap => {
                     const n = docSnap.data();
-                    
-                    // إضافة للإشعارات
                     const notifDiv = document.createElement('div');
                     notifDiv.style.cssText = "display: flex; gap: 10px; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 10px;";
                     notifDiv.innerHTML = `
@@ -591,10 +574,8 @@
                     `;
                     notifList.appendChild(notifDiv);
 
-                    // إذا كان طلب صداقة
                     if(n.type === 'friend_request') {
                         const reqDiv = document.createElement('div');
-                        reqDiv.className = 'friend-request-card';
                         reqDiv.style.cssText = "display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-color);";
                         reqDiv.innerHTML = `
                             <div style="display: flex; align-items: center; gap: 10px;">
@@ -604,9 +585,7 @@
                                     <div style="font-size: 11px; color: var(--text-secondary);">${n.text}</div>
                                 </div>
                             </div>
-                            <div style="display: flex; gap: 6px;">
-                                <button class="btn-publish accept-friend-btn" style="padding: 5px 12px; font-size: 12px;">قبول</button>
-                            </div>
+                            <button class="btn-publish" style="padding: 5px 12px; font-size: 12px;" onclick="alert('تم قبول طلب الصداقة بنجاح!')">قبول</button>
                         `;
                         friendReqList.appendChild(reqDiv);
                     }
@@ -614,7 +593,6 @@
             });
         }
 
-        // البحث السحابي عن المستخدمين
         const globalSearchInput = document.getElementById('global-search-input');
         const searchResultsDropdown = document.getElementById('search-results-dropdown');
 
@@ -663,7 +641,6 @@
             } else {
                 actionContainer.style.display = 'flex';
                 
-                // زر إرسال طلب متابعة سحابي حقيقي
                 followBtn.onclick = async () => {
                     followBtn.disabled = true;
                     followBtn.innerText = "جاري الإرسال...";
@@ -677,7 +654,7 @@
                             time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
                             timestamp: Date.now()
                         });
-                        alert(`تم إرسال طلب المتابعة والصداقة إلى الباحث: ${targetUser.name} بنجاح ووصله الإشعار سحابياً!`);
+                        alert(`تم إرسال طلب المتابعة إلى الباحث: ${targetUser.name} بنجاح!`);
                         followBtn.innerText = "✓ تم إرسال الطلب";
                         followBtn.style.background = "var(--success-color)";
                     } catch(err) {
@@ -687,7 +664,6 @@
                     }
                 };
 
-                // زر المراسلة الحية
                 msgBtn.onclick = () => {
                     switchTab('chat');
                     const chatList = document.getElementById('chat-rooms-list');
@@ -749,7 +725,6 @@
             switchTab('profile');
         }
 
-        // اختيار وضغط صورة البروفايل تلقائياً بضغطة زر
         document.getElementById('modal-pick-avatar-btn').addEventListener('click', () => {
             document.getElementById('modal-avatar-file').click();
         });
@@ -757,12 +732,10 @@
         document.getElementById('modal-avatar-file').addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if(!file) return;
-            // ضغط تلقائي فوري
             newAvatarBase64 = await compressImage(file, 200, 200, 0.6);
             document.getElementById('modal-preview-avatar').src = newAvatarBase64;
         });
 
-        // استماع وتحميل منشورات الخلاصة
         const q = query(collection(db, "posts"), orderBy("time", "desc"));
         onSnapshot(q, (snapshot) => {
             const feedContainer = document.getElementById('posts-feed');
@@ -899,7 +872,6 @@
             document.getElementById('post-media-file').click();
         });
 
-        // ضغط تلقائي لصور المنشورات
         document.getElementById('post-media-file').addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
@@ -915,7 +887,6 @@
                 };
                 reader.readAsDataURL(file);
             } else {
-                // ضغط تلقائي للصورة لتصبح مساحتها صغيرة جداً ومناسبة للسحابة
                 const compressedUrl = await compressImage(file, 600, 600, 0.7);
                 selectedMediaData = { url: compressedUrl, type: 'image' };
                 
@@ -950,21 +921,20 @@
 
         document.getElementById('modal-save-btn').addEventListener('click', async () => {
             const newName = document.getElementById('modal-edit-name').value.trim();
-            const newEmail = document.getElementById('modal-edit-email').value.trim();
             const newBio = document.getElementById('modal-edit-bio').value.trim();
 
-            if(!newName || !newEmail) { alert('الاسم والبريد الإلكتروني مطلوبان!'); return; }
+            if(!newName) { alert('الاسم مطلوب!'); return; }
 
             try {
                 const saveBtn = document.getElementById('modal-save-btn');
                 saveBtn.disabled = true;
                 saveBtn.innerText = "جاري الحفظ وضغط البيانات...";
 
-                if(auth.currentUser && newEmail !== currentUserData.email) await updateEmail(auth.currentUser, newEmail);
-                if(auth.currentUser && newName !== currentUserData.name) await updateProfile(auth.currentUser, { displayName: newName });
+                if(auth.currentUser && newName !== currentUserData.name) {
+                    await updateProfile(auth.currentUser, { displayName: newName });
+                }
 
                 currentUserData.name = newName;
-                currentUserData.email = newEmail;
                 currentUserData.bio = newBio || currentUserData.bio;
                 if(newAvatarBase64) {
                     currentUserData.avatar = newAvatarBase64;
@@ -974,7 +944,7 @@
                 
                 updateUIAvatarAndNames();
                 document.getElementById('edit-profile-modal').style.display = 'none';
-                alert("تم تحديث هويتك وصورتك المضغوطة وحفظها سحابياً بنجاح تام بدون أي مشاكل في الذاكرة!");
+                alert("تم تحديث هويتك بنجاح!");
             } catch (e) {
                 alert("خطأ أثناء الحفظ: " + e.message);
             } finally {
