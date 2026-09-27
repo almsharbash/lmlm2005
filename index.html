@@ -703,12 +703,10 @@
             switchTab('profile');
         }
 
-        // دالة لفتح محادثة حية وثابتة بين المستخدمين عبر Firestore
         function openChatWithUser(targetUser) {
             switchTab('chat');
             const chatList = document.getElementById('chat-rooms-list');
             
-            // توليد معرف محادثة فريد وموحد بين الشخصين
             const chatId = currentUserData.uid < targetUser.uid ? `${currentUserData.uid}_${targetUser.uid}` : `${targetUser.uid}_${currentUserData.uid}`;
 
             chatList.innerHTML = `
@@ -727,7 +725,6 @@
                 </div>
             `;
 
-            // الاستماع للرسائل في هذه المحادثة سحابياً بشكل مباشر وفوري
             const qMessages = query(collection(db, "chats", chatId, "messages"), orderBy("timestamp", "asc"));
             onSnapshot(qMessages, (snapshot) => {
                 const msgBox = document.getElementById('direct-chat-messages');
@@ -786,7 +783,6 @@
             document.getElementById('modal-preview-avatar').src = newAvatarBase64;
         });
 
-        // الاستماع للمنشورات مع الترتيب الصحيح والتزامن السحابي
         const qPosts = query(collection(db, "posts"), orderBy("timestamp", "desc"));
         onSnapshot(qPosts, (snapshot) => {
             const feedContainer = document.getElementById('posts-feed');
@@ -862,7 +858,6 @@
             });
         });
 
-        // دالة لجلب وتعرض التعليقات سحابياً لكل منشور
         function loadPostComments(postId) {
             const qComments = query(collection(db, "posts", postId, "comments"), orderBy("timestamp", "asc"));
             onSnapshot(qComments, (snapshot) => {
