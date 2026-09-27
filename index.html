@@ -58,16 +58,12 @@
         .auth-switch { color: var(--accent-color); font-size: 13px; cursor: pointer; margin-top: 8px; display: inline-block; font-weight: 600; }
 
         header {
-            position: sticky; top: 0; background: var(--card-bg); padding: 8px 12px;
+            position: sticky; top: 0; background: var(--card-bg); padding: 10px 15px;
             display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.05); z-index: 100;
             border-bottom: 1px solid var(--border-color); gap: 8px;
         }
-        .logo { font-size: 20px; font-weight: 900; color: var(--accent-color); cursor: pointer; display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-        
-        .custom-logo-img { 
-            width: 32px; height: 32px; border-radius: 50%; object-fit: cover; 
-            border: 1.5px solid var(--accent-color); cursor: pointer; background: #fff; display: inline-block; flex-shrink: 0;
-        }
+        .logo { font-size: 22px; font-weight: 900; color: var(--accent-color); cursor: pointer; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .logo i { color: var(--accent-color); }
         
         .search-box {
             background: var(--bg-color); border-radius: 20px; padding: 5px 10px;
@@ -100,7 +96,7 @@
             box-shadow: 0 4px 12px rgba(41, 128, 185, 0.2); position: relative; overflow: hidden;
         }
         .wisdom-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-        .wisdom-card h4 { font-size: 14px; opacity: 0.95; font-weight: bold; }
+        .wisdom-card h4 { font-size: 14px; opacity: 0.95; font-weight: bold; display: flex; align-items: center; gap: 6px; }
         .wisdom-card p { font-size: 15px; line-height: 1.6; font-weight: 500; }
 
         .create-post { display: flex; flex-direction: column; gap: 10px; }
@@ -178,9 +174,7 @@
     <!-- شاشة تسجيل الدخول -->
     <div id="auth-screen">
         <div class="auth-card">
-            <h1 id="auth-main-title">
-                <img src="https://i.ibb.co/3W6qWq1/1000226145.png" id="auth-logo-preview" class="custom-logo-img" alt="شعار"> كلمات
-            </h1>
+            <h1><i class="fa-solid fa-feather-pointed" style="color: var(--accent-color);"></i> كلمات</h1>
             <div class="auth-subtitle">«دائماً هناك كلمات لا يجيد كتابتها القلم تغوص في قعر النفس ولا تطفو»</div>
             <input type="text" id="auth-name" class="auth-input" placeholder="الاسم الكامل (مطلوب عند التسجيل)" style="display:none;">
             <input type="email" id="auth-email" class="auth-input" placeholder="البريد الإلكتروني (مثال: mymail@gmail.com)">
@@ -193,15 +187,11 @@
     <!-- نافذة إعدادات الملف الشخصي -->
     <div id="edit-profile-modal">
         <div class="modal-card">
-            <h3>إعدادات الهوية والشعار المخصص</h3>
-            <label style="font-size: 12px; color: var(--text-secondary);">اختر شعار الريشة الخاص بك (من هاتفك)</label>
-            <input type="file" id="modal-edit-logo-file" class="modal-input" accept="image/*" style="padding: 6px;">
+            <h3>إعدادات الهوية والمعلومات</h3>
             <label style="font-size: 12px; color: var(--text-secondary);">الاسم الكامل</label>
             <input type="text" id="modal-edit-name" class="modal-input">
             <label style="font-size: 12px; color: var(--text-secondary);">البريد الإلكتروني</label>
             <input type="email" id="modal-edit-email" class="modal-input">
-            <label style="font-size: 12px; color: var(--text-secondary);">صورة الملف الشخصي</label>
-            <input type="file" id="modal-edit-avatar-file" class="modal-input" accept="image/*" style="padding: 6px;">
             <label style="font-size: 12px; color: var(--text-secondary);">النبذة المعرفية (البايو)</label>
             <input type="text" id="modal-edit-bio" class="modal-input" placeholder="اكتب نبذة عن اهتماماتك الفكرية...">
             <div class="modal-btns">
@@ -213,7 +203,7 @@
 
     <header>
         <div class="logo" id="logo-main-btn">
-            <img src="https://i.ibb.co/3W6qWq1/1000226145.png" id="header-logo-img" class="custom-logo-img" alt="شعار كلمات"> كلمات
+            <i class="fa-solid fa-feather-pointed"></i> كلمات
         </div>
         <div class="search-box">
             <i class="fa-solid fa-magnifying-glass"></i>
@@ -231,8 +221,7 @@
         <div id="tab-home" class="view-section active">
             <div class="wisdom-card">
                 <div class="wisdom-card-header">
-                    <img src="https://i.ibb.co/3W6qWq1/1000226145.png" id="wisdom-logo-img" class="custom-logo-img" style="width: 28px; height: 28px;" alt="شعار">
-                    <h4>ومضة معرفية اليوم</h4>
+                    <h4><i class="fa-solid fa-feather-pointed"></i> ومضة معرفية اليوم</h4>
                 </div>
                 <p>«دائماً هناك كلمات لا يجيد كتابتها القلم تغوص في قعر النفس ولا تطفو»</p>
             </div>
@@ -306,7 +295,7 @@
                 <h3>سجل الومضات والإشعارات</h3>
                 <div id="notifications-list" style="margin-top: 15px;">
                     <div style="display: flex; gap: 10px; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
-                        <img src="https://i.ibb.co/3W6qWq1/1000226145.png" id="notif-logo-img" class="custom-logo-img" style="width: 32px; height: 32px;" alt="شعار">
+                        <div class="action-icon-btn" style="background: var(--accent-color); color: #fff;"><i class="fa-solid fa-feather-pointed"></i></div>
                         <div><p style="font-size: 13px;"><b>منصة كلمات:</b> أشرقت شمس الواحة الفكرية بنجاح تام!</p><span style="font-size: 11px; color: var(--text-secondary);">الآن</span></div>
                     </div>
                 </div>
@@ -324,9 +313,9 @@
                     </div>
                 </div>
                 <ul class="menu-list">
-                    <li class="menu-item" id="menu-settings-btn"><i class="fa-solid fa-gear" style="color: var(--accent-color);"></i> إعدادات الهوية والشعار المخصص</li>
+                    <li class="menu-item" id="menu-settings-btn"><i class="fa-solid fa-gear" style="color: var(--accent-color);"></i> إعدادات الهوية والمعلومات</li>
                     <li class="menu-item" id="menu-chat-btn"><i class="fa-brands fa-facebook-messenger" style="color: #2980b9;"></i> الصالونات الفكرية والرسائل</li>
-                    <li class="menu-item" id="menu-welcome-btn"><i class="fa-solid fa-feather" style="color: var(--success-color);"></i> فلسفة منصة كلمات</li>
+                    <li class="menu-item" id="menu-welcome-btn"><i class="fa-solid fa-feather-pointed" style="color: var(--success-color);"></i> فلسفة منصة كلمات</li>
                     <li class="menu-item" id="logout-btn" style="color: var(--danger-color);"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</li>
                 </ul>
             </div>
@@ -349,9 +338,7 @@
         <div class="nav-item" id="nav-chat" title="الصالونات الفكرية"><i class="fa-brands fa-facebook-messenger nav-icon"></i></div>
         <div class="nav-item" id="nav-friends" title="الرفقاء"><i class="fa-solid fa-users nav-icon"></i></div>
         <div class="nav-item" id="nav-notifications" title="الإشعارات"><i class="fa-solid fa-bolt nav-icon"></i></div>
-        <div class="nav-item" id="nav-menu" title="الخزانة">
-            <img src="https://i.ibb.co/3W6qWq1/1000226145.png" id="nav-logo-img" class="custom-logo-img" style="width: 24px; height: 24px;" alt="شعار">
-        </div>
+        <div class="nav-item" id="nav-menu" title="الخزانة"><i class="fa-solid fa-feather-pointed nav-icon"></i></div>
     </nav>
 
     <!-- ربط Firebase وتفعيل قواعد البيانات Firestore و Authentication -->
@@ -377,27 +364,6 @@
         let isSignUpMode = false;
         let currentUserData = { name: "باحث عن المعرفة", email: "", uid: "", bio: "باحث عن المعرفة في واحة كلمات الفكرية", avatar: "" };
         let selectedMediaData = { url: "", type: "" };
-        let defaultLogoUrl = localStorage.getItem('kalimat_custom_logo') || "https://i.ibb.co/3W6qWq1/1000226145.png";
-
-        function updateAllLogosOnPage() {
-            document.querySelectorAll('#header-logo-img, #auth-logo-preview, #wisdom-logo-img, #notif-logo-img, #nav-logo-img').forEach(img => {
-                if(img) img.src = defaultLogoUrl;
-            });
-        }
-
-        document.getElementById('modal-edit-logo-file').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    defaultLogoUrl = evt.target.result;
-                    localStorage.setItem('kalimat_custom_logo', defaultLogoUrl);
-                    updateAllLogosOnPage();
-                    alert("تم تحديث وحفظ شعار الريشة الخاص بك بنجاح!");
-                };
-                reader.readAsDataURL(file);
-            }
-        });
 
         document.getElementById('theme-toggle-btn').addEventListener('click', () => {
             const body = document.body;
@@ -420,7 +386,7 @@
 
         document.getElementById('auth-switch-text').addEventListener('click', () => {
             isSignUpMode = !isSignUpMode;
-            document.getElementById('auth-main-title').innerHTML = `<img src="${defaultLogoUrl}" class="custom-logo-img" alt="شعار"> ${isSignUpMode ? "انضمام للواحة" : "كلمات"}`;
+            document.getElementById('auth-main-title').innerHTML = `<i class="fa-solid fa-feather-pointed" style="color: var(--accent-color);"></i> ${isSignUpMode ? "انضمام للواحة" : "كلمات"}`;
             document.getElementById('auth-submit-btn').innerText = isSignUpMode ? "إنشاء حساب جديد والانضمام" : "تسجيل الدخول";
             document.getElementById('auth-switch-text').innerText = isSignUpMode ? "لديك حساب بالفعل؟ سجل دخولك" : "ليس لديك حساب؟ انضم إلى الواحة الفكرية";
             document.getElementById('auth-name').style.display = isSignUpMode ? "block" : "none";
@@ -465,7 +431,6 @@
             } else {
                 authScreen.style.display = 'flex';
             }
-            updateAllLogosOnPage();
         });
 
         const q = query(collection(db, "posts"), orderBy("time", "desc"));
@@ -476,7 +441,7 @@
             feedContainer.innerHTML = '';
             notifContainer.innerHTML = `
                 <div style="display: flex; gap: 10px; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 10px;">
-                    <img src="${defaultLogoUrl}" class="custom-logo-img" style="width: 32px; height: 32px;" alt="شعار">
+                    <div class="action-icon-btn" style="background: var(--accent-color); color: #fff;"><i class="fa-solid fa-feather-pointed"></i></div>
                     <div><p style="font-size: 13px;"><b>منصة كلمات:</b> أشرقت شمس الواحة الفكرية بنجاح تام!</p><span style="font-size: 11px; color: var(--text-secondary);">منذ فترة</span></div>
                 </div>
             `;
@@ -509,7 +474,7 @@
                             <div>
                                 <div class="post-author-name">${post.author || 'باحث معرفي'}</div>
                                 <div class="post-meta-info">
-                                    <span>${post.time || 'منذ قليل'}</span> • <span class="post-category-tag"><img src="${defaultLogoUrl}" class="custom-logo-img" style="width: 14px; height: 14px;" alt="شعار"> فكرة</span>
+                                    <span>${post.time || 'منذ قليل'}</span> • <span class="post-category-tag"><i class="fa-solid fa-feather-pointed" style="font-size: 11px;"></i> فكرة</span>
                                 </div>
                             </div>
                         </div>
@@ -673,7 +638,6 @@
             const newName = document.getElementById('modal-edit-name').value.trim();
             const newEmail = document.getElementById('modal-edit-email').value.trim();
             const newBio = document.getElementById('modal-edit-bio').value.trim();
-            const avatarFile = document.getElementById('modal-edit-avatar-file').files[0];
 
             if(!newName || !newEmail) { alert('الاسم والبريد الإلكتروني مطلوبان!'); return; }
 
@@ -684,7 +648,6 @@
                 currentUserData.name = newName;
                 currentUserData.email = newEmail;
                 currentUserData.bio = newBio || currentUserData.bio;
-                if (avatarFile) currentUserData.avatar = URL.createObjectURL(avatarFile);
                 
                 updateUIAvatarAndNames();
                 document.getElementById('edit-profile-modal').style.display = 'none';
