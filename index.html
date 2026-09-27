@@ -48,14 +48,14 @@
         .auth-card h1 { color: var(--accent-color); margin-bottom: 8px; font-size: 26px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .auth-subtitle { font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5; }
         .auth-input {
-            width: 100%; padding: 11px; margin-bottom: 12px; border: 1px solid var(--border-color);
+            width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color);
             border-radius: 8px; outline: none; font-size: 14px; background: var(--bg-color); color: var(--text-color);
         }
         .auth-btn {
-            width: 100%; padding: 11px; background: var(--accent-color); color: white; border: none;
-            border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; margin-bottom: 10px;
+            width: 100%; padding: 12px; background: var(--accent-color); color: white; border: none;
+            border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; margin-bottom: 12px;
         }
-        .auth-switch { color: var(--accent-color); font-size: 13px; cursor: pointer; margin-top: 8px; display: inline-block; font-weight: 600; }
+        .auth-switch { color: var(--accent-color); font-size: 13px; cursor: pointer; margin-top: 10px; display: inline-block; font-weight: 700; padding: 5px; }
 
         header {
             position: sticky; top: 0; background: var(--card-bg); padding: 10px 15px;
@@ -63,7 +63,6 @@
             border-bottom: 1px solid var(--border-color); gap: 8px;
         }
         .logo { font-size: 22px; font-weight: 900; color: var(--accent-color); cursor: pointer; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-        .logo i { color: var(--accent-color); }
         
         .search-box {
             background: var(--bg-color); border-radius: 20px; padding: 5px 10px;
@@ -171,16 +170,18 @@
 </head>
 <body data-theme="light">
 
-    <!-- شاشة تسجيل الدخول -->
+    <!-- شاشة تسجيل الدخول / إنشاء حساب -->
     <div id="auth-screen">
         <div class="auth-card">
             <h1><i class="fa-solid fa-feather-pointed" style="color: var(--accent-color);"></i> كلمات</h1>
             <div class="auth-subtitle">«دائماً هناك كلمات لا يجيد كتابتها القلم تغوص في قعر النفس ولا تطفو»</div>
-            <input type="text" id="auth-name" class="auth-input" placeholder="الاسم الكامل (مطلوب عند التسجيل)" style="display:none;">
-            <input type="email" id="auth-email" class="auth-input" placeholder="البريد الإلكتروني (مثال: mymail@gmail.com)">
+            
+            <input type="text" id="auth-name" class="auth-input" placeholder="الاسم الكامل (مطلوب عند التسجيل الجديد)" style="display:none;">
+            <input type="email" id="auth-email" class="auth-input" placeholder="البريد الإلكتروني (مثال: user@gmail.com)">
             <input type="password" id="auth-password" class="auth-input" placeholder="كلمة المرور">
+            
             <button class="auth-btn" id="auth-submit-btn">تسجيل الدخول</button>
-            <span class="auth-switch" id="auth-switch-text">ليس لديك حساب؟ انضم إلى الواحة الفكرية</span>
+            <div class="auth-switch" id="auth-switch-text">ليس لديك حساب؟ انضم إلى الواحة الفكرية</div>
         </div>
     </div>
 
@@ -341,7 +342,7 @@
         <div class="nav-item" id="nav-menu" title="الخزانة"><i class="fa-solid fa-feather-pointed nav-icon"></i></div>
     </nav>
 
-    <!-- ربط Firebase وتفعيل قواعد البيانات Firestore و Authentication -->
+    <!-- ربط Firebase وتفعيل قواعد البيانات والتحويل التفاعلي السليم -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, updateEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -384,36 +385,59 @@
         document.getElementById('logo-main-btn').addEventListener('click', showWelcomeMessage);
         document.getElementById('menu-welcome-btn').addEventListener('click', showWelcomeMessage);
 
-        document.getElementById('auth-switch-text').addEventListener('click', () => {
+        // التبديل التفاعلي الحقيقي بين تسجيل الدخول وإنشاء حساب جديد لأي زائر بالعالم
+        const authSwitchText = document.getElementById('auth-switch-text');
+        const authSubmitBtn = document.getElementById('auth-submit-btn');
+        const authNameInput = document.getElementById('auth-name');
+
+        authSwitchText.addEventListener('click', () => {
             isSignUpMode = !isSignUpMode;
-            document.getElementById('auth-main-title').innerHTML = `<i class="fa-solid fa-feather-pointed" style="color: var(--accent-color);"></i> ${isSignUpMode ? "انضمام للواحة" : "كلمات"}`;
-            document.getElementById('auth-submit-btn').innerText = isSignUpMode ? "إنشاء حساب جديد والانضمام" : "تسجيل الدخول";
-            document.getElementById('auth-switch-text').innerText = isSignUpMode ? "لديك حساب بالفعل؟ سجل دخولك" : "ليس لديك حساب؟ انضم إلى الواحة الفكرية";
-            document.getElementById('auth-name').style.display = isSignUpMode ? "block" : "none";
+            if (isSignUpMode) {
+                authNameInput.style.display = "block";
+                authSubmitBtn.innerText = "إنشاء حساب جديد والانضمام";
+                authSwitchText.innerText = "لديك حساب بالفعل؟ سجل دخولك";
+            } else {
+                authNameInput.style.display = "none";
+                authSubmitBtn.innerText = "تسجيل الدخول";
+                authSwitchText.innerText = "ليس لديك حساب؟ انضم إلى الواحة الفكرية";
+            }
         });
 
-        document.getElementById('auth-submit-btn').addEventListener('click', async () => {
+        // زر الاعتماد للتسجيل أو الدخول لأي زائر
+        authSubmitBtn.addEventListener('click', async () => {
             const email = document.getElementById('auth-email').value.trim();
             const password = document.getElementById('auth-password').value.trim();
-            const name = document.getElementById('auth-name').value.trim();
+            const name = authNameInput.value.trim();
 
             if (!email || !password || (isSignUpMode && !name)) {
-                alert("الرجاء تعبئة كافة الحقول بشكل صحيح!");
+                alert("الرجاء تعبئة كافة الحقول المطلوبة بشكل صحيح!");
                 return;
             }
 
             try {
+                authSubmitBtn.disabled = true;
+                authSubmitBtn.innerText = "جاري المعالجة...";
+
                 if (isSignUpMode) {
                     const res = await createUserWithEmailAndPassword(auth, email, password);
                     await updateProfile(res.user, { displayName: name });
-                    alert("تم إنشاء الحساب والانضمام للواحة الفكرية بنجاح!");
+                    alert("تم إنشاء حسابك والانضمام للواحة الفكرية بنجاح!");
                 } else {
                     await signInWithEmailAndPassword(auth, email, password);
                     alert("مرحباً بك مجدداً في كلمات!");
                 }
                 document.getElementById('auth-screen').style.display = 'none';
             } catch (error) {
-                alert("تعذر الدخول. تأكد من صحة البريد وكلمة المرور.\n\nخطأ: " + error.message);
+                let errorMsg = error.message;
+                if(error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    errorMsg = "البريد الإلكتروني غير مسجل أو كلمة المرور غير صحيحة. انضم للواحة بإنشاء حساب جديد إذا كنت تزورنا لأول مرة!";
+                } else if(error.code === 'auth/email-already-in-use') {
+                    errorMsg = "البريد الإلكتروني مسجل مسبقاً، حاول تسجيل الدخول بدلاً من إنشاء حساب جديد.";
+                }
+                alert("تعذر المصادقة:\n\n" + errorMsg);
+            } finally {
+                authSubmitBtn.disabled = false;
+                authSubmitBtn.innerText = isSignUpMode ? "إنشاء حساب جديد والانضمام" : "تسجيل الدخول";
             }
         });
 
@@ -442,7 +466,7 @@
             notifContainer.innerHTML = `
                 <div style="display: flex; gap: 10px; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 10px;">
                     <div class="action-icon-btn" style="background: var(--accent-color); color: #fff;"><i class="fa-solid fa-feather-pointed"></i></div>
-                    <div><p style="font-size: 13px;"><b>منصة كلمات:</b> أشرقت شمس الواحة الفكرية بنجاح تام!</p><span style="font-size: 11px; color: var(--text-secondary);">منذ فترة</span></div>
+                    <div><p style="font-size: 13px;"><b>منصة كلمات:</b> أشرقت شمس الواحة الفكرية بنجاح تام!</p><span style="font-size: 11px; color: var(--text-secondary);">الآن</span></div>
                 </div>
             `;
             
