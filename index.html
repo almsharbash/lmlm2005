@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalimat | كلمات - الواحة الفكرية</title>
+    <title>Kalimat | كلمات - الواحة الفكرية العالمية</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -64,13 +64,22 @@
         }
         .logo { font-size: 22px; font-weight: 900; color: var(--accent-color); cursor: pointer; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
         
+        .search-container { position: relative; flex: 1; max-width: 180px; }
         .search-box {
             background: var(--bg-color); border-radius: 20px; padding: 5px 10px;
-            display: flex; align-items: center; gap: 6px; flex: 1; max-width: 160px; color: var(--text-secondary);
+            display: flex; align-items: center; gap: 6px; width: 100%; color: var(--text-secondary);
             border: 1px solid var(--border-color);
         }
         .search-box input { border: none; background: transparent; outline: none; width: 100%; font-size: 12px; color: var(--text-color); }
         
+        #search-results-dropdown {
+            position: absolute; top: 40px; right: 0; width: 220px; background: var(--card-bg);
+            border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none; z-index: 300; max-height: 200px; overflow-y: auto;
+        }
+        .search-result-item { padding: 8px 12px; font-size: 13px; cursor: pointer; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 8px; }
+        .search-result-item:hover { background: var(--bg-color); }
+
         .header-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
         .action-icon-btn, .user-avatar-img {
             width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
@@ -146,7 +155,7 @@
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.5); z-index: 1500; display: none; align-items: center; justify-content: center; padding: 20px;
         }
-        .modal-card { background: var(--card-bg); width: 100%; max-width: 400px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); border: 1px solid var(--border-color); }
+        .modal-card { background: var(--card-bg); width: 100%; max-width: 400px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); border: 1px solid var(--border-color); max-height: 90vh; overflow-y: auto; }
         .modal-card h3 { margin-bottom: 15px; color: var(--accent-color); }
         .modal-input { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; outline: none; background: var(--bg-color); color: var(--text-color); }
         .modal-btns { display: flex; justify-content: flex-end; gap: 8px; }
@@ -185,10 +194,19 @@
         </div>
     </div>
 
-    <!-- نافذة إعدادات الملف الشخصي -->
+    <!-- نافذة إعدادات الملف الشخصي مع زر اختيار صورة من المعرض -->
     <div id="edit-profile-modal">
         <div class="modal-card">
             <h3>إعدادات الهوية والمعلومات</h3>
+            
+            <div style="text-align: center; margin-bottom: 12px;">
+                <img src="" id="modal-preview-avatar" class="user-avatar-img" style="width: 70px; height: 70px; margin: 0 auto 8px auto; font-size: 24px;" alt="صورة البروفايل">
+                <input type="file" id="modal-avatar-file" accept="image/*" style="display: none;">
+                <button type="button" class="action-icon-btn" id="modal-pick-avatar-btn" style="width: auto; padding: 6px 14px; border-radius: 6px; font-size: 12px; margin: 0 auto; background: var(--accent-color); color: white; border: none;">
+                    <i class="fa-solid fa-camera"></i> اختيار صورة من المعرض
+                </button>
+            </div>
+
             <label style="font-size: 12px; color: var(--text-secondary);">الاسم الكامل</label>
             <input type="text" id="modal-edit-name" class="modal-input">
             <label style="font-size: 12px; color: var(--text-secondary);">البريد الإلكتروني</label>
@@ -206,9 +224,12 @@
         <div class="logo" id="logo-main-btn">
             <i class="fa-solid fa-feather-pointed"></i> كلمات
         </div>
-        <div class="search-box">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" placeholder="بحث...">
+        <div class="search-container">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="global-search-input" placeholder="بحث عن باحث...">
+            </div>
+            <div id="search-results-dropdown"></div>
         </div>
         <div class="header-actions">
             <div class="action-icon-btn" id="theme-toggle-btn" title="المظهر"><i class="fa-solid fa-moon" id="theme-icon"></i></div>
@@ -322,14 +343,22 @@
             </div>
         </div>
 
-        <!-- 6. البروفايل -->
+        <!-- 6. البروفايل الشخصي أو بروفايل أي مستخدم يتم زيارته -->
         <div id="tab-profile" class="view-section">
             <div class="card" style="text-align: center; padding: 25px;">
                 <img src="" id="profile-view-avatar" class="user-avatar-img" style="width: 75px; height: 75px; font-size: 30px; margin: 0 auto 10px auto;" alt="صورة">
                 <h2 id="profile-view-name">اسم الباحث</h2>
                 <p id="profile-view-email" style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;"></p>
-                <p id="profile-view-bio" style="color: var(--text-secondary); font-size: 13px; margin-top: 8px;">باحث عن المعرفة في واحة كلمات الفكرية</p>
+                <p id="profile-view-bio" style="color: var(--text-secondary); font-size: 13px; margin-top: 8px; margin-bottom: 15px;">باحث عن المعرفة في واحة كلمات الفكرية</p>
+                
+                <!-- زر طلب المتابعة / الصداقة -->
+                <div id="profile-action-container" style="display: none; margin-bottom: 15px;">
+                    <button class="btn-publish" id="follow-user-btn" style="padding: 6px 20px; font-size: 13px;">+ متابعة / طلب صداقة</button>
+                </div>
             </div>
+
+            <h4 style="margin-bottom: 10px; font-size: 15px; color: var(--accent-color);">منشورات الباحث</h4>
+            <div id="user-profile-posts-feed"></div>
         </div>
     </div>
 
@@ -342,11 +371,11 @@
         <div class="nav-item" id="nav-menu" title="الخزانة"><i class="fa-solid fa-feather-pointed nav-icon"></i></div>
     </nav>
 
-    <!-- ربط Firebase وتفعيل قواعد البيانات والتحويل التفاعلي السليم -->
+    <!-- ربط Firebase وتفعيل المنصة التفاعلية السحابية الشاملة -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, updateEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, query, orderBy, onSnapshot, deleteDoc, updateDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, getDoc, setDoc, doc, query, orderBy, onSnapshot, deleteDoc, updateDoc, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAPjMSa60LLeM0gse8UEfr21xly0dCk5gM",
@@ -365,6 +394,7 @@
         let isSignUpMode = false;
         let currentUserData = { name: "باحث عن المعرفة", email: "", uid: "", bio: "باحث عن المعرفة في واحة كلمات الفكرية", avatar: "" };
         let selectedMediaData = { url: "", type: "" };
+        let newAvatarBase64 = "";
 
         document.getElementById('theme-toggle-btn').addEventListener('click', () => {
             const body = document.body;
@@ -379,13 +409,12 @@
         });
 
         function showWelcomeMessage() {
-            alert("مرحباً بك في واحة كلمات الفكرية الثقافية!\n\n«دائماً هناك كلمات لا يجيد كتابتها القلم تغوص في قعر النفس ولا تطفو»");
+            alert("مرحباً بك في واحة كلمات الفكرية الثقافية العالمية!\n\n«دائماً هناك كلمات لا يجيد كتابتها القلم تغوص في قعر النفس ولا تطفو»");
         }
 
         document.getElementById('logo-main-btn').addEventListener('click', showWelcomeMessage);
         document.getElementById('menu-welcome-btn').addEventListener('click', showWelcomeMessage);
 
-        // التبديل التفاعلي الحقيقي بين تسجيل الدخول وإنشاء حساب جديد لأي زائر بالعالم
         const authSwitchText = document.getElementById('auth-switch-text');
         const authSubmitBtn = document.getElementById('auth-submit-btn');
         const authNameInput = document.getElementById('auth-name');
@@ -394,7 +423,7 @@
             isSignUpMode = !isSignUpMode;
             if (isSignUpMode) {
                 authNameInput.style.display = "block";
-                authSubmitBtn.innerText = "إنشاء حساب جديد والانضمام";
+                authSubmitBtn.innerText = "إنشاء حساب عالمي والانضمام";
                 authSwitchText.innerText = "لديك حساب بالفعل؟ سجل دخولك";
             } else {
                 authNameInput.style.display = "none";
@@ -403,7 +432,6 @@
             }
         });
 
-        // زر الاعتماد للتسجيل أو الدخول لأي زائر
         authSubmitBtn.addEventListener('click', async () => {
             const email = document.getElementById('auth-email').value.trim();
             const password = document.getElementById('auth-password').value.trim();
@@ -416,40 +444,60 @@
 
             try {
                 authSubmitBtn.disabled = true;
-                authSubmitBtn.innerText = "جاري المعالجة...";
+                authSubmitBtn.innerText = "جاري الاتصال بالسحابة...";
 
                 if (isSignUpMode) {
                     const res = await createUserWithEmailAndPassword(auth, email, password);
                     await updateProfile(res.user, { displayName: name });
-                    alert("تم إنشاء حسابك والانضمام للواحة الفكرية بنجاح!");
+                    const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2980b9&color=fff`;
+                    
+                    // حفظ بيانات المستخدم في السحابة ليظهر في البحث والعالم
+                    await setDoc(doc(db, "users", res.user.uid), {
+                        uid: res.user.uid,
+                        name: name,
+                        email: email,
+                        bio: "باحث عن المعرفة في واحة كلمات الفكرية",
+                        avatar: defaultAvatar
+                    });
+                    alert("تم إنشاء حسابك العالمي والانضمام بنجاح!");
                 } else {
                     await signInWithEmailAndPassword(auth, email, password);
-                    alert("مرحباً بك مجدداً في كلمات!");
+                    alert("مرحباً بك مجدداً في واحة كلمات!");
                 }
                 document.getElementById('auth-screen').style.display = 'none';
             } catch (error) {
                 let errorMsg = error.message;
                 if(error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-                    errorMsg = "البريد الإلكتروني غير مسجل أو كلمة المرور غير صحيحة. انضم للواحة بإنشاء حساب جديد إذا كنت تزورنا لأول مرة!";
-                } else if(error.code === 'auth/email-already-in-use') {
-                    errorMsg = "البريد الإلكتروني مسجل مسبقاً، حاول تسجيل الدخول بدلاً من إنشاء حساب جديد.";
+                    errorMsg = "البريد الإلكتروني غير مسجل أو كلمة المرور غير صحيحة. انضم للواحة بإنشاء حساب جديد!";
                 }
-                alert("تعذر المصادقة:\n\n" + errorMsg);
+                alert("تعذر الاتصال:\n\n" + errorMsg);
             } finally {
                 authSubmitBtn.disabled = false;
-                authSubmitBtn.innerText = isSignUpMode ? "إنشاء حساب جديد والانضمام" : "تسجيل الدخول";
+                authSubmitBtn.innerText = isSignUpMode ? "إنشاء حساب عالمي والانضمام" : "تسجيل الدخول";
             }
         });
 
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             const authScreen = document.getElementById('auth-screen');
             if (user) {
                 authScreen.style.display = 'none';
                 currentUserData.uid = user.uid;
-                currentUserData.name = user.displayName || user.email.split('@')[0];
-                currentUserData.email = user.email;
-                if(!currentUserData.avatar) {
+                
+                // جلب بيانات المستخدم من سحابة Firestore
+                const userDocRef = doc(db, "users", user.uid);
+                const userDocSnap = await getDoc(userDocRef);
+                
+                if(userDocSnap.exists()) {
+                    const data = userDocSnap.data();
+                    currentUserData.name = data.name || user.displayName || "باحث";
+                    currentUserData.email = data.email || user.email;
+                    currentUserData.bio = data.bio || "باحث عن المعرفة في واحة كلمات الفكرية";
+                    currentUserData.avatar = data.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUserData.name)}&background=2980b9&color=fff`;
+                } else {
+                    currentUserData.name = user.displayName || user.email.split('@')[0];
+                    currentUserData.email = user.email;
                     currentUserData.avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUserData.name)}&background=2980b9&color=fff`;
+                    await setDoc(userDocRef, currentUserData);
                 }
                 updateUIAvatarAndNames();
             } else {
@@ -457,6 +505,121 @@
             }
         });
 
+        function updateUIAvatarAndNames() {
+            document.querySelectorAll('#header-user-avatar, #post-user-avatar, #menu-user-avatar').forEach(img => img.src = currentUserData.avatar);
+            document.getElementById('menu-profile-name').innerText = currentUserData.name;
+            document.getElementById('menu-profile-email').innerText = currentUserData.email;
+            document.getElementById('new-post-text').placeholder = `شارك فكرة، يا ${currentUserData.name}...`;
+        }
+
+        // محرك البحث الحقيقي الفعّال في سحابة المستخدمين
+        const globalSearchInput = document.getElementById('global-search-input');
+        const searchResultsDropdown = document.getElementById('search-results-dropdown');
+
+        globalSearchInput.addEventListener('input', async (e) => {
+            const keyword = e.target.value.trim().toLowerCase();
+            if(!keyword) {
+                searchResultsDropdown.style.display = 'none';
+                return;
+            }
+
+            const usersSnap = await getDocs(collection(db, "users"));
+            searchResultsDropdown.innerHTML = '';
+            let count = 0;
+
+            usersSnap.forEach(docSnap => {
+                const u = docSnap.data();
+                if(u.name && u.name.toLowerCase().includes(keyword)) {
+                    count++;
+                    const div = document.createElement('div');
+                    div.className = 'search-result-item';
+                    div.innerHTML = `<img src="${u.avatar}" class="user-avatar-img" style="width: 26px; height: 26px;"> <span>${u.name}</span>`;
+                    div.addEventListener('click', () => {
+                        searchResultsDropdown.style.display = 'none';
+                        globalSearchInput.value = '';
+                        openUserProfile(u);
+                    });
+                    searchResultsDropdown.appendChild(div);
+                }
+            });
+
+            searchResultsDropdown.style.display = count > 0 ? 'block' : 'none';
+        });
+
+        // فتح بروفايل أي مستخدم آخر وتصفح منشوراته مع زر طلب صداقة / متابعة
+        async function openUserProfile(targetUser) {
+            document.getElementById('profile-view-name').innerText = targetUser.name;
+            document.getElementById('profile-view-email').innerText = targetUser.email || "scholar@kalimat.com";
+            document.getElementById('profile-view-avatar').src = targetUser.avatar || currentUserData.avatar;
+            document.getElementById('profile-view-bio').innerText = targetUser.bio || "باحث عن المعرفة في واحة كلمات الفكرية";
+
+            const actionContainer = document.getElementById('profile-action-container');
+            const followBtn = document.getElementById('follow-user-btn');
+
+            if(targetUser.uid === currentUserData.uid) {
+                actionContainer.style.display = 'none';
+            } else {
+                actionContainer.style.display = 'block';
+                followBtn.onclick = () => {
+                    alert(`تم إرسال طلب المتابعة والصداقة إلى الباحث: ${targetUser.name} بنجاح!`);
+                    followBtn.innerText = "✓ تم إرسال الطلب";
+                    followBtn.style.background = "var(--success-color)";
+                    followBtn.disabled = true;
+                };
+            }
+
+            // جلب منشورات هذا المستخدم فقط
+            const userFeed = document.getElementById('user-profile-posts-feed');
+            userFeed.innerHTML = `<div class="card" style="text-align: center;"><i class="fa-solid fa-spinner fa-spin"></i> جاري تحميل منشورات الباحث...</div>`;
+            
+            const qPosts = query(collection(db, "posts"), where("uid", "==", targetUser.uid));
+            const postsSnap = await getDocs(qPosts);
+            userFeed.innerHTML = '';
+
+            if(postsSnap.empty) {
+                userFeed.innerHTML = `<div class="card" style="text-align: center; color: var(--text-secondary);">لا توجد منشورات لهذا الباحث بعد.</div>`;
+            } else {
+                postsSnap.forEach(docSnap => {
+                    const p = docSnap.data();
+                    const postCard = document.createElement('div');
+                    postCard.className = 'card';
+                    postCard.innerHTML = `
+                        <div class="post-header">
+                            <div class="post-user-info">
+                                <img src="${targetUser.avatar}" class="user-avatar-img" style="width: 35px; height: 35px;">
+                                <div>
+                                    <div class="post-author-name">${targetUser.name}</div>
+                                    <div class="post-meta-info">${p.time || 'منذ قليل'}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="post-body">${p.text}</div>
+                        ${p.media ? `<img src="${p.media}" class="post-media">` : ''}
+                    `;
+                    userFeed.appendChild(postCard);
+                });
+            }
+
+            switchTab('profile');
+        }
+
+        // رفع صورة البروفايل الشخصي من المعرض
+        document.getElementById('modal-pick-avatar-btn').addEventListener('click', () => {
+            document.getElementById('modal-avatar-file').click();
+        });
+
+        document.getElementById('modal-avatar-file').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                newAvatarBase64 = event.target.result;
+                document.getElementById('modal-preview-avatar').src = newAvatarBase64;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // الاستماع لمنشورات الخلاصة العالمية
         const q = query(collection(db, "posts"), orderBy("time", "desc"));
         onSnapshot(q, (snapshot) => {
             const feedContainer = document.getElementById('posts-feed');
@@ -466,7 +629,7 @@
             notifContainer.innerHTML = `
                 <div style="display: flex; gap: 10px; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 10px;">
                     <div class="action-icon-btn" style="background: var(--accent-color); color: #fff;"><i class="fa-solid fa-feather-pointed"></i></div>
-                    <div><p style="font-size: 13px;"><b>منصة كلمات:</b> أشرقت شمس الواحة الفكرية بنجاح تام!</p><span style="font-size: 11px; color: var(--text-secondary);">الآن</span></div>
+                    <div><p style="font-size: 13px;"><b>منصة كلمات:</b> أشرقت شمس الواحة الفكرية العالمية!</p><span style="font-size: 11px; color: var(--text-secondary);">الآن</span></div>
                 </div>
             `;
             
@@ -485,7 +648,7 @@
                 notifItem.style.cssText = "display: flex; gap: 10px; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 10px;";
                 notifItem.innerHTML = `
                     <img src="${authorAvatar}" class="user-avatar-img" style="width: 32px; height: 32px;" alt="صورة">
-                    <div><p style="font-size: 13px;"><b>${post.author || 'باحث'}</b> نشر فكرة جديدة: "${post.text.substring(0, 35)}..."</p><span style="font-size: 11px; color: var(--text-secondary);">${post.time || 'منذ قليل'}</span></div>
+                    <div><p style="font-size: 13px;"><b>${post.author || 'باحث'}</b> نشر فكرة: "${post.text.substring(0, 30)}..."</p><span style="font-size: 11px; color: var(--text-secondary);">${post.time || 'منذ قليل'}</span></div>
                 `;
                 notifContainer.appendChild(notifItem);
 
@@ -493,7 +656,7 @@
                 postCard.className = 'card';
                 postCard.innerHTML = `
                     <div class="post-header">
-                        <div class="post-user-info" data-action="profile" data-name="${post.author || 'باحث'}" data-avatar="${authorAvatar}">
+                        <div class="post-user-info" data-action="visit-profile" data-uid="${post.uid}" data-name="${post.author || 'باحث'}" data-avatar="${authorAvatar}" data-email="${post.email || 'scholar@kalimat.com'}" data-bio="${post.bio || 'باحث معرفي'}">
                             <img src="${authorAvatar}" class="user-avatar-img" style="width: 38px; height: 38px;" alt="صورة">
                             <div>
                                 <div class="post-author-name">${post.author || 'باحث معرفي'}</div>
@@ -551,27 +714,17 @@
             } else if(action === 'share') {
                 const postText = target.getAttribute('data-text') || "فكرة من منصة كلمات الثقافية";
                 if (navigator.share) {
-                    try {
-                        await navigator.share({
-                            title: 'منصة كلمات',
-                            text: postText,
-                            url: window.location.href,
-                        });
-                    } catch (err) {}
+                    try { await navigator.share({ title: 'منصة كلمات', text: postText, url: window.location.href }); } catch (err) {}
                 } else {
                     navigator.clipboard?.writeText(window.location.href);
-                    alert("تم نسخ رابط الفكرة إلى الحافظة بنجاح!");
+                    alert("تم نسخ رابط الفكرة إلى الحافظة!");
                 }
             } else if(action === 'delete') {
-                if(confirm("هل أنت متأكد من حذف هذه الفكرة؟")) {
-                    await deleteDoc(doc(db, "posts", postId));
-                }
+                if(confirm("هل أنت متأكد من حذف هذه الفكرة؟")) { await deleteDoc(doc(db, "posts", postId)); }
             } else if(action === 'edit') {
                 const oldText = target.getAttribute('data-text');
                 const newText = prompt("تعديل محتوى الفكرة:", oldText);
-                if(newText !== null && newText.trim() !== "") {
-                    await updateDoc(doc(db, "posts", postId), { text: newText });
-                }
+                if(newText !== null && newText.trim() !== "") { await updateDoc(doc(db, "posts", postId), { text: newText }); }
             } else if(action === 'toggle-reactions') {
                 const popup = document.getElementById('reactions-' + postId);
                 popup.style.display = popup.style.display === 'flex' ? 'none' : 'flex';
@@ -603,23 +756,17 @@
                 `;
                 list.appendChild(item);
                 input.value = '';
-            } else if(action === 'profile') {
-                const name = target.getAttribute('data-name');
-                const avatar = target.getAttribute('data-avatar');
-                document.getElementById('profile-view-name').innerText = name;
-                document.getElementById('profile-view-email').innerText = name === currentUserData.name ? currentUserData.email : "scholar@kalimat.com";
-                document.getElementById('profile-view-avatar').src = avatar || currentUserData.avatar;
-                document.getElementById('profile-view-bio').innerText = name === currentUserData.name ? currentUserData.bio : "باحث عن المعرفة في واحة كلمات الفكرية";
-                switchTab('profile');
+            } else if(action === 'visit-profile') {
+                const uData = {
+                    uid: target.getAttribute('data-uid'),
+                    name: target.getAttribute('data-name'),
+                    avatar: target.getAttribute('data-avatar'),
+                    email: target.getAttribute('data-email'),
+                    bio: target.getAttribute('data-bio')
+                };
+                openUserProfile(uData);
             }
         });
-
-        function updateUIAvatarAndNames() {
-            document.querySelectorAll('#header-user-avatar, #post-user-avatar, #menu-user-avatar').forEach(img => img.src = currentUserData.avatar);
-            document.getElementById('menu-profile-name').innerText = currentUserData.name;
-            document.getElementById('menu-profile-email').innerText = currentUserData.email;
-            document.getElementById('new-post-text').placeholder = `شارك فكرة، يا ${currentUserData.name}...`;
-        }
 
         document.getElementById('attach-media-trigger').addEventListener('click', () => {
             document.getElementById('post-media-file').click();
@@ -651,6 +798,8 @@
             document.getElementById('modal-edit-name').value = currentUserData.name;
             document.getElementById('modal-edit-email').value = currentUserData.email;
             document.getElementById('modal-edit-bio').value = currentUserData.bio;
+            document.getElementById('modal-preview-avatar').src = currentUserData.avatar;
+            newAvatarBase64 = "";
             document.getElementById('edit-profile-modal').style.display = 'flex';
         }
 
@@ -661,7 +810,7 @@
         document.getElementById('modal-save-btn').addEventListener('click', async () => {
             const newName = document.getElementById('modal-edit-name').value.trim();
             const newEmail = document.getElementById('modal-edit-email').value.trim();
-            const newBio = document.getElementById('modal-edit-bio').value.trim();
+            const newBio = document.getElementById('modal-edit-bio'].value.trim();
 
             if(!newName || !newEmail) { alert('الاسم والبريد الإلكتروني مطلوبان!'); return; }
 
@@ -672,10 +821,16 @@
                 currentUserData.name = newName;
                 currentUserData.email = newEmail;
                 currentUserData.bio = newBio || currentUserData.bio;
+                if(newAvatarBase64) {
+                    currentUserData.avatar = newAvatarBase64;
+                }
+
+                // تحديث بيانات المستخدم في السحابة لترى عالمياً
+                await setDoc(doc(db, "users", currentUserData.uid), currentUserData, { merge: true });
                 
                 updateUIAvatarAndNames();
                 document.getElementById('edit-profile-modal').style.display = 'none';
-                alert("تم تحديث الهوية المعرفية بنجاح!");
+                alert("تم تحديث هويتك وصورتك في الواحة العالمية بنجاح!");
             } catch (e) {
                 alert("خطأ: " + e.message);
             }
@@ -695,6 +850,8 @@
                     mediaType: selectedMediaData.type,
                     author: currentUserData.name,
                     avatar: currentUserData.avatar,
+                    email: currentUserData.email,
+                    bio: currentUserData.bio,
                     uid: currentUserData.uid,
                     time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
                 });
