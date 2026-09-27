@@ -8,173 +8,211 @@
     
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --accent-color: #2980b9;
-            --bg-color: #f7f9fa;
+            --primary-color: #1e293b;
+            --accent-color: #3b82f6;
+            --accent-hover: #2563eb;
+            --bg-color: #f8fafc;
             --card-bg: #ffffff;
-            --text-color: #2c3e50;
-            --text-secondary: #7f8c8d;
+            --text-color: #1e293b;
+            --text-secondary: #64748b;
             --border-color: #e2e8f0;
-            --danger-color: #c0392b;
-            --success-color: #27ae60;
+            --danger-color: #ef4444;
+            --success-color: #10b981;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.08);
+            --transition: all 0.25s ease;
         }
 
         [data-theme="dark"] {
-            --primary-color: #3498db;
-            --accent-color: #2980b9;
-            --bg-color: #12181b;
-            --card-bg: #1e262c;
-            --text-color: #ecf0f1;
-            --text-secondary: #95a5a6;
-            --border-color: #2c3e50;
-            --danger-color: #e74c3c;
-            --success-color: #2ecc71;
+            --primary-color: #60a5fa;
+            --accent-color: #3b82f6;
+            --accent-hover: #60a5fa;
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --danger-color: #f87171;
+            --success-color: #34d399;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.2);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.3);
+            --shadow-lg: 0 10px 25px -3px rgba(0,0,0,0.5);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-color); padding-bottom: 70px; }
+        body { background-color: var(--bg-color); color: var(--text-color); padding-bottom: 90px; transition: var(--transition); }
 
+        /* شاشة المصادقة */
         #auth-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--bg-color); z-index: 2000;
-            display: flex; align-items: center; justify-content: center; padding: 15px;
+            display: flex; align-items: center; justify-content: center; padding: 20px;
             overflow-y: auto;
         }
         .auth-card {
-            background: var(--card-bg); padding: 25px; border-radius: 16px; width: 100%; max-width: 380px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; border: 1px solid var(--border-color);
-            margin: auto;
+            background: var(--card-bg); padding: 35px 25px; border-radius: 20px; width: 100%; max-width: 400px;
+            box-shadow: var(--shadow-lg); text-align: center; border: 1px solid var(--border-color);
+            margin: auto; animation: fadeIn 0.4s ease;
         }
-        .auth-card h1 { color: var(--accent-color); margin-bottom: 8px; font-size: 26px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .auth-subtitle { font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5; }
+        .auth-card h1 { color: var(--accent-color); margin-bottom: 10px; font-size: 28px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .auth-subtitle { font-size: 14px; color: var(--text-secondary); margin-bottom: 25px; line-height: 1.6; }
         .auth-input {
-            width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color);
-            border-radius: 8px; outline: none; font-size: 14px; background: var(--bg-color); color: var(--text-color);
+            width: 100%; padding: 14px; margin-bottom: 14px; border: 1px solid var(--border-color);
+            border-radius: 12px; outline: none; font-size: 14px; background: var(--bg-color); color: var(--text-color);
+            transition: var(--transition);
         }
+        .auth-input:focus { border-color: var(--accent-color); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
         .auth-btn {
-            width: 100%; padding: 12px; background: var(--accent-color); color: white; border: none;
-            border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; margin-bottom: 12px;
+            width: 100%; padding: 14px; background: var(--accent-color); color: white; border: none;
+            border-radius: 12px; font-weight: bold; font-size: 16px; cursor: pointer; margin-bottom: 15px;
+            transition: var(--transition); box-shadow: var(--shadow-md);
         }
-        .auth-switch { color: var(--accent-color); font-size: 13px; cursor: pointer; margin-top: 10px; display: inline-block; font-weight: 700; padding: 5px; }
+        .auth-btn:hover { background: var(--accent-hover); transform: translateY(-1px); }
+        .auth-switch { color: var(--accent-color); font-size: 13px; cursor: pointer; margin-top: 10px; display: inline-block; font-weight: 700; padding: 5px; transition: var(--transition); }
+        .auth-switch:hover { opacity: 0.8; }
 
+        /* الهيدر العلوي */
         header {
-            position: sticky; top: 0; background: var(--card-bg); padding: 10px 15px;
-            display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.05); z-index: 100;
-            border-bottom: 1px solid var(--border-color); gap: 8px;
+            position: sticky; top: 0; background: var(--card-bg); padding: 12px 20px;
+            display: flex; align-items: center; justify-content: space-between; box-shadow: var(--shadow-sm); z-index: 100;
+            border-bottom: 1px solid var(--border-color); gap: 12px; backdrop-filter: blur(10px);
         }
         .logo { font-size: 22px; font-weight: 900; color: var(--accent-color); cursor: pointer; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
         
-        .search-container { position: relative; flex: 1; max-width: 180px; }
+        .search-container { position: relative; flex: 1; max-width: 220px; }
         .search-box {
-            background: var(--bg-color); border-radius: 20px; padding: 5px 10px;
-            display: flex; align-items: center; gap: 6px; width: 100%; color: var(--text-secondary);
-            border: 1px solid var(--border-color);
+            background: var(--bg-color); border-radius: 20px; padding: 8px 14px;
+            display: flex; align-items: center; gap: 8px; width: 100%; color: var(--text-secondary);
+            border: 1px solid var(--border-color); transition: var(--transition);
         }
-        .search-box input { border: none; background: transparent; outline: none; width: 100%; font-size: 12px; color: var(--text-color); }
+        .search-box:focus-within { border-color: var(--accent-color); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
+        .search-box input { border: none; background: transparent; outline: none; width: 100%; font-size: 13px; color: var(--text-color); }
         
         #search-results-dropdown {
-            position: absolute; top: 40px; right: 0; width: 220px; background: var(--card-bg);
-            border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            display: none; z-index: 300; max-height: 200px; overflow-y: auto;
+            position: absolute; top: 48px; right: 0; width: 250px; background: var(--card-bg);
+            border: 1px solid var(--border-color); border-radius: 12px; box-shadow: var(--shadow-lg);
+            display: none; z-index: 300; max-height: 220px; overflow-y: auto; animation: fadeIn 0.2s ease;
         }
-        .search-result-item { padding: 8px 12px; font-size: 13px; cursor: pointer; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 8px; }
+        .search-result-item { padding: 10px 14px; font-size: 13px; cursor: pointer; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 10px; transition: var(--transition); }
         .search-result-item:hover { background: var(--bg-color); }
 
-        .header-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+        .header-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
         .action-icon-btn, .user-avatar-img {
-            width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
             font-weight: bold; font-size: 14px; flex-shrink: 0; cursor: pointer; object-fit: cover; position: relative;
+            transition: var(--transition);
         }
         .action-icon-btn { background: var(--bg-color); color: var(--text-secondary); border: 1px solid var(--border-color); }
-        .user-avatar-img { background-color: var(--accent-color); color: #fff; }
+        .action-icon-btn:hover { background: var(--border-color); color: var(--text-color); transform: scale(1.05); }
+        .user-avatar-img { background-color: var(--accent-color); color: #fff; box-shadow: var(--shadow-sm); }
 
-        .container { max-width: 500px; margin: 12px auto; padding: 0 10px; }
-        .view-section { display: none; }
+        .container { max-width: 540px; margin: 20px auto; padding: 0 15px; }
+        .view-section { display: none; animation: fadeIn 0.3s ease; }
         .view-section.active { display: block; }
 
-        .card {
-            background: var(--card-bg); border-radius: 12px; padding: 15px;
-            margin-bottom: 14px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02); position: relative;
-            border: 1px solid var(--border-color);
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
         }
+
+        .card {
+            background: var(--card-bg); border-radius: 16px; padding: 20px;
+            margin-bottom: 16px; box-shadow: var(--shadow-sm); position: relative;
+            border: 1px solid var(--border-color); transition: var(--transition);
+        }
+        .card:hover { box-shadow: var(--shadow-md); }
 
         .wisdom-card {
-            background: linear-gradient(135deg, #2c3e50, #2980b9);
-            color: white; border-radius: 12px; padding: 18px; margin-bottom: 14px;
-            box-shadow: 0 4px 12px rgba(41, 128, 185, 0.2); position: relative; overflow: hidden;
+            background: linear-gradient(135deg, #1e293b, #3b82f6);
+            color: white; border-radius: 16px; padding: 22px; margin-bottom: 16px;
+            box-shadow: var(--shadow-md); position: relative; overflow: hidden;
+        }
+        .wisdom-card::after {
+            content: ''; position: absolute; top: -50px; left: -50px; width: 150px; height: 150px;
+            background: rgba(255, 255, 255, 0.05); border-radius: 50%; pointer-events: none;
         }
         .wisdom-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-        .wisdom-card h4 { font-size: 14px; opacity: 0.95; font-weight: bold; display: flex; align-items: center; gap: 6px; }
-        .wisdom-card p { font-size: 15px; line-height: 1.6; font-weight: 500; }
+        .wisdom-card h4 { font-size: 14px; opacity: 0.9; font-weight: bold; display: flex; align-items: center; gap: 8px; }
+        .wisdom-card p { font-size: 16px; line-height: 1.7; font-weight: 500; }
 
-        .create-post { display: flex; flex-direction: column; gap: 10px; }
-        .post-input-container { display: flex; align-items: center; gap: 10px; }
-        .post-input { width: 100%; border: none; background: var(--bg-color); color: var(--text-color); padding: 10px 16px; border-radius: 20px; outline: none; font-size: 14px; border: 1px solid var(--border-color); }
+        .create-post { display: flex; flex-direction: column; gap: 12px; }
+        .post-input-container { display: flex; align-items: center; gap: 12px; }
+        .post-input { width: 100%; border: none; background: var(--bg-color); color: var(--text-color); padding: 12px 18px; border-radius: 24px; outline: none; font-size: 14px; border: 1px solid var(--border-color); transition: var(--transition); }
+        .post-input:focus { border-color: var(--accent-color); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
         
-        .post-actions-bar { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 10px; margin-top: 4px; }
-        .btn-publish { background: var(--accent-color); color: white; border: none; padding: 6px 20px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; }
+        .post-actions-bar { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 12px; margin-top: 6px; }
+        .btn-publish { background: var(--accent-color); color: white; border: none; padding: 8px 22px; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 600; transition: var(--transition); box-shadow: var(--shadow-sm); }
+        .btn-publish:hover { background: var(--accent-hover); transform: translateY(-1px); }
 
-        #media-preview-container { position: relative; display: none; margin-top: 4px; }
-        #media-preview-container img, #media-preview-container video { width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; }
-        .remove-media-btn { position: absolute; top: 5px; left: 5px; background: rgba(0,0,0,0.7); color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; }
+        #media-preview-container { position: relative; display: none; margin-top: 8px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); }
+        #media-preview-container img, #media-preview-container video { width: 100%; max-height: 220px; object-fit: cover; display: block; border-radius: 12px; }
+        .remove-media-btn { position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.7); color: white; border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition); }
+        .remove-media-btn:hover { background: rgba(0,0,0,0.9); transform: scale(1.1); }
 
-        .post-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-        .post-user-info { display: flex; align-items: center; gap: 8px; cursor: pointer; }
-        .post-author-name { font-weight: bold; font-size: 14px; }
-        .post-meta-info { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-secondary); }
-        .post-category-tag { background: rgba(41, 128, 185, 0.1); color: var(--accent-color); padding: 2px 8px; border-radius: 4px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
+        .post-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+        .post-user-info { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .post-author-name { font-weight: bold; font-size: 15px; color: var(--text-color); }
+        .post-meta-info { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+        .post-category-tag { background: rgba(59, 130, 246, 0.1); color: var(--accent-color); padding: 2px 8px; border-radius: 6px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
         
-        .post-body { font-size: 14px; line-height: 1.6; margin-bottom: 12px; word-break: break-word; }
-        .post-media { width: 100%; max-height: 320px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; }
-        .post-footer-actions { display: flex; justify-content: space-around; border-top: 1px solid var(--border-color); padding-top: 8px; color: var(--text-secondary); font-size: 13px; font-weight: 600; }
-        .interaction-btn { display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 6px 12px; border-radius: 4px; }
-        .interaction-btn:hover { background: var(--bg-color); }
+        .post-body { font-size: 15px; line-height: 1.7; margin-bottom: 14px; word-break: break-word; color: var(--text-color); }
+        .post-media { width: 100%; max-height: 350px; object-fit: cover; border-radius: 12px; margin-bottom: 12px; border: 1px solid var(--border-color); }
+        .post-footer-actions { display: flex; justify-content: space-around; border-top: 1px solid var(--border-color); padding-top: 10px; color: var(--text-secondary); font-size: 13px; font-weight: 600; }
+        .interaction-btn { display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 8px 14px; border-radius: 8px; transition: var(--transition); }
+        .interaction-btn:hover { background: var(--bg-color); color: var(--accent-color); }
         .interaction-btn.active-reaction { color: var(--accent-color); font-weight: bold; }
 
         .reactions-popup {
-            position: absolute; bottom: 40px; background: var(--card-bg); border: 1px solid var(--border-color);
-            border-radius: 20px; padding: 5px 10px; display: none; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 20;
+            position: absolute; bottom: 50px; background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 30px; padding: 6px 14px; display: none; gap: 12px; box-shadow: var(--shadow-lg); z-index: 20; animation: fadeIn 0.2s ease;
         }
-        .reaction-option { cursor: pointer; font-size: 18px; transition: transform 0.2s; }
-        .reaction-option:hover { transform: scale(1.3); }
+        .reaction-option { cursor: pointer; font-size: 20px; transition: transform 0.2s; }
+        .reaction-option:hover { transform: scale(1.4); }
 
         .post-menu {
-            position: absolute; left: 15px; top: 40px; background: var(--card-bg); border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: none; z-index: 10; width: 150px; border: 1px solid var(--border-color);
+            position: absolute; left: 15px; top: 45px; background: var(--card-bg); border-radius: 12px;
+            box-shadow: var(--shadow-lg); display: none; z-index: 10; width: 160px; border: 1px solid var(--border-color); overflow: hidden; animation: fadeIn 0.2s ease;
         }
-        .post-menu div { padding: 10px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border-color); color: var(--text-color); }
-        .post-menu div:hover { background: var(--bg-color); }
+        .post-menu div { padding: 12px 14px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border-color); color: var(--text-color); transition: var(--transition); }
+        .post-menu div:last-child { border-bottom: none; }
+        .post-menu div:hover { background: var(--bg-color); color: var(--accent-color); }
 
-        .comments-section { margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 10px; display: none; }
-        .comment-item { display: flex; gap: 8px; margin-bottom: 8px; font-size: 13px; }
-        .comment-bubble { background: var(--bg-color); padding: 8px 12px; border-radius: 12px; flex: 1; border: 1px solid var(--border-color); }
-        .comment-input-box { display: flex; gap: 8px; margin-top: 8px; }
-        .comment-input { flex: 1; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 16px; outline: none; font-size: 13px; background: var(--bg-color); color: var(--text-color); }
+        .comments-section { margin-top: 12px; border-top: 1px solid var(--border-color); padding-top: 12px; display: none; }
+        .comment-item { display: flex; gap: 10px; margin-bottom: 10px; font-size: 13px; }
+        .comment-bubble { background: var(--bg-color); padding: 10px 14px; border-radius: 14px; flex: 1; border: 1px solid var(--border-color); }
+        .comment-input-box { display: flex; gap: 8px; margin-top: 10px; }
+        .comment-input { flex: 1; border: 1px solid var(--border-color); padding: 8px 14px; border-radius: 20px; outline: none; font-size: 13px; background: var(--bg-color); color: var(--text-color); transition: var(--transition); }
+        .comment-input:focus { border-color: var(--accent-color); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
 
+        /* نافذة إعدادات الملف الشخصي */
         #edit-profile-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); z-index: 1500; display: none; align-items: center; justify-content: center; padding: 20px;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 1500; display: none; align-items: center; justify-content: center; padding: 20px;
         }
-        .modal-card { background: var(--card-bg); width: 100%; max-width: 400px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); border: 1px solid var(--border-color); max-height: 90vh; overflow-y: auto; }
-        .modal-card h3 { margin-bottom: 15px; color: var(--accent-color); }
-        .modal-input { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; outline: none; background: var(--bg-color); color: var(--text-color); }
-        .modal-btns { display: flex; justify-content: flex-end; gap: 8px; }
+        .modal-card { background: var(--card-bg); width: 100%; max-width: 420px; padding: 25px; border-radius: 20px; box-shadow: var(--shadow-lg); border: 1px solid var(--border-color); max-height: 90vh; overflow-y: auto; animation: fadeIn 0.3s ease; }
+        .modal-card h3 { margin-bottom: 18px; color: var(--accent-color); font-size: 20px; font-weight: 700; }
+        .modal-input { width: 100%; padding: 12px; margin-bottom: 14px; border: 1px solid var(--border-color); border-radius: 10px; font-size: 14px; outline: none; background: var(--bg-color); color: var(--text-color); transition: var(--transition); }
+        .modal-input:focus { border-color: var(--accent-color); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
+        .modal-btns { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
 
-        .chat-list-item { display: flex; align-items: center; gap: 12px; padding: 10px; border-bottom: 1px solid var(--border-color); cursor: pointer; }
+        .chat-list-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: var(--transition); border-radius: 10px; }
         .chat-list-item:hover { background: var(--bg-color); }
 
+        /* شريط التنقل السفلي الحديث */
         nav.bottom-nav {
             position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg);
-            display: flex; justify-content: space-around; padding: 10px 0; box-shadow: -1px 3px rgba(0,0,0,0.05); z-index: 100;
-            border-top: 1px solid var(--border-color);
+            display: flex; justify-content: space-around; padding: 12px 0; box-shadow: 0 -4px 20px rgba(0,0,0,0.06); z-index: 100;
+            border-top: 1px solid var(--border-color); backdrop-filter: blur(10px);
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; width: 20%; }
-        .nav-item.active { color: var(--accent-color); }
-        .nav-item:not(.active) { color: var(--text-secondary); }
-        .nav-icon { font-size: 24px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; width: 20%; color: var(--text-secondary); transition: var(--transition); }
+        .nav-item.active { color: var(--accent-color); transform: translateY(-2px); }
+        .nav-item.active::after { content: ''; position: absolute; bottom: -12px; width: 20px; height: 3px; background: var(--accent-color); border-radius: 2px; }
+        .nav-icon { font-size: 22px; }
         
         .menu-list { list-style: none; padding: 0; }
-        .menu-item { display: flex; align-items: center; gap: 15px; padding: 12px; border-bottom: 1px solid var(--border-color); cursor: pointer; font-weight: 600; color: var(--text-color); }
+        .menu-item { display: flex; align-items: center; gap: 15px; padding: 14px; border-bottom: 1px solid var(--border-color); cursor: pointer; font-weight: 600; color: var(--text-color); transition: var(--transition); border-radius: 10px; }
+        .menu-item:hover { background: var(--bg-color); color: var(--accent-color); padding-right: 18px; }
     </style>
 </head>
 <body data-theme="light">
@@ -199,22 +237,22 @@
         <div class="modal-card">
             <h3>إعدادات الهوية والمعلومات</h3>
             
-            <div style="text-align: center; margin-bottom: 12px;">
-                <img src="" id="modal-preview-avatar" class="user-avatar-img" style="width: 70px; height: 70px; margin: 0 auto 8px auto; font-size: 24px;" alt="صورة البروفايل">
+            <div style="text-align: center; margin-bottom: 16px;">
+                <img src="" id="modal-preview-avatar" class="user-avatar-img" style="width: 80px; height: 80px; margin: 0 auto 10px auto; font-size: 26px;" alt="صورة البروفايل">
                 <input type="file" id="modal-avatar-file" accept="image/*" style="display: none;">
-                <button type="button" class="action-icon-btn" id="modal-pick-avatar-btn" style="width: auto; padding: 6px 14px; border-radius: 6px; font-size: 12px; margin: 0 auto; background: var(--accent-color); color: white; border: none;">
-                    <i class="fa-solid fa-camera"></i> اختيار صورة من المعرض
+                <button type="button" class="action-icon-btn" id="modal-pick-avatar-btn" style="width: auto; padding: 8px 16px; border-radius: 8px; font-size: 13px; margin: 0 auto; background: var(--accent-color); color: white; border: none;">
+                    <i class="fa-solid fa-camera"></i> اختيار صورة جديدة
                 </button>
             </div>
 
-            <label style="font-size: 12px; color: var(--text-secondary);">الاسم الكامل</label>
+            <label style="font-size: 12px; color: var(--text-secondary); font-weight: 600;">الاسم الكامل</label>
             <input type="text" id="modal-edit-name" class="modal-input">
-            <label style="font-size: 12px; color: var(--text-secondary);">البريد الإلكتروني</label>
+            <label style="font-size: 12px; color: var(--text-secondary); font-weight: 600;">البريد الإلكتروني</label>
             <input type="email" id="modal-edit-email" class="modal-input">
-            <label style="font-size: 12px; color: var(--text-secondary);">النبذة المعرفية (البايو)</label>
+            <label style="font-size: 12px; color: var(--text-secondary); font-weight: 600;">النبذة المعرفية (البايو)</label>
             <input type="text" id="modal-edit-bio" class="modal-input" placeholder="اكتب نبذة عن اهتماماتك الفكرية...">
             <div class="modal-btns">
-                <button class="action-icon-btn" style="width:auto; padding: 0 15px; border-radius: 6px;" id="modal-cancel-btn">إلغاء</button>
+                <button class="action-icon-btn" style="width:auto; padding: 0 16px; border-radius: 8px;" id="modal-cancel-btn">إلغاء</button>
                 <button class="btn-publish" id="modal-save-btn">حفظ التغييرات</button>
             </div>
         </div>
@@ -262,28 +300,28 @@
                 <input type="file" id="post-media-file" accept="image/*,video/*" style="display: none;">
 
                 <div class="post-actions-bar">
-                    <div class="post-option" id="attach-media-trigger" style="cursor: pointer; font-size: 13px; color: var(--text-secondary);"><i class="fa-solid fa-image" style="color: var(--success-color); font-size: 16px;"></i> <span>إرفاق وسائط</span></div>
+                    <div class="post-option" id="attach-media-trigger" style="cursor: pointer; font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px;"><i class="fa-solid fa-image" style="color: var(--success-color); font-size: 18px;">}</i> <span>إرفاق وسائط</span></div>
                     <button class="btn-publish" id="publish-post-btn">نشر الفكرة</button>
                 </div>
             </div>
 
             <div id="posts-feed">
-                <div class="card" style="text-align: center; color: var(--text-secondary); padding: 25px;"><i class="fa-solid fa-spinner fa-spin"></i> جاري استدعاء الأفكار المضيئة...</div>
+                <div class="card" style="text-align: center; color: var(--text-secondary); padding: 30px;"><i class="fa-solid fa-spinner fa-spin fa-lg"></i> جاري استدعاء الأفكار المضيئة...</div>
             </div>
         </div>
 
         <!-- 2. الصالونات الفكرية -->
         <div id="tab-chat" class="view-section">
             <div class="card">
-                <h3>الصالونات الفكرية (المحادثات)</h3>
+                <h3 style="color: var(--accent-color); margin-bottom: 10px;">الصالونات الفكرية (المحادثات)</h3>
                 <div style="margin-top: 10px;">
                     <div class="chat-list-item">
                         <div class="user-avatar-img" style="background: var(--accent-color);"><i class="fa-solid fa-feather-pointed"></i></div>
                         <div style="flex: 1;">
                             <div style="font-weight: bold; font-size: 14px;">صالون كلمات الفكري</div>
-                            <div style="font-size: 12px; color: var(--text-secondary);">مرحباً بك في الواحة الفكرية العالمية!</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">مرحباً بك في الواحة الفكرية العالمية!</div>
                         </div>
-                        <span style="font-size: 10px; color: var(--accent-color); font-weight: bold;">نشط</span>
+                        <span style="font-size: 11px; color: var(--success-color); font-weight: bold; background: rgba(16, 185, 129, 0.1); padding: 3px 8px; border-radius: 6px;">نشط</span>
                     </div>
                 </div>
             </div>
@@ -292,19 +330,19 @@
         <!-- 3. الرفقاء -->
         <div id="tab-friends" class="view-section">
             <div class="card">
-                <h3>شبكة الرفقاء والباحثين</h3>
+                <h3 style="color: var(--accent-color); margin-bottom: 10px;">شبكة الرفقاء والباحثين</h3>
                 <div id="friend-requests-list" style="margin-top: 12px;">
-                    <div class="friend-request-card" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0;">
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <div class="user-avatar-img" style="width: 40px; height: 40px; font-size: 16px; background: #7f8c8d;">م</div>
+                    <div class="friend-request-card" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border-color);">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div class="user-avatar-img" style="width: 42px; height: 42px; font-size: 16px; background: #64748b;">م</div>
                             <div>
                                 <div style="font-weight: bold; font-size: 14px;">محمد الشمري</div>
-                                <div style="font-size: 11px; color: var(--text-secondary);">يرغب بالانضمام لشبكتك المعرفية</div>
+                                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">يرغب بالانضمام لشبكتك المعرفية</div>
                             </div>
                         </div>
-                        <div style="display: flex; gap: 6px;">
-                            <button class="btn-publish accept-friend-btn" style="padding: 5px 12px; font-size: 12px;">قبول</button>
-                            <button class="action-icon-btn reject-friend-btn" style="width:auto; padding: 0 10px; border-radius:6px;">رفض</button>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn-publish accept-friend-btn" style="padding: 6px 14px; font-size: 12px;">قبول</button>
+                            <button class="action-icon-btn reject-friend-btn" style="width:auto; padding: 0 12px; border-radius:8px;">رفض</button>
                         </div>
                     </div>
                 </div>
@@ -314,11 +352,11 @@
         <!-- 4. الإشعارات -->
         <div id="tab-notifications" class="view-section">
             <div class="card">
-                <h3>سجل الومضات والإشعارات</h3>
+                <h3 style="color: var(--accent-color); margin-bottom: 15px;">سجل الومضات والإشعارات</h3>
                 <div id="notifications-list" style="margin-top: 15px;">
-                    <div style="display: flex; gap: 10px; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+                    <div style="display: flex; gap: 12px; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
                         <div class="action-icon-btn" style="background: var(--accent-color); color: #fff;"><i class="fa-solid fa-feather-pointed"></i></div>
-                        <div><p style="font-size: 13px;"><b>منصة كلمات:</b> أشرقت شمس الواحة الفكرية العالمية!</p><span style="font-size: 11px; color: var(--text-secondary);">الآن</span></div>
+                        <div><p style="font-size: 13px;"><b>منصة كلمات:</b> أشرقت شمس الواحة الفكرية العالمية!</p><span style="font-size: 11px; color: var(--text-secondary); margin-top: 2px; display: inline-block;">الآن</span></div>
                     </div>
                 </div>
             </div>
@@ -327,41 +365,41 @@
         <!-- 5. الخزانة -->
         <div id="tab-menu" class="view-section">
             <div class="card">
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
-                    <img src="" id="menu-user-avatar" class="user-avatar-img" style="width: 50px; height: 50px; font-size: 20px;" alt="صورة">
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color);">
+                    <img src="" id="menu-user-avatar" class="user-avatar-img" style="width: 60px; height: 60px; font-size: 22px;" alt="صورة">
                     <div>
-                        <h3 id="menu-profile-name">باحث عن المعرفة</h3>
-                        <span id="menu-profile-email" style="font-size: 12px; color: var(--text-secondary);">user@kalimat.com</span>
+                        <h3 id="menu-profile-name" style="font-size: 18px; color: var(--text-color);">باحث عن المعرفة</h3>
+                        <span id="menu-profile-email" style="font-size: 12px; color: var(--text-secondary); margin-top: 2px; display: block;">user@kalimat.com</span>
                     </div>
                 </div>
                 <ul class="menu-list">
                     <li class="menu-item" id="menu-settings-btn"><i class="fa-solid fa-gear" style="color: var(--accent-color);"></i> إعدادات الهوية والمعلومات</li>
-                    <li class="menu-item" id="menu-chat-btn"><i class="fa-brands fa-facebook-messenger" style="color: #2980b9;"></i> الصالونات الفكرية والرسائل</li>
+                    <li class="menu-item" id="menu-chat-btn"><i class="fa-brands fa-facebook-messenger" style="color: #3b82f6;"></i> الصالونات الفكرية والرسائل</li>
                     <li class="menu-item" id="menu-welcome-btn"><i class="fa-solid fa-feather-pointed" style="color: var(--success-color);"></i> فلسفة منصة كلمات</li>
                     <li class="menu-item" id="logout-btn" style="color: var(--danger-color);"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</li>
                 </ul>
             </div>
         </div>
 
-        <!-- 6. البروفايل الشخصي أو بروفايل أي مستخدم يتم زيارته -->
+        <!-- 6. البروفايل الشخصي -->
         <div id="tab-profile" class="view-section">
-            <div class="card" style="text-align: center; padding: 25px;">
-                <img src="" id="profile-view-avatar" class="user-avatar-img" style="width: 75px; height: 75px; font-size: 30px; margin: 0 auto 10px auto;" alt="صورة">
-                <h2 id="profile-view-name">اسم الباحث</h2>
-                <p id="profile-view-email" style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;"></p>
-                <p id="profile-view-bio" style="color: var(--text-secondary); font-size: 13px; margin-top: 8px; margin-bottom: 15px;">باحث عن المعرفة في واحة كلمات الفكرية</p>
+            <div class="card" style="text-align: center; padding: 30px 20px;">
+                <img src="" id="profile-view-avatar" class="user-avatar-img" style="width: 80px; height: 80px; font-size: 32px; margin: 0 auto 12px auto;" alt="صورة">
+                <h2 id="profile-view-name" style="font-size: 20px; color: var(--text-color);">اسم الباحث</h2>
+                <p id="profile-view-email" style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;"></p>
+                <p id="profile-view-bio" style="color: var(--text-secondary); font-size: 13px; margin-top: 10px; margin-bottom: 20px; line-height: 1.5;">باحث عن المعرفة في واحة كلمات الفكرية</p>
                 
-                <div id="profile-action-container" style="display: none; margin-bottom: 15px;">
-                    <button class="btn-publish" id="follow-user-btn" style="padding: 6px 20px; font-size: 13px;">+ متابعة / طلب صداقة</button>
+                <div id="profile-action-container" style="display: none; margin-bottom: 10px;">
+                    <button class="btn-publish" id="follow-user-btn" style="padding: 8px 24px; font-size: 13px;">+ متابعة / طلب صداقة</button>
                 </div>
             </div>
 
-            <h4 style="margin-bottom: 10px; font-size: 15px; color: var(--accent-color);">منشورات الباحث</h4>
+            <h4 style="margin-bottom: 12px; font-size: 16px; color: var(--accent-color); font-weight: 700;">منشورات الباحث</h4>
             <div id="user-profile-posts-feed"></div>
         </div>
     </div>
 
-    <!-- Navigation Bar -->
+    <!-- شريط التنقل السفلي -->
     <nav class="bottom-nav">
         <div class="nav-item active" id="nav-home" title="الخلاصة"><i class="fa-solid fa-book-open nav-icon"></i></div>
         <div class="nav-item" id="nav-chat" title="الصالونات الفكرية"><i class="fa-brands fa-facebook-messenger nav-icon"></i></div>
@@ -370,7 +408,7 @@
         <div class="nav-item" id="nav-menu" title="الخزانة"><i class="fa-solid fa-feather-pointed nav-icon"></i></div>
     </nav>
 
-    <!-- ربط Firebase وتفعيل المنصة العالمية المتكاملة تلقائياً -->
+    <!-- سكربت التشغيل Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, updateEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -448,7 +486,7 @@
                 if (isSignUpMode) {
                     const res = await createUserWithEmailAndPassword(auth, email, password);
                     await updateProfile(res.user, { displayName: name });
-                    const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=2980b9&color=fff`;
+                    const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=3b82f6&color=fff`;
                     
                     await setDoc(doc(db, "users", res.user.uid), {
                         uid: res.user.uid,
@@ -466,7 +504,7 @@
             } catch (error) {
                 let errorMsg = error.message;
                 if(error.code === 'auth/email-already-in-use') {
-                    errorMsg = "البريد الإلكتروني مستخدم مسبقاً! يرجى الضغط على 'لديك حساب بالفعل؟ سجل دخولك'.";
+                    errorMsg = "البريد الإلكتروني مستخدم مسبقاً! يرجى تسجيل الدخول بدلاً من ذلك.";
                 } else if(error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
                     errorMsg = "البريد الإلكتروني غير مسجل أو كلمة المرور غير صحيحة.";
                 }
@@ -491,11 +529,11 @@
                     currentUserData.name = data.name || user.displayName || "باحث";
                     currentUserData.email = data.email || user.email;
                     currentUserData.bio = data.bio || "باحث عن المعرفة في واحة كلمات الفكرية";
-                    currentUserData.avatar = data.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUserData.name)}&background=2980b9&color=fff`;
+                    currentUserData.avatar = data.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUserData.name)}&background=3b82f6&color=fff`;
                 } else {
                     currentUserData.name = user.displayName || user.email.split('@')[0];
                     currentUserData.email = user.email;
-                    currentUserData.avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUserData.name)}&background=2980b9&color=fff`;
+                    currentUserData.avatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUserData.name)}&background=3b82f6&color=fff`;
                     await setDoc(userDocRef, currentUserData);
                 }
                 updateUIAvatarAndNames();
@@ -511,7 +549,6 @@
             document.getElementById('new-post-text').placeholder = `شارك فكرة، يا ${currentUserData.name}...`;
         }
 
-        // محرك البحث السحابي الحقيقي
         const globalSearchInput = document.getElementById('global-search-input');
         const searchResultsDropdown = document.getElementById('search-results-dropdown');
 
@@ -532,7 +569,7 @@
                     count++;
                     const div = document.createElement('div');
                     div.className = 'search-result-item';
-                    div.innerHTML = `<img src="${u.avatar}" class="user-avatar-img" style="width: 26px; height: 26px;"> <span>${u.name}</span>`;
+                    div.innerHTML = `<img src="${u.avatar}" class="user-avatar-img" style="width: 28px; height: 28px;"> <span>${u.name}</span>`;
                     div.addEventListener('click', () => {
                         searchResultsDropdown.style.display = 'none';
                         globalSearchInput.value = '';
@@ -583,7 +620,7 @@
                     postCard.innerHTML = `
                         <div class="post-header">
                             <div class="post-user-info">
-                                <img src="${targetUser.avatar}" class="user-avatar-img" style="width: 35px; height: 35px;">
+                                <img src="${targetUser.avatar}" class="user-avatar-img" style="width: 38px; height: 38px;">
                                 <div>
                                     <div class="post-author-name">${targetUser.name}</div>
                                     <div class="post-meta-info">${p.time || 'منذ قليل'}</div>
@@ -600,7 +637,6 @@
             switchTab('profile');
         }
 
-        // اختيار وضغط صورة البروفايل تلقائياً
         document.getElementById('modal-pick-avatar-btn').addEventListener('click', () => {
             document.getElementById('modal-avatar-file').click();
         });
@@ -629,14 +665,13 @@
                     canvas.width = width;
                     canvas.height = height;
                     ctx.drawImage(img, 0, 0, width, height);
-                    newAvatarBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                    newAvatarBase64 = canvas.toDataURL('image/jpeg', 0.8);
                     document.getElementById('modal-preview-avatar').src = newAvatarBase64;
                 }
             };
             reader.readAsDataURL(file);
         });
 
-        // الاستماع لمنشورات الخلاصة العالمية
         const q = query(collection(db, "posts"), orderBy("time", "desc"));
         onSnapshot(q, (snapshot) => {
             const feedContainer = document.getElementById('posts-feed');
@@ -644,14 +679,14 @@
             
             feedContainer.innerHTML = '';
             notifContainer.innerHTML = `
-                <div style="display: flex; gap: 10px; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 10px;">
+                <div style="display: flex; gap: 12px; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 12px;">
                     <div class="action-icon-btn" style="background: var(--accent-color); color: #fff;"><i class="fa-solid fa-feather-pointed"></i></div>
-                    <div><p style="font-size: 13px;"><b>منصة كلمات:</b> أشرقت شمس الواحة الفكرية العالمية!</p><span style="font-size: 11px; color: var(--text-secondary);">الآن</span></div>
+                    <div><p style="font-size: 13px;"><b>منصة كلمات:</b> أشرقت شمس الواحة الفكرية العالمية!</p><span style="font-size: 11px; color: var(--text-secondary); margin-top: 2px; display: inline-block;">الآن</span></div>
                 </div>
             `;
             
             if (snapshot.empty) {
-                feedContainer.innerHTML = `<div class="card" style="text-align: center; color: var(--text-secondary);">لا توجد أفكار منشورة في الواحة بعد. كن أول المساهمين!</div>`;
+                feedContainer.innerHTML = `<div class="card" style="text-align: center; color: var(--text-secondary); padding: 30px;">لا توجد أفكار منشورة في الواحة بعد. كن أول المساهمين!</div>`;
                 return;
             }
 
@@ -659,13 +694,13 @@
                 const post = docSnap.data();
                 const postId = docSnap.id;
                 const isMyPost = post.uid === currentUserData.uid;
-                const authorAvatar = post.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(post.author || 'ي')}&background=2980b9&color=fff`;
+                const authorAvatar = post.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(post.author || 'ي')}&background=3b82f6&color=fff`;
 
                 const notifItem = document.createElement('div');
-                notifItem.style.cssText = "display: flex; gap: 10px; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 10px;";
+                notifItem.style.cssText = "display: flex; gap: 12px; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 12px;";
                 notifItem.innerHTML = `
-                    <img src="${authorAvatar}" class="user-avatar-img" style="width: 32px; height: 32px;" alt="صورة">
-                    <div><p style="font-size: 13px;"><b>${post.author || 'باحث'}</b> نشر فكرة: "${post.text.substring(0, 30)}..."</p><span style="font-size: 11px; color: var(--text-secondary);">${post.time || 'منذ قليل'}</span></div>
+                    <img src="${authorAvatar}" class="user-avatar-img" style="width: 34px; height: 34px;" alt="صورة">
+                    <div><p style="font-size: 13px;"><b>${post.author || 'باحث'}</b> نشر فكرة: "${post.text.substring(0, 30)}..."</p><span style="font-size: 11px; color: var(--text-secondary); margin-top: 2px; display: inline-block;">${post.time || 'منذ قليل'}</span></div>
                 `;
                 notifContainer.appendChild(notifItem);
 
@@ -674,7 +709,7 @@
                 postCard.innerHTML = `
                     <div class="post-header">
                         <div class="post-user-info" data-action="visit-profile" data-uid="${post.uid}" data-name="${post.author || 'باحث'}" data-avatar="${authorAvatar}" data-email="${post.email || 'scholar@kalimat.com'}" data-bio="${post.bio || 'باحث معرفي'}">
-                            <img src="${authorAvatar}" class="user-avatar-img" style="width: 38px; height: 38px;" alt="صورة">
+                            <img src="${authorAvatar}" class="user-avatar-img" style="width: 42px; height: 42px;" alt="صورة">
                             <div>
                                 <div class="post-author-name">${post.author || 'باحث معرفي'}</div>
                                 <div class="post-meta-info">
@@ -683,7 +718,7 @@
                             </div>
                         </div>
                         <div style="position:relative;">
-                            <i class="fa-solid fa-ellipsis" style="color: var(--text-secondary); cursor: pointer; padding: 5px;" data-action="toggle-menu" data-id="${postId}"></i>
+                            <i class="fa-solid fa-ellipsis" style="color: var(--text-secondary); cursor: pointer; padding: 8px;" data-action="toggle-menu" data-id="${postId}"></i>
                             <div class="post-menu" id="menu-${postId}">
                                 <div data-action="share" data-text="${post.text}"><i class="fa-solid fa-share"></i> مشاركة الفكرة</div>
                                 ${isMyPost ? `
@@ -710,7 +745,7 @@
                         <div id="comments-list-${postId}"></div>
                         <div class="comment-input-box">
                             <input type="text" class="comment-input" id="comment-input-${postId}" placeholder="أضف مداخلتك الفكرية...">
-                            <button class="btn-publish" data-action="add-comment" data-id="${postId}" style="padding: 4px 12px; font-size: 12px;">إرسال</button>
+                            <button class="btn-publish" data-action="add-comment" data-id="${postId}" style="padding: 6px 14px; font-size: 12px;">إرسال</button>
                         </div>
                     </div>
                 `;
@@ -763,10 +798,10 @@
                 const item = document.createElement('div');
                 item.className = 'comment-item';
                 item.innerHTML = `
-                    <img src="${currentUserData.avatar}" class="user-avatar-img" style="width: 28px; height: 28px;" alt="صورة">
-                    <div class="comment-input-box" style="margin:0; border:none;">
+                    <img src="${currentUserData.avatar}" class="user-avatar-img" style="width: 30px; height: 30px;" alt="صورة">
+                    <div class="comment-input-box" style="margin:0; border:none; flex:1;">
                         <div class="comment-bubble">
-                            <div style="font-weight: bold; font-size: 12px; color: var(--accent-color);">${currentUserData.name}</div>
+                            <div style="font-weight: bold; font-size: 12px; color: var(--accent-color); margin-bottom: 2px;">${currentUserData.name}</div>
                             <div>${val}</div>
                         </div>
                     </div>
