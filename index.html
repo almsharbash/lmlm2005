@@ -13,8 +13,8 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="كلمات">
 
-    <!-- ربط ملف الـ Manifest للتحويل إلى تطبيق قابل للتثبيت -->
-    <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22Kalimat%20%7C%20%D9%83%D9%84%D9%85%D8%A7%D administrativa%22%2C%22short_name%22%3A%22%D9%83%D9%84%D9%85%D8%A7%D8%AA%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f7f9fa%22%2C%22theme_color%22%3A%22%232c3e50%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fi.ibb.co%2F6R2v9G2%2F1000228192-3.jpg%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fjpeg%22%7D%5D%7D">
+    <!-- ربط ملف الـ Manifest الديناميكي للتحويل إلى تطبيق قابل للتثبيت والحذف -->
+    <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22Kalimat%20%7C%20%D9%83%D9%84%D9%85%D8%A7%D8%AA%22%2C%22short_name%22%3A%22%D9%83%D9%84%D9%85%D8%A7%D8%AA%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f7f9fa%22%2C%22theme_color%22%3A%22%232c3e50%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fi.ibb.co%2F6R2v9G2%2F1000228192-3.jpg%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fjpeg%22%7D%5D%7D">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -336,7 +336,7 @@
             </div>
         </div>
 
-        <!-- 5. الخزانة (مع زر التثبيت الفوري للتطبيق) -->
+        <!-- 5. الخزانة (مع زر التثبيت الفوري للتطبيق وحذفه متى شئت) -->
         <div id="tab-menu" class="view-section">
             <div class="card">
                 <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
@@ -420,7 +420,7 @@
                 }
                 deferredPrompt = null;
             } else {
-                alert("لتثبيت التطبيق على جهازك:\n\n• إذا كنت تستخدم متصفح كروم (أندرويد)، اضغط على خيارات المتصفح (النقاط الثلاث) ثم اختر 'إضافة إلى الشاشة الرئيسية' أو 'تثبيت التطبيق'.\n• إذا كنت تستخدم سفاري (آيفون)، اضغط على زر المشاركة (Share) ثم اختر 'إضافة إلى الصفحة الرئيسية' (Add to Home Screen).");
+                alert("لتثبيت التطبيق على جهازك أو إعادة تثبيته:\n\n• إذا كنت تستخدم متصفح كروم (أندرويد)، اضغط على خيارات المتصفح (النقاط الثلاث) ثم اختر 'إضافة إلى الشاشة الرئيسية' أو 'تثبيت التطبيق'. يمكنك حذفه في أي وقت من إعدادات هاتفك أو من الشاشة الرئيسية مباشرة.\n• إذا كنت تستخدم سفاري (آيفون)، اضغط على زر المشاركة (Share) ثم اختر 'إضافة إلى الصفحة الرئيسية' (Add to Home Screen).");
             }
         });
 
@@ -953,10 +953,6 @@
                 alert("حدث خطأ أثناء نشر الفكرة.");
             }
         });
-
-        document.querySelectorAll('.accept-friend-btn').forEach, b => {
-            // بقية الأكواد التفاعلية
-        };
 
         function switchTab(tabName) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
