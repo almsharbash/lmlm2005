@@ -179,7 +179,7 @@
 </head>
 <body data-theme="light">
 
-    <!-- شاشة تسجيل الدخول / إنشاء حساب متكاملة -->
+    <!-- شاشة تسجيل الدخول / إنشاء حساب -->
     <div id="auth-screen">
         <div class="auth-card">
             <h1><i class="fa-solid fa-feather-pointed" style="color: var(--accent-color);"></i> كلمات</h1>
@@ -194,7 +194,7 @@
         </div>
     </div>
 
-    <!-- نافذة إعدادات الملف الشخصي مع زر اختيار صورة من المعرض -->
+    <!-- نافذة إعدادات الملف الشخصي مع تصغير وضغط الصورة تلقائياً لتجنب خطأ الحجم -->
     <div id="edit-profile-modal">
         <div class="modal-card">
             <h3>إعدادات الهوية والمعلومات</h3>
@@ -371,7 +371,7 @@
         <div class="nav-item" id="nav-menu" title="الخزانة"><i class="fa-solid fa-feather-pointed nav-icon"></i></div>
     </nav>
 
-    <!-- ربط Firebase ومعالجة اختيار الصور والتحويل الآمن بين الحسابات -->
+    <!-- ربط Firebase وتفعيل ضغط الصور التلقائي وحفظ البيانات في السحابة -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, updateEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -467,7 +467,7 @@
             } catch (error) {
                 let errorMsg = error.message;
                 if(error.code === 'auth/email-already-in-use') {
-                    errorMsg = "البريد الإلكتروني مستخدم مسبقاً! يرجى الضغط على 'لديك حساب بالفعل؟ سجل دخولك' لتسجيل الدخول.";
+                    errorMsg = "البريد الإلكتروني مستخدم مسبقاً! يرجى الضغط على 'لديك حساب بالفعل؟ سجل دخولك'.";
                 } else if(error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
                     errorMsg = "البريد الإلكتروني غير مسجل أو كلمة المرور غير صحيحة.";
                 }
@@ -601,7 +601,7 @@
             switchTab('profile');
         }
 
-        // تفعيل اختيار وتغيير صورة البروفايل من المعرض بسلاسة تامة
+        // معالجة اختيار وضغط صورة البروفايل تلقائياً لتجنب أي أخطاء في السحابة
         document.getElementById('modal-pick-avatar-btn').addEventListener('click', () => {
             document.getElementById('modal-avatar-file').click();
         });
@@ -611,8 +611,28 @@
             if(!file) return;
             const reader = new FileReader();
             reader.onload = function(event) {
-                newAvatarBase64 = event.target.result;
-                document.getElementById('modal-preview-avatar').src = newAvatarBase64;
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const MAX_WIDTH = 150;
+                    const MAX_HEIGHT = 150;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                    } else {
+                        if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+                    newAvatarBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                    document.getElementById('modal-preview-avatar').src = newAvatarBase64;
+                }
             };
             reader.readAsDataURL(file);
         });
@@ -813,6 +833,10 @@
             if(!newName || !newEmail) { alert('الاسم والبريد الإلكتروني مطلوبان!'); return; }
 
             try {
+                const saveBtn = document.getElementById('modal-save-btn');
+                saveBtn.disabled = true;
+                saveBtn.innerText = "جاري الحفظ...";
+
                 if(auth.currentUser && newEmail !== currentUserData.email) await updateEmail(auth.currentUser, newEmail);
                 if(auth.currentUser && newName !== currentUserData.name) await updateProfile(auth.currentUser, { displayName: newName });
 
@@ -827,9 +851,13 @@
                 
                 updateUIAvatarAndNames();
                 document.getElementById('edit-profile-modal').style.display = 'none';
-                alert("تم تحديث هويتك وصورتك في الواحة العالمية بنجاح!");
+                alert("تم تحديث هويتك وصورتك في الواحة العالمية بنجاح وحفظها في السحابة!");
             } catch (e) {
-                alert("خطأ: " + e.message);
+                alert("خطأ أثناء الحفظ: " + e.message);
+            } finally {
+                const saveBtn = document.getElementById('modal-save-btn');
+                saveBtn.disabled = false;
+                saveBtn.innerText = "حفظ التغييرات";
             }
         });
 
