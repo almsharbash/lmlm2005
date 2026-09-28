@@ -62,34 +62,33 @@
         header {
             position: sticky; top: 0; background: var(--card-bg); padding: 10px 15px;
             display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.05); z-index: 100;
-            border-bottom: 1px solid var(--border-color); gap: 8px;
+            border-bottom: 1px solid var(--border-color); gap: 10px;
         }
         .logo { font-size: 20px; font-weight: 900; color: var(--accent-color); cursor: pointer; display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-        
         .logo-icon-svg {
-            width: 36px; height: 36px; background: var(--accent-color); border-radius: 8px;
-            display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;
+            width: 34px; height: 34px; background: var(--accent-color); border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; color: white; font-size: 18px;
         }
         
-        .search-container { position: relative; flex: 1; max-width: 180px; }
+        .search-container { position: relative; flex: 1; max-width: 240px; }
         .search-box {
-            background: var(--bg-color); border-radius: 20px; padding: 5px 10px;
-            display: flex; align-items: center; gap: 6px; width: 100%; color: var(--text-secondary);
+            background: var(--bg-color); border-radius: 20px; padding: 6px 12px;
+            display: flex; align-items: center; gap: 8px; width: 100%; color: var(--text-secondary);
             border: 1px solid var(--border-color);
         }
-        .search-box input { border: none; background: transparent; outline: none; width: 100%; font-size: 12px; color: var(--text-color); }
+        .search-box input { border: none; background: transparent; outline: none; width: 100%; font-size: 13px; color: var(--text-color); }
         
         #search-results-dropdown {
-            position: absolute; top: 40px; right: 0; width: 220px; background: var(--card-bg);
+            position: absolute; top: 45px; right: 0; width: 100%; background: var(--card-bg);
             border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             display: none; z-index: 300; max-height: 200px; overflow-y: auto;
         }
         .search-result-item { padding: 8px 12px; font-size: 13px; cursor: pointer; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 8px; }
         .search-result-item:hover { background: var(--bg-color); }
 
-        .header-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+        .header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
         .action-icon-btn, .user-avatar-img {
-            width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
             font-weight: bold; font-size: 14px; flex-shrink: 0; cursor: pointer; object-fit: cover; position: relative;
         }
         .action-icon-btn { background: var(--bg-color); color: var(--text-secondary); border: 1px solid var(--border-color); }
@@ -183,7 +182,6 @@
 </head>
 <body data-theme="light">
 
-    <!-- شاشة تسجيل الدخول -->
     <div id="auth-screen">
         <div class="auth-card">
             <h1>
@@ -200,7 +198,6 @@
         </div>
     </div>
 
-    <!-- نافذة إعدادات الملف الشخصي -->
     <div id="edit-profile-modal">
         <div class="modal-card">
             <h3>إعدادات الهوية والمعلومات</h3>
@@ -238,21 +235,16 @@
             <div id="search-results-dropdown"></div>
         </div>
         <div class="header-actions">
-            <div class="action-icon-btn" id="install-app-btn" title="تثبيت التطبيق على الجوال" style="background: var(--success-color); color: white;"><i class="fa-solid fa-download"></i></div>
-            <div class="action-icon-btn" id="theme-toggle-btn" title="المظهر"><i class="fa-solid fa-moon" id="theme-icon"></i></div>
             <div class="action-icon-btn" id="settings-open-btn" title="الإعدادات"><i class="fa-solid fa-gear"></i></div>
             <img src="" id="header-user-avatar" class="user-avatar-img" alt="بروفايل">
         </div>
     </header>
 
     <div class="container">
-        <!-- 1. الخلاصة الفكرية -->
         <div id="tab-home" class="view-section active">
             <div class="wisdom-card">
                 <div class="wisdom-card-header">
-                    <h4>
-                        <i class="fa-solid fa-feather-pointed" style="font-size: 16px;"></i> ومضة معرفية اليوم
-                    </h4>
+                    <h4><i class="fa-solid fa-feather-pointed"></i> ومضة معرفية اليوم</h4>
                 </div>
                 <p>«دائماً هناك كلمات لا يجيد كتابتها القلم تغوص في قعر النفس ولا تطفو»</p>
             </div>
@@ -281,7 +273,6 @@
             </div>
         </div>
 
-        <!-- 2. الصالونات الفكرية والدردشة الحية الثابتة -->
         <div id="tab-chat" class="view-section">
             <div class="card">
                 <h3>الصالونات الفكرية والرسائل الحية</h3>
@@ -291,7 +282,6 @@
             </div>
         </div>
 
-        <!-- 3. الرفقاء وطلبات الصداقة -->
         <div id="tab-friends" class="view-section">
             <div class="card">
                 <h3>شبكة الرفقاء وطلبات المتابعة الواردة</h3>
@@ -301,7 +291,6 @@
             </div>
         </div>
 
-        <!-- 4. الإشعارات السحابية -->
         <div id="tab-notifications" class="view-section">
             <div class="card">
                 <h3>سجل التنبيهات والإشعارات الفكرية</h3>
@@ -311,7 +300,6 @@
             </div>
         </div>
 
-        <!-- 5. الخزانة -->
         <div id="tab-menu" class="view-section">
             <div class="card">
                 <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
@@ -323,6 +311,7 @@
                 </div>
                 <ul class="menu-list">
                     <li class="menu-item" id="menu-settings-btn"><i class="fa-solid fa-gear" style="color: var(--accent-color);"></i> إعدادات الهوية والمعلومات</li>
+                    <li class="menu-item" id="menu-theme-toggle"><i class="fa-solid fa-moon" id="menu-theme-icon" style="color: var(--accent-color);"></i> تبديل المظهر (فاتح / داكن)</li>
                     <li class="menu-item" id="menu-install-btn"><i class="fa-solid fa-download" style="color: var(--success-color);"></i> تثبيت التطبيق على الشاشة الرئيسية</li>
                     <li class="menu-item" id="menu-chat-btn"><i class="fa-brands fa-facebook-messenger" style="color: #2980b9;"></i> الصالونات الفكرية والرسائل</li>
                     <li class="menu-item" id="menu-welcome-btn"><i class="fa-solid fa-feather-pointed" style="color: var(--success-color);"></i> فلسفة منصة كلمات</li>
@@ -331,7 +320,6 @@
             </div>
         </div>
 
-        <!-- 6. البروفايل الشخصي -->
         <div id="tab-profile" class="view-section">
             <div class="card" style="text-align: center; padding: 25px;">
                 <img src="" id="profile-view-avatar" class="user-avatar-img" style="width: 75px; height: 75px; font-size: 30px; margin: 0 auto 10px auto;" alt="صورة">
@@ -350,7 +338,6 @@
         </div>
     </div>
 
-    <!-- شريط التنقل السفلي -->
     <nav class="bottom-nav">
         <div class="nav-item active" id="nav-home" title="الخلاصة"><i class="fa-solid fa-book-open nav-icon"></i></div>
         <div class="nav-item" id="nav-chat" title="الصالونات الفكرية"><i class="fa-brands fa-facebook-messenger nav-icon"></i></div>
@@ -361,7 +348,6 @@
         </div>
     </nav>
 
-    <!-- الجافاسكريبت للتشغيل السحابي -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -405,8 +391,6 @@
         let selectedMediaData = { url: "", type: "" };
         let newAvatarBase64 = "";
 
-        const defaultFeatherAvatar = "";
-
         function compressImage(file, maxWidth = 400, maxHeight = 400, quality = 0.7) {
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -435,17 +419,19 @@
             });
         }
 
-        document.getElementById('theme-toggle-btn').addEventListener('click', () => {
+        function toggleAppTheme() {
             const body = document.body;
-            const themeIcon = document.getElementById('theme-icon');
+            const themeIcon = document.getElementById('menu-theme-icon');
             if(body.getAttribute('data-theme') === 'light') {
                 body.setAttribute('data-theme', 'dark');
-                themeIcon.className = "fa-solid fa-sun";
+                if(themeIcon) themeIcon.className = "fa-solid fa-sun";
             } else {
                 body.setAttribute('data-theme', 'light');
-                themeIcon.className = "fa-solid fa-moon";
+                if(themeIcon) themeIcon.className = "fa-solid fa-moon";
             }
-        });
+        }
+
+        document.getElementById('menu-theme-toggle').addEventListener('click', toggleAppTheme);
 
         function showWelcomeMessage() {
             alert("مرحباً بك في واحة كلمات الفكرية الثقافية العالمية!\n\n«دائماً هناك كلمات لا يجيد كتابتها القلم تغوص في قعر النفس ولا تطفو»");
@@ -542,12 +528,21 @@
             document.querySelectorAll('#header-user-avatar, #post-user-avatar, #menu-user-avatar').forEach(img => {
                 if(currentUserData.avatar) {
                     img.src = currentUserData.avatar;
-                    img.innerHTML = "";
+                    img.style.display = "block";
                 } else {
-                    img.src = "";
-                    img.innerHTML = `<i class="fa-solid fa-user"></i>`;
+                    img.removeAttribute('src');
+                    img.style.backgroundColor = "var(--accent-color)";
                 }
             });
+            // وضع حرف أول اسم في حال عدم وجود صورة بروفايل لضمان عدم حدوث فراغ
+            document.querySelectorAll('#header-user-avatar, #post-user-avatar, #menu-user-avatar').forEach(img => {
+                if(!currentUserData.avatar) {
+                    img.innerText = currentUserData.name ? currentUserData.name.charAt(0) : "ب";
+                } else {
+                    img.innerText = "";
+                }
+            });
+
             document.getElementById('menu-profile-name').innerText = currentUserData.name;
             document.getElementById('menu-profile-email').innerText = currentUserData.email;
             document.getElementById('new-post-text').placeholder = `شارك فكرة، يا ${currentUserData.name}...`;
@@ -573,7 +568,7 @@
                     const notifDiv = document.createElement('div');
                     notifDiv.style.cssText = "display: flex; gap: 10px; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 10px;";
                     notifDiv.innerHTML = `
-                        <div class="user-avatar-img" style="width: 32px; height: 32px; font-size:14px;"><i class="fa-solid fa-user"></i></div>
+                        <div class="user-avatar-img" style="width: 32px; height: 32px; font-size:14px;">${n.senderName ? n.senderName.charAt(0) : 'ب'}</div>
                         <div><p style="font-size: 13px;"><b>${n.senderName}:</b> ${n.text}</p><span style="font-size: 11px; color: var(--text-secondary);">${n.time || 'منذ قليل'}</span></div>
                     `;
                     notifList.appendChild(notifDiv);
@@ -583,7 +578,7 @@
                         reqDiv.style.cssText = "display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-color);";
                         reqDiv.innerHTML = `
                             <div style="display: flex; align-items: center; gap: 10px;">
-                                <div class="user-avatar-img" style="width: 40px; height: 40px; font-size:16px;"><i class="fa-solid fa-user"></i></div>
+                                <div class="user-avatar-img" style="width: 40px; height: 40px; font-size:16px;">${n.senderName ? n.senderName.charAt(0) : 'ب'}</div>
                                 <div>
                                     <div style="font-weight: bold; font-size: 14px;">${n.senderName}</div>
                                     <div style="font-size: 11px; color: var(--text-secondary);">${n.text}</div>
@@ -617,7 +612,7 @@
                     count++;
                     const div = document.createElement('div');
                     div.className = 'search-result-item';
-                    div.innerHTML = `<div class="user-avatar-img" style="width: 26px; height: 26px; font-size:12px;"><i class="fa-solid fa-user"></i></div> <span>${u.name}</span>`;
+                    div.innerHTML = `<div class="user-avatar-img" style="width: 26px; height: 26px; font-size:12px;">${u.name.charAt(0)}</div> <span>${u.name}</span>`;
                     div.addEventListener('click', () => {
                         searchResultsDropdown.style.display = 'none';
                         globalSearchInput.value = '';
@@ -636,10 +631,10 @@
             const profileAvatarImg = document.getElementById('profile-view-avatar');
             if(targetUser.avatar) {
                 profileAvatarImg.src = targetUser.avatar;
-                profileAvatarImg.innerHTML = "";
+                profileAvatarImg.innerText = "";
             } else {
-                profileAvatarImg.src = "";
-                profileAvatarImg.innerHTML = `<i class="fa-solid fa-user"></i>`;
+                profileAvatarImg.removeAttribute('src');
+                profileAvatarImg.innerText = targetUser.name ? targetUser.name.charAt(0) : "ب";
             }
             document.getElementById('profile-view-bio').innerText = targetUser.bio || "باحث عن المعرفة في واحة كلمات الفكرية";
 
@@ -697,7 +692,7 @@
                     postCard.innerHTML = `
                         <div class="post-header">
                             <div class="post-user-info">
-                                <div class="user-avatar-img" style="width: 35px; height: 35px; font-size:15px;"><i class="fa-solid fa-user"></i></div>
+                                <div class="user-avatar-img" style="width: 35px; height: 35px; font-size:15px;">${targetUser.name.charAt(0)}</div>
                                 <div>
                                     <div class="post-author-name">${targetUser.name}</div>
                                     <div class="post-meta-info"><span>${p.timeStr || 'منذ قليل'}</span> • <span class="post-category-tag"><i class="fa-solid fa-feather" style="font-size:10px;"></i> فكرة</span></div>
@@ -722,7 +717,7 @@
             chatList.innerHTML = `
                 <div class="card" style="padding: 12px;">
                     <div style="font-weight: bold; margin-bottom: 8px; color: var(--accent-color); display:flex; align-items:center; gap:8px;">
-                        <div class="user-avatar-img" style="width:30px; height:30px; font-size:13px;"><i class="fa-solid fa-user"></i></div>
+                        <div class="user-avatar-img" style="width:30px; height:30px; font-size:13px;">${targetUser.name.charAt(0)}</div>
                         محادثة حية مع: ${targetUser.name}
                     </div>
                     <div id="direct-chat-messages" style="height: 220px; overflow-y: auto; background: var(--bg-color); padding: 10px; border-radius: 6px; margin-bottom: 10px; font-size: 13px; border: 1px solid var(--border-color);">
@@ -791,6 +786,7 @@
             if(!file) return;
             newAvatarBase64 = await compressImage(file, 200, 200, 0.6);
             document.getElementById('modal-preview-avatar').src = newAvatarBase64;
+            document.getElementById('modal-preview-avatar').innerText = "";
         });
 
         const qPosts = query(collection(db, "posts"), orderBy("timestamp", "desc"));
@@ -809,13 +805,14 @@
                 const isMyPost = post.uid === currentUserData.uid;
                 const likesCount = post.likes ? Object.keys(post.likes).length : 0;
                 const userHasLiked = post.likes && post.likes[currentUserData.uid];
+                const authorInitial = post.author ? post.author.charAt(0) : "ب";
 
                 const postCard = document.createElement('div');
                 postCard.className = 'card';
                 postCard.innerHTML = `
                     <div class="post-header">
                         <div class="post-user-info" data-action="visit-profile" data-uid="${post.uid}" data-name="${post.author || 'باحث'}" data-avatar="${post.avatar || ''}" data-email="${post.email || 'scholar@kalimat.com'}" data-bio="${post.bio || 'باحث معرفي'}">
-                            <div class="user-avatar-img" style="width: 38px; height: 38px; font-size:16px;"><i class="fa-solid fa-user"></i></div>
+                            ${post.avatar ? `<img src="${post.avatar}" class="user-avatar-img" style="width: 38px; height: 38px;">` : `<div class="user-avatar-img" style="width: 38px; height: 38px; font-size:16px;">${authorInitial}</div>`}
                             <div>
                                 <div class="post-author-name">${post.author || 'باحث معرفي'}</div>
                                 <div class="post-meta-info">
@@ -879,10 +876,11 @@
 
                 snapshot.forEach(docSnap => {
                     const c = docSnap.data();
+                    const commentInitial = c.authorName ? c.authorName.charAt(0) : "ب";
                     const item = document.createElement('div');
                     item.className = 'comment-item';
                     item.innerHTML = `
-                        <div class="user-avatar-img" style="width: 28px; height: 28px; font-size:12px;"><i class="fa-solid fa-user"></i></div>
+                        <div class="user-avatar-img" style="width: 28px; height: 28px; font-size:12px;">${commentInitial}</div>
                         <div class="comment-bubble">
                             <div style="font-weight: bold; font-size: 12px; color: var(--accent-color);">${c.authorName}</div>
                             <div style="font-size: 13px;">${c.text}</div>
@@ -1006,10 +1004,10 @@
             const modalAvatarImg = document.getElementById('modal-preview-avatar');
             if(currentUserData.avatar) {
                 modalAvatarImg.src = currentUserData.avatar;
-                modalAvatarImg.innerHTML = "";
+                modalAvatarImg.innerText = "";
             } else {
-                modalAvatarImg.src = "";
-                modalAvatarImg.innerHTML = `<i class="fa-solid fa-user"></i>`;
+                modalAvatarImg.removeAttribute('src');
+                modalAvatarImg.innerText = currentUserData.name ? currentUserData.name.charAt(0) : "ب";
             }
             newAvatarBase64 = "";
             document.getElementById('edit-profile-modal').style.display = 'flex';
@@ -1079,6 +1077,7 @@
                     timestamp: serverTimestamp(),
                     likes: {}
                 });
+                textInput.value = { url: "", type: "" }; // تنظيف
                 textInput.value = '';
                 selectedMediaData = { url: "", type: "" };
                 document.getElementById('media-preview-container').style.display = 'none';
