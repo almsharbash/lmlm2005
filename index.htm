@@ -1,1123 +1,1098 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalimat | كلمات - الواحة الفكرية العالمية</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- إعدادات تطبيق الويب التقدمي (PWA) مع شعار الريشة المدمج -->
-    <meta name="theme-color" content="#2980b9">
-    <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232980b9'/><path d='M30 75 C30 75 25 40 50 25 C75 40 70 75 70 75 Z' fill='%23ffffff'/><path d='M50 25 L50 75' stroke='%232980b9' stroke-width='3'/></svg>">
-    <link rel="manifest" href="data:application/manifest+json;charset=utf-8,{
-        %22name%22: %22Kalimat | كلمات%22,
-        %22short_name%22: %22كلمات%22,
-        %22start_url%22: %22.%22,
-        %22display%22: %22standalone%22,
-        %22background_color%22: %22%23f7f9fa%22,
-        %22theme_color%22: %22%232980b9%22,
-        %22icons%22: [{
-            %22src%22: %22data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232980b9'/><path d='M30 75 C30 75 25 40 50 25 C75 40 70 75 70 75 Z' fill='%23ffffff'/><path d='M50 25 L50 75' stroke='%232980b9' stroke-width='3'/></svg>%22,
-            %22sizes%22: %22512x512%22,
-            %22type%22: %22image/svg+xml%22
-        }]
-    }">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#176b52">
+<title>كلمات | الواحة الفكرية</title>
 
-    <style>
-        :root {
-            --primary-color: #2c3e50;
-            --accent-color: #2980b9;
-            --bg-color: #f7f9fa;
-            --card-bg: #ffffff;
-            --text-color: #2c3e50;
-            --text-secondary: #7f8c8d;
-            --border-color: #e2e8f0;
-            --danger-color: #c0392b;
-            --success-color: #27ae60;
-        }
-
-        [data-theme="dark"] {
-            --primary-color: #3498db;
-            --accent-color: #2980b9;
-            --bg-color: #12181b;
-            --card-bg: #1e262c;
-            --text-color: #ecf0f1;
-            --text-secondary: #95a5a6;
-            --border-color: #2c3e50;
-            --danger-color: #e74c3c;
-            --success-color: #2ecc71;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-color); padding-bottom: 70px; }
-
-        #auth-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-color); z-index: 2000;
-            display: flex; align-items: center; justify-content: center; padding: 15px;
-            overflow-y: auto;
-        }
-        .auth-card {
-            background: var(--card-bg); padding: 25px; border-radius: 16px; width: 100%; max-width: 380px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; border: 1px solid var(--border-color);
-            margin: auto;
-        }
-        .auth-card h1 { color: var(--accent-color); margin-bottom: 8px; font-size: 26px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .auth-subtitle { font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5; }
-        .auth-input {
-            width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color);
-            border-radius: 8px; outline: none; font-size: 14px; background: var(--bg-color); color: var(--text-color);
-        }
-        .auth-btn {
-            width: 100%; padding: 12px; background: var(--accent-color); color: white; border: none;
-            border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; margin-bottom: 12px;
-        }
-        .auth-switch { color: var(--accent-color); font-size: 13px; cursor: pointer; margin-top: 10px; display: inline-block; font-weight: 700; padding: 5px; }
-
-        header {
-            position: sticky; top: 0; background: var(--card-bg); padding: 10px 15px;
-            display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.05); z-index: 100;
-            border-bottom: 1px solid var(--border-color); gap: 8px;
-        }
-        .logo { font-size: 22px; font-weight: 900; color: var(--accent-color); cursor: pointer; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-        .logo svg, .logo img { width: 32px; height: 32px; border-radius: 8px; }
-        
-        .search-container { position: relative; flex: 1; max-width: 180px; }
-        .search-box {
-            background: var(--bg-color); border-radius: 20px; padding: 5px 10px;
-            display: flex; align-items: center; gap: 6px; width: 100%; color: var(--text-secondary);
-            border: 1px solid var(--border-color);
-        }
-        .search-box input { border: none; background: transparent; outline: none; width: 100%; font-size: 12px; color: var(--text-color); }
-        
-        #search-results-dropdown {
-            position: absolute; top: 40px; right: 0; width: 220px; background: var(--card-bg);
-            border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            display: none; z-index: 300; max-height: 200px; overflow-y: auto;
-        }
-        .search-result-item { padding: 8px 12px; font-size: 13px; cursor: pointer; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 8px; }
-        .search-result-item:hover { background: var(--bg-color); }
-
-        .header-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-        .action-icon-btn, .user-avatar-img {
-            width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 14px; flex-shrink: 0; cursor: pointer; object-fit: cover; position: relative;
-        }
-        .action-icon-btn { background: var(--bg-color); color: var(--text-secondary); border: 1px solid var(--border-color); }
-        .user-avatar-img { background-color: var(--accent-color); color: #fff; }
-
-        .container { max-width: 500px; margin: 12px auto; padding: 0 10px; }
-        .view-section { display: none; }
-        .view-section.active { display: block; }
-
-        .card {
-            background: var(--card-bg); border-radius: 12px; padding: 15px;
-            margin-bottom: 14px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02); position: relative;
-            border: 1px solid var(--border-color);
-        }
-
-        .wisdom-card {
-            background: linear-gradient(135deg, #2c3e50, #2980b9);
-            color: white; border-radius: 12px; padding: 18px; margin-bottom: 14px;
-            box-shadow: 0 4px 12px rgba(41, 128, 185, 0.2); position: relative; overflow: hidden;
-        }
-        .wisdom-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-        .wisdom-card h4 { font-size: 14px; opacity: 0.95; font-weight: bold; display: flex; align-items: center; gap: 6px; }
-        .wisdom-card p { font-size: 15px; line-height: 1.6; font-weight: 500; }
-
-        .create-post { display: flex; flex-direction: column; gap: 10px; }
-        .post-input-container { display: flex; align-items: center; gap: 10px; }
-        .post-input { width: 100%; border: none; background: var(--bg-color); color: var(--text-color); padding: 10px 16px; border-radius: 20px; outline: none; font-size: 14px; border: 1px solid var(--border-color); }
-        
-        .post-actions-bar { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 10px; margin-top: 4px; }
-        .btn-publish { background: var(--accent-color); color: white; border: none; padding: 6px 20px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; }
-
-        #media-preview-container { position: relative; display: none; margin-top: 4px; }
-        #media-preview-container img, #media-preview-container video { width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; }
-        .remove-media-btn { position: absolute; top: 5px; left: 5px; background: rgba(0,0,0,0.7); color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; }
-
-        .post-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-        .post-user-info { display: flex; align-items: center; gap: 8px; cursor: pointer; }
-        .post-author-name { font-weight: bold; font-size: 14px; }
-        .post-meta-info { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-secondary); }
-        .post-category-tag { background: rgba(41, 128, 185, 0.1); color: var(--accent-color); padding: 2px 8px; border-radius: 4px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
-        
-        .post-body { font-size: 14px; line-height: 1.6; margin-bottom: 12px; word-break: break-word; }
-        .post-media { width: 100%; max-height: 320px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; }
-        .post-footer-actions { display: flex; justify-content: space-around; border-top: 1px solid var(--border-color); padding-top: 8px; color: var(--text-secondary); font-size: 13px; font-weight: 600; }
-        .interaction-btn { display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 6px 12px; border-radius: 4px; }
-        .interaction-btn:hover { background: var(--bg-color); }
-        .interaction-btn.active-reaction { color: var(--accent-color); font-weight: bold; }
-
-        .reactions-popup {
-            position: absolute; bottom: 40px; background: var(--card-bg); border: 1px solid var(--border-color);
-            border-radius: 20px; padding: 5px 10px; display: none; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 20;
-        }
-        .reaction-option { cursor: pointer; font-size: 18px; transition: transform 0.2s; }
-        .reaction-option:hover { transform: scale(1.3); }
-
-        .post-menu {
-            position: absolute; left: 15px; top: 40px; background: var(--card-bg); border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: none; z-index: 10; width: 150px; border: 1px solid var(--border-color);
-        }
-        .post-menu div { padding: 10px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border-color); color: var(--text-color); }
-        .post-menu div:hover { background: var(--bg-color); }
-
-        .comments-section { margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 10px; display: none; }
-        .comment-item { display: flex; gap: 8px; margin-bottom: 8px; font-size: 13px; align-items: flex-start; }
-        .comment-bubble { background: var(--bg-color); padding: 8px 12px; border-radius: 12px; flex: 1; border: 1px solid var(--border-color); }
-        .comment-input-box { display: flex; gap: 8px; margin-top: 8px; }
-        .comment-input { flex: 1; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 16px; outline: none; font-size: 13px; background: var(--bg-color); color: var(--text-color); }
-
-        #edit-profile-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); z-index: 1500; display: none; align-items: center; justify-content: center; padding: 20px;
-        }
-        .modal-card { background: var(--card-bg); width: 100%; max-width: 400px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); border: 1px solid var(--border-color); max-height: 90vh; overflow-y: auto; }
-        .modal-card h3 { margin-bottom: 15px; color: var(--accent-color); }
-        .modal-input { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; outline: none; background: var(--bg-color); color: var(--text-color); }
-        .modal-btns { display: flex; justify-content: flex-end; gap: 8px; }
-
-        nav.bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg);
-            display: flex; justify-content: space-around; padding: 10px 0; box-shadow: -1px 3px rgba(0,0,0,0.05); z-index: 100;
-            border-top: 1px solid var(--border-color);
-        }
-        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; width: 20%; }
-        .nav-item.active { color: var(--accent-color); }
-        .nav-item:not(.active) { color: var(--text-secondary); }
-        .nav-icon { font-size: 24px; }
-        
-        .menu-list { list-style: none; padding: 0; }
-        .menu-item { display: flex; align-items: center; gap: 15px; padding: 12px; border-bottom: 1px solid var(--border-color); cursor: pointer; font-weight: 600; color: var(--text-color); }
-    </style>
+<style>
+:root{
+  --primary:#176b52;
+  --primary2:#218765;
+  --bg:#f3f6f5;
+  --surface:#fff;
+  --text:#202b27;
+  --muted:#75817b;
+  --border:#e2e9e5;
+  --danger:#c0392b;
+  --shadow:0 4px 18px #183d2b0c;
+}
+body.dark{
+  --bg:#101916;
+  --surface:#1b2621;
+  --text:#e9f2ed;
+  --muted:#a0b0a7;
+  --border:#33433a;
+  --shadow:0 4px 18px #0003;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:Tahoma,Arial,sans-serif;font-size:14px;
+  transition:background .2s,color .2s
+}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+.hidden{display:none!important}
+.muted{color:var(--muted)}
+.small{font-size:12px}
+.btn{
+  border:0;border-radius:10px;padding:10px 15px;
+  background:var(--primary);color:white;font-weight:bold
+}
+.btn.secondary{background:var(--bg);color:var(--text);border:1px solid var(--border)}
+.btn.danger{background:var(--danger)}
+.btn.block{width:100%}
+input,textarea{
+  width:100%;padding:12px;border:1px solid var(--border);
+  border-radius:10px;background:var(--surface);color:var(--text);
+  outline:none
+}
+input:focus,textarea:focus{border-color:var(--primary)}
+textarea{resize:vertical;min-height:90px}
+label{display:block;margin:12px 0 6px;font-weight:bold}
+.avatar{
+  width:44px;height:44px;border-radius:50%;object-fit:cover;
+  background:#dcebe2;flex-shrink:0
+}
+.avatar.big{width:82px;height:82px}
+.row{display:flex;align-items:center;gap:10px}
+.between{justify-content:space-between}
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:15px;padding:15px;margin-bottom:14px;
+  box-shadow:var(--shadow)
+}
+#auth-screen{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:20px;background:linear-gradient(135deg,#e8f4ed,#f7faf8)
+}
+.auth-card{
+  width:100%;max-width:410px;background:var(--surface);
+  padding:28px;border-radius:20px;box-shadow:var(--shadow)
+}
+.brand{text-align:center;color:var(--primary);font-size:30px;font-weight:bold}
+.brand-sub{text-align:center;color:var(--muted);margin:8px 0 22px}
+#app{min-height:100vh}
+header{
+  position:sticky;top:0;z-index:10;background:var(--surface);
+  border-bottom:1px solid var(--border)
+}
+.header-inner{
+  max-width:1100px;margin:auto;padding:10px 16px;
+  display:flex;align-items:center;gap:12px
+}
+.logo{font-size:22px;color:var(--primary);font-weight:bold;white-space:nowrap}
+.search-wrap{position:relative;flex:1}
+.search-results{
+  position:absolute;top:46px;right:0;left:0;background:var(--surface);
+  border:1px solid var(--border);border-radius:12px;z-index:30;
+  max-height:300px;overflow:auto;box-shadow:var(--shadow)
+}
+.search-result{padding:10px;cursor:pointer}
+.search-result:hover{background:var(--bg)}
+.icon-btn{
+  border:0;background:var(--bg);color:var(--text);
+  padding:10px;border-radius:10px
+}
+.layout{
+  max-width:1100px;margin:20px auto;padding:0 14px;
+  display:grid;grid-template-columns:220px minmax(0,1fr);
+  gap:18px
+}
+.sidebar{align-self:start;position:sticky;top:82px}
+.side-btn{
+  width:100%;display:flex;gap:10px;align-items:center;
+  border:0;border-radius:10px;padding:13px;background:transparent;
+  color:var(--text);text-align:right;margin-bottom:4px
+}
+.side-btn:hover,.side-btn.active{background:#e5f2eb;color:var(--primary)}
+body.dark .side-btn:hover,body.dark .side-btn.active{background:#243c30}
+main{min-width:0}
+.post-form .row{align-items:flex-start}
+.post-form textarea{min-height:80px}
+.post-body{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.8;margin:14px 0}
+.post-image{display:block;max-width:100%;max-height:480px;object-fit:contain;border-radius:12px;margin-top:12px}
+.post-actions{
+  display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid var(--border);
+  padding-top:10px;margin-top:12px
+}
+.action{
+  flex:1;border:0;border-radius:8px;padding:9px 5px;
+  background:var(--bg);color:var(--text)
+}
+.action.liked{color:var(--primary);font-weight:bold}
+.comment{padding:9px 0;border-bottom:1px solid var(--border)}
+.comment:last-child{border:0}
+.comment-form{display:flex;gap:8px;margin-top:10px}
+.comment-form input{min-width:0}
+.user-line{display:flex;gap:10px;align-items:center}
+.user-line .user-info{flex:1;min-width:0}
+.user-line strong{display:block;overflow-wrap:anywhere}
+.page-title{font-size:20px;margin:0 0 15px}
+.empty{text-align:center;padding:35px 12px;color:var(--muted)}
+.profile-head{text-align:center;padding:25px}
+.profile-head .avatar{margin:0 auto 10px}
+.badge{background:#e5f2eb;color:var(--primary);padding:4px 8px;border-radius:20px;font-size:11px}
+body.dark .badge{background:#243c30}
+.notice{padding:12px;border-bottom:1px solid var(--border);line-height:1.7}
+.notice:last-child{border:0}
+.chat-layout{display:grid;grid-template-columns:190px minmax(0,1fr);gap:12px}
+.chat-list{max-height:500px;overflow:auto}
+.chat-person{padding:10px;border-radius:10px;cursor:pointer}
+.chat-person:hover,.chat-person.selected{background:var(--bg)}
+.chat-box{display:flex;flex-direction:column;min-height:390px}
+.chat-messages{flex:1;max-height:400px;overflow:auto;padding:10px 0}
+.bubble{max-width:85%;padding:10px 12px;border-radius:13px;margin:7px 0;overflow-wrap:anywhere;white-space:pre-wrap}
+.bubble.mine{margin-right:auto;background:var(--primary);color:white}
+.bubble.theirs{margin-left:auto;background:var(--bg)}
+.bottom-nav{display:none}
+#toast{
+  position:fixed;bottom:25px;left:50%;transform:translateX(-50%);
+  background:#202b27;color:white;padding:12px 18px;border-radius:12px;
+  z-index:100;max-width:90%;text-align:center;box-shadow:var(--shadow)
+}
+.modal-backdrop{
+  position:fixed;inset:0;background:#0008;z-index:50;
+  display:flex;align-items:center;justify-content:center;padding:15px
+}
+.modal{
+  width:100%;max-width:470px;max-height:90vh;overflow:auto;
+  background:var(--surface);border-radius:16px;padding:20px
+}
+.modal h2{margin-top:0}
+hr{border:0;border-top:1px solid var(--border);margin:14px 0}
+@media(max-width:700px){
+  .layout{display:block;margin:12px auto;padding:0 10px}
+  .sidebar{display:none}
+  .header-inner{gap:7px;padding:9px}
+  .logo{font-size:19px}
+  .header-avatar{display:none}
+  .bottom-nav{
+    display:flex;position:fixed;bottom:0;left:0;right:0;z-index:20;
+    justify-content:space-around;background:var(--surface);
+    border-top:1px solid var(--border);padding:7px 2px env(safe-area-inset-bottom)
+  }
+  .bottom-nav button{
+    border:0;background:transparent;color:var(--muted);
+    padding:7px 9px;font-size:11px
+  }
+  .bottom-nav button.active{color:var(--primary);font-weight:bold}
+  main{padding-bottom:75px}
+  .chat-layout{grid-template-columns:1fr}
+  .chat-list{max-height:150px}
+  .chat-box{min-height:320px}
+}
+</style>
 </head>
-<body data-theme="light">
+<body>
 
-    <!-- شاشة تسجيل الدخول / إنشاء حساب -->
-    <div id="auth-screen">
-        <div class="auth-card">
-            <h1>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" style="width:36px; height:36px; border-radius:8px; vertical-align:middle;">
-                    <rect width="100" height="100" rx="20" fill="#2980b9"/>
-                    <path d="M30 75 C30 75 25 40 50 25 C75 40 70 75 70 75 Z" fill="#ffffff"/>
-                    <path d="M50 25 L50 75" stroke="#2980b9" stroke-width="3"/>
-                </svg> كلمات
-            </h1>
-            <div class="auth-subtitle">«دائماً هناك كلمات لا يجيد كتابتها القلم تغوص في قعر النفس ولا تطفو»</div>
-            
-            <input type="text" id="auth-name" class="auth-input" placeholder="الاسم الكامل (مطلوب عند التسجيل الجديد)" style="display:none;">
-            <input type="email" id="auth-email" class="auth-input" placeholder="البريد الإلكتروني الحقيقي (مثال: user@gmail.com)">
-            <input type="password" id="auth-password" class="auth-input" placeholder="كلمة المرور">
-            
-            <button class="auth-btn" id="auth-submit-btn">تسجيل الدخول</button>
-            <div class="auth-switch" id="auth-switch-text">ليس لديك حساب؟ انضم إلى الواحة الفكرية</div>
-        </div>
+<section id="auth-screen">
+  <div class="auth-card">
+    <div class="brand">كلمات</div>
+    <div class="brand-sub">الواحة الفكرية العالمية</div>
+    <h2 id="auth-title">مرحبًا بعودتك</h2>
+    <form id="auth-form">
+      <div id="name-field" class="hidden">
+        <label for="auth-name">الاسم الكامل</label>
+        <input id="auth-name" maxlength="60" autocomplete="name" placeholder="اسمك">
+      </div>
+      <label for="auth-email">البريد الإلكتروني</label>
+      <input id="auth-email" type="email" required autocomplete="email" placeholder="name@example.com">
+      <label for="auth-password">كلمة المرور</label>
+      <input id="auth-password" type="password" required minlength="6" autocomplete="current-password" placeholder="ستة أحرف على الأقل">
+      <button id="auth-submit-btn" class="btn block" style="margin-top:18px">تسجيل الدخول</button>
+    </form>
+    <p id="auth-switch-text" style="text-align:center;margin-bottom:0">
+      ليس لديك حساب؟ <a href="#" id="auth-switch">أنشئ حسابًا</a>
+    </p>
+    <p class="small muted">يتطلب التطبيق اتصالًا بالإنترنت وإعداد Firebase.</p>
+  </div>
+</section>
+
+<div id="app" class="hidden">
+  <header>
+    <div class="header-inner">
+      <button class="icon-btn logo" id="logo-main-btn" title="الرئيسية">كلمات</button>
+      <div class="search-wrap">
+        <input id="global-search-input" placeholder="ابحث عن الباحثين..." autocomplete="off">
+        <div id="search-results-dropdown" class="search-results hidden"></div>
+      </div>
+      <button class="icon-btn" id="theme-toggle-btn" title="تغيير المظهر"><span id="theme-icon">🌙</span></button>
+      <img id="header-user-avatar" class="avatar header-avatar" alt="الصورة الشخصية">
     </div>
+  </header>
 
-    <!-- نافذة إعدادات الملف الشخصي -->
-    <div id="edit-profile-modal">
-        <div class="modal-card">
-            <h3>إعدادات الهوية والمعلومات</h3>
-            
-            <div style="text-align: center; margin-bottom: 12px;">
-                <img src="" id="modal-preview-avatar" class="user-avatar-img" style="width: 70px; height: 70px; margin: 0 auto 8px auto; font-size: 24px;" alt="صورة البروفايل">
-                <input type="file" id="modal-avatar-file" accept="image/*" style="display: none;">
-                <button type="button" class="action-icon-btn" id="modal-pick-avatar-btn" style="width: auto; padding: 6px 14px; border-radius: 6px; font-size: 12px; margin: 0 auto; background: var(--accent-color); color: white; border: none;">
-                    <i class="fa-solid fa-camera"></i> اختيار وضغط صورة البروفايل
-                </button>
-            </div>
-
-            <label style="font-size: 12px; color: var(--text-secondary);">الاسم الكامل</label>
-            <input type="text" id="modal-edit-name" class="modal-input">
-            <label style="font-size: 12px; color: var(--text-secondary);">البريد الإلكتروني</label>
-            <input type="email" id="modal-edit-email" class="modal-input" disabled style="opacity: 0.7;">
-            <label style="font-size: 12px; color: var(--text-secondary);">النبذة المعرفية (البايو)</label>
-            <input type="text" id="modal-edit-bio" class="modal-input" placeholder="اكتب نبذة عن اهتماماتك الفكرية...">
-            <div class="modal-btns">
-                <button class="action-icon-btn" style="width:auto; padding: 0 15px; border-radius: 6px;" id="modal-cancel-btn">إلغاء</button>
-                <button class="btn-publish" id="modal-save-btn">حفظ التغييرات</button>
-            </div>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="card">
+        <div class="user-line">
+          <img id="menu-user-avatar" class="avatar" alt="">
+          <div class="user-info">
+            <strong id="menu-profile-name">حسابي</strong>
+            <span id="menu-profile-email" class="small muted"></span>
+          </div>
         </div>
-    </div>
+      </div>
+      <button class="side-btn active" data-page="home">🏠 الرئيسية</button>
+      <button class="side-btn" data-page="chat">💬 المراسلات</button>
+      <button class="side-btn" data-page="friends">👥 الأصدقاء</button>
+      <button class="side-btn" data-page="notifications">🔔 الإشعارات</button>
+      <button class="side-btn" data-page="profile">👤 ملفي الشخصي</button>
+      <button class="side-btn" id="settings-open-btn">⚙️ إعدادات الحساب</button>
+      <button class="side-btn" id="logout-btn">↪ تسجيل الخروج</button>
+    </aside>
 
-    <header>
-        <div class="logo" id="logo-main-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" style="width:32px; height:32px; border-radius:8px;">
-                <rect width="100" height="100" rx="20" fill="#2980b9"/>
-                <path d="M30 75 C30 75 25 40 50 25 C75 40 70 75 70 75 Z" fill="#ffffff"/>
-                <path d="M50 25 L50 75" stroke="#2980b9" stroke-width="3"/>
-            </svg> كلمات
-        </div>
-        <div class="search-container">
-            <div class="search-box">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="global-search-input" placeholder="بحث عن باحث...">
+    <main>
+      <section id="page-home" class="page">
+        <h2 class="page-title">الواحة الفكرية</h2>
+        <div class="card post-form">
+          <div class="row">
+            <img id="post-user-avatar" class="avatar" alt="">
+            <textarea id="new-post-text" maxlength="5000" placeholder="بماذا تفكر يا صديقي؟"></textarea>
+          </div>
+          <div id="media-preview-container" class="hidden">
+            <img id="media-preview-content" class="post-image" alt="معاينة الصورة">
+            <button id="remove-media-btn" class="btn secondary" style="margin-top:8px">إزالة الصورة</button>
+          </div>
+          <div class="row between" style="margin-top:12px">
+            <div>
+              <input id="post-media-file" type="file" accept="image/*" class="hidden">
+              <button id="attach-media-trigger" class="btn secondary">🖼️ إرفاق صورة</button>
             </div>
-            <div id="search-results-dropdown"></div>
+            <button id="publish-post-btn" class="btn">نشر المنشور</button>
+          </div>
+          <p class="small muted">تُضغط الصورة قبل حفظها. الحد الأقصى بعد الضغط 250 كيلوبايت.</p>
         </div>
-        <div class="header-actions">
-            <div class="action-icon-btn" id="install-app-btn" title="تثبيت التطبيق على الجوال" style="background: var(--success-color); color: white;"><i class="fa-solid fa-download"></i></div>
-            <div class="action-icon-btn" id="theme-toggle-btn" title="المظهر"><i class="fa-solid fa-moon" id="theme-icon"></i></div>
-            <div class="action-icon-btn" id="settings-open-btn" title="الإعدادات"><i class="fa-solid fa-gear"></i></div>
-            <img src="" id="header-user-avatar" class="user-avatar-img" alt="بروفايل">
+        <div id="posts-feed"><div class="empty">جارٍ تحميل المنشورات...</div></div>
+      </section>
+
+      <section id="page-chat" class="page hidden">
+        <h2 class="page-title">المراسلات</h2>
+        <div class="card chat-layout">
+          <div>
+            <h3>المحادثات</h3>
+            <div id="chat-rooms-list" class="chat-list"><div class="empty">اختر صديقًا لبدء محادثة.</div></div>
+          </div>
+          <div class="chat-box">
+            <div id="chat-heading" class="row"><strong>اختر محادثة</strong></div>
+            <hr>
+            <div id="chat-messages" class="chat-messages"><div class="empty">لا توجد محادثة مفتوحة.</div></div>
+            <form id="chat-form" class="comment-form">
+              <input id="chat-input" maxlength="2000" placeholder="اكتب رسالتك..." autocomplete="off" disabled>
+              <button class="btn" id="chat-send-btn" disabled>إرسال</button>
+            </form>
+          </div>
         </div>
-    </header>
+      </section>
 
-    <div class="container">
-        <!-- 1. الخلاصة الفكرية -->
-        <div id="tab-home" class="view-section active">
-            <div class="wisdom-card">
-                <div class="wisdom-card-header">
-                    <h4>
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" style="width:20px; height:20px; border-radius:4px; vertical-align:middle;">
-                            <rect width="100" height="100" rx="20" fill="#ffffff"/>
-                            <path d="M30 75 C30 75 25 40 50 25 C75 40 70 75 70 75 Z" fill="#2980b9"/>
-                        </svg> ومضة معرفية اليوم
-                    </h4>
-                </div>
-                <p>«دائماً هناك كلمات لا يجيد كتابتها القلم تغوص في قعر النفس ولا تطفو»</p>
-            </div>
+      <section id="page-friends" class="page hidden">
+        <h2 class="page-title">طلبات الصداقة</h2>
+        <div id="friend-requests-list" class="card"><div class="empty">جارٍ التحميل...</div></div>
+        <h2 class="page-title">الأصدقاء</h2>
+        <div id="friends-list" class="card"><div class="empty">جارٍ التحميل...</div></div>
+      </section>
 
-            <div class="card create-post">
-                <div class="post-input-container">
-                    <img src="" id="post-user-avatar" class="user-avatar-img" alt="صورة">
-                    <div style="flex: 1;"><input type="text" id="new-post-text" class="post-input" placeholder="شارك فكرة..."></div>
-                </div>
+      <section id="page-notifications" class="page hidden">
+        <h2 class="page-title">الإشعارات</h2>
+        <div id="notifications-list" class="card"><div class="empty">لا توجد إشعارات.</div></div>
+      </section>
 
-                <div id="media-preview-container">
-                    <button class="remove-media-btn" id="remove-media-btn"><i class="fa-solid fa-xmark"></i></button>
-                    <div id="media-preview-content"></div>
-                </div>
-
-                <input type="file" id="post-media-file" accept="image/*,video/*" style="display: none;">
-
-                <div class="post-actions-bar">
-                    <div class="post-option" id="attach-media-trigger" style="cursor: pointer; font-size: 13px; color: var(--text-secondary);"><i class="fa-solid fa-image" style="color: var(--success-color); font-size: 16px;"></i> <span>إرفاق وضغط صورة</span></div>
-                    <button class="btn-publish" id="publish-post-btn">نشر الفكرة</button>
-                </div>
-            </div>
-
-            <div id="posts-feed">
-                <div class="card" style="text-align: center; color: var(--text-secondary); padding: 25px;"><i class="fa-solid fa-spinner fa-spin"></i> جاري استدعاء الأفكار المضيئة...</div>
-            </div>
+      <section id="page-profile" class="page hidden">
+        <div class="card profile-head">
+          <img id="profile-view-avatar" class="avatar big" alt="">
+          <h2 id="profile-view-name">ملفي الشخصي</h2>
+          <div id="profile-view-email" class="muted"></div>
+          <p id="profile-view-bio" class="muted"></p>
+          <button id="edit-profile-btn" class="btn">تعديل الملف الشخصي</button>
         </div>
+        <h2 class="page-title">منشوراتي</h2>
+        <div id="user-profile-posts-feed"></div>
+      </section>
+    </main>
+  </div>
 
-        <!-- 2. الصالونات الفكرية والدردشة الحية الثابتة -->
-        <div id="tab-chat" class="view-section">
-            <div class="card">
-                <h3>الصالونات الفكرية والرسائل الحية</h3>
-                <div id="chat-rooms-list" style="margin-top: 10px;">
-                    <div style="text-align: center; color: var(--text-secondary); padding: 15px;">اختر باحثاً من قائمة البحث أو البروفايلات لبدء أو متابعة الدردشة الثابتة.</div>
-                </div>
-            </div>
+  <nav class="bottom-nav">
+    <button data-page="home" class="active">🏠<br>الرئيسية</button>
+    <button data-page="chat">💬<br>المراسلات</button>
+    <button data-page="friends">👥<br>الأصدقاء</button>
+    <button data-page="notifications">🔔<br>الإشعارات</button>
+    <button data-page="profile">👤<br>حسابي</button>
+  </nav>
+</div>
+
+<div id="modal-root"></div>
+<div id="toast" class="hidden" role="status"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import {
+  getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+  onAuthStateChanged, signOut, updateProfile
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import {
+  getFirestore, collection, doc, getDoc, getDocs, setDoc, addDoc,
+  updateDoc, deleteDoc, query, where, orderBy, limit, onSnapshot,
+  serverTimestamp, runTransaction, arrayUnion, arrayRemove
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAPjMSa60LLeM0gse8UEfr21xly0dCk5gM",
+  authDomain: "gogi1982-1982.firebaseapp.com",
+  projectId: "gogi1982-1982",
+  storageBucket: "gogi1982-1982.firebasestorage.app",
+  messagingSenderId: "233752528773",
+  appId: "1:233752528773:web:b77ec97d0c83c7a23966ec",
+  measurementId: "G-P4VE7LJMDD"
+};
+
+const appFirebase = initializeApp(firebaseConfig);
+const auth = getAuth(appFirebase);
+const db = getFirestore(appFirebase);
+
+const $ = id => document.getElementById(id);
+const DEFAULT_AVATAR = "https://www.gravatar.com/avatar/?d=mp&s=160";
+
+let currentUser = null;
+let currentUserData = null;
+let authMode = "login";
+let currentPage = "home";
+let viewedProfile = null;
+let selectedChat = null;
+let selectedChatUser = null;
+let pendingImage = "";
+let postsCache = [];
+let usersCache = [];
+let unsubscribers = [];
+let chatUnsubscribe = null;
+let toastTimer = null;
+
+function toast(message) {
+  $("toast").textContent = message;
+  $("toast").classList.remove("hidden");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => $("toast").classList.add("hidden"), 3500);
+}
+function escapeHTML(value = "") {
+  return String(value).replace(/[&<>"']/g, c => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+  })[c]);
+}
+function avatarOf(user) {
+  return user?.photoURL || user?.avatar || DEFAULT_AVATAR;
+}
+function formatDate(timestamp) {
+  const date = timestamp?.toDate ? timestamp.toDate() : null;
+  return date ? date.toLocaleString("ar", {dateStyle:"short",timeStyle:"short"}) : "الآن";
+}
+function stopListeners() {
+  unsubscribers.forEach(unsub => { try { unsub(); } catch {} });
+  unsubscribers = [];
+  if (chatUnsubscribe) chatUnsubscribe();
+  chatUnsubscribe = null;
+}
+function listen(ref, callback, onError) {
+  const unsub = onSnapshot(ref, callback, error => {
+    console.error(error);
+    onError?.(error);
+  });
+  unsubscribers.push(unsub);
+  return unsub;
+}
+function showPage(page) {
+  currentPage = page;
+  document.querySelectorAll(".page").forEach(el => el.classList.add("hidden"));
+  $("page-" + page)?.classList.remove("hidden");
+  document.querySelectorAll("[data-page]").forEach(el => {
+    el.classList.toggle("active", el.dataset.page === page);
+  });
+  if (page === "profile") openOwnProfile();
+  if (page === "chat") loadChatRooms();
+}
+function setUserAvatar(url) {
+  ["header-user-avatar","menu-user-avatar","post-user-avatar","profile-view-avatar"]
+    .forEach(id => { if ($(id)) $(id).src = url || DEFAULT_AVATAR; });
+}
+function updateUserUI() {
+  const name = currentUserData?.name || currentUser?.displayName || "مستخدم كلمات";
+  $("menu-profile-name").textContent = name;
+  $("menu-profile-email").textContent = currentUser?.email || "";
+  setUserAvatar(avatarOf(currentUserData));
+}
+function openOwnProfile() {
+  viewedProfile = currentUserData;
+  if (!currentUserData || !currentUser) return;
+  $("profile-view-name").textContent = currentUserData.name || "مستخدم كلمات";
+  $("profile-view-email").textContent = currentUser.email || "";
+  $("profile-view-bio").textContent = currentUserData.bio || "لم يضف نبذة شخصية بعد.";
+  $("edit-profile-btn").classList.remove("hidden");
+  renderProfilePosts(currentUser.uid);
+}
+function showAuthError(error) {
+  const messages = {
+    "auth/invalid-email":"البريد الإلكتروني غير صحيح.",
+    "auth/user-not-found":"لا يوجد حساب بهذا البريد.",
+    "auth/wrong-password":"كلمة المرور غير صحيحة.",
+    "auth/invalid-credential":"البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+    "auth/email-already-in-use":"هذا البريد مسجل مسبقًا.",
+    "auth/weak-password":"كلمة المرور يجب أن تتكون من 6 أحرف على الأقل.",
+    "auth/network-request-failed":"تعذر الاتصال بالإنترنت."
+  };
+  toast(messages[error.code] || error.message || "حدث خطأ غير متوقع.");
+}
+
+$("auth-switch").addEventListener("click", e => {
+  e.preventDefault();
+  authMode = authMode === "login" ? "register" : "login";
+  $("name-field").classList.toggle("hidden", authMode !== "register");
+  $("auth-title").textContent = authMode === "login" ? "مرحبًا بعودتك" : "إنشاء حساب جديد";
+  $("auth-submit-btn").textContent = authMode === "login" ? "تسجيل الدخول" : "إنشاء الحساب";
+  $("auth-switch-text").innerHTML = authMode === "login"
+    ? 'ليس لديك حساب؟ <a href="#" id="auth-switch">أنشئ حسابًا</a>'
+    : 'لديك حساب؟ <a href="#" id="auth-switch">سجّل الدخول</a>';
+  $("auth-switch").addEventListener("click", e2 => {
+    e2.preventDefault();
+    $("auth-switch").click();
+  }, {once:true});
+});
+
+/* تسجيل الدخول وإنشاء الحساب */
+$("auth-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const email = $("auth-email").value.trim();
+  const password = $("auth-password").value;
+  const name = $("auth-name").value.trim();
+  const button = $("auth-submit-btn");
+  button.disabled = true;
+  try {
+    if (authMode === "register") {
+      if (!name) throw new Error("يرجى إدخال الاسم.");
+      const credential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(credential.user, {displayName:name});
+      await setDoc(doc(db,"users",credential.user.uid), {
+        uid:credential.user.uid, name, email, bio:"",
+        photoURL:"", friends:[], createdAt:serverTimestamp()
+      });
+      toast("أهلًا بك في كلمات!");
+    } else {
+      await signInWithEmailAndPassword(auth, email, password);
+    }
+  } catch(error) {
+    if (error.message === "يرجى إدخال الاسم.") toast(error.message);
+    else showAuthError(error);
+  } finally {
+    button.disabled = false;
+  }
+});
+
+onAuthStateChanged(auth, async user => {
+  stopListeners();
+  currentUser = user;
+  if (!user) {
+    currentUserData = null;
+    $("app").classList.add("hidden");
+    $("auth-screen").classList.remove("hidden");
+    return;
+  }
+  try {
+    const userRef = doc(db,"users",user.uid);
+    let snap = await getDoc(userRef);
+    if (!snap.exists()) {
+      const data = {
+        uid:user.uid, name:user.displayName || "مستخدم كلمات",
+        email:user.email || "", bio:"", photoURL:"", friends:[],
+        createdAt:serverTimestamp()
+      };
+      await setDoc(userRef,data);
+      snap = await getDoc(userRef);
+    }
+    currentUserData = snap.data();
+    $("auth-screen").classList.add("hidden");
+    $("app").classList.remove("hidden");
+    updateUserUI();
+    showPage("home");
+    subscribePosts();
+    subscribeNotifications();
+    subscribeFriendRequests();
+  } catch(error) {
+    console.error(error);
+    toast("تعذر تحميل الحساب. تحقق من قواعد Firestore.");
+  }
+});
+
+/* التنقل */
+document.querySelectorAll("[data-page]").forEach(button => {
+  button.addEventListener("click", () => showPage(button.dataset.page));
+});
+$("logo-main-btn").addEventListener("click", () => showPage("home"));
+$("logout-btn").addEventListener("click", async () => {
+  if (confirm("هل تريد تسجيل الخروج؟")) {
+    stopListeners();
+    await signOut(auth);
+  }
+});
+
+/* المنشورات */
+function subscribePosts() {
+  listen(query(collection(db,"posts"),orderBy("createdAt","desc"),limit(50)), snapshot => {
+    postsCache = snapshot.docs.map(d => ({id:d.id,...d.data()}));
+    renderPosts($("posts-feed"),postsCache);
+    if (currentPage === "profile" && viewedProfile?.uid) {
+      renderProfilePosts(viewedProfile.uid);
+    }
+  }, () => toast("تعذر تحميل المنشورات. تحقق من صلاحيات Firestore."));
+}
+function renderPosts(container, posts) {
+  if (!posts.length) {
+    container.innerHTML = '<div class="card empty">لا توجد منشورات بعد. كن أول من يشارك فكرة!</div>';
+    return;
+  }
+  container.innerHTML = posts.map(post => {
+    const liked = (post.likes || []).includes(currentUser?.uid);
+    const own = post.uid === currentUser?.uid;
+    const comments = Array.isArray(post.comments) ? post.comments : [];
+    return `
+    <article class="card" data-post="${escapeHTML(post.id)}">
+      <div class="row between">
+        <div class="user-line">
+          <img class="avatar" src="${escapeHTML(post.photoURL || DEFAULT_AVATAR)}" alt="">
+          <div class="user-info">
+            <strong>${escapeHTML(post.name || "مستخدم كلمات")}</strong>
+            <span class="small muted">${escapeHTML(formatDate(post.createdAt))}</span>
+          </div>
         </div>
+        ${own ? `<button class="icon-btn delete-post" data-id="${escapeHTML(post.id)}" title="حذف المنشور">🗑️</button>` : ""}
+      </div>
+      <div class="post-body">${escapeHTML(post.text || "")}</div>
+      ${post.image ? `<img class="post-image" src="${escapeHTML(post.image)}" alt="صورة المنشور" loading="lazy">` : ""}
+      <div class="post-actions">
+        <button class="action ${liked ? "liked":""} like-post" data-id="${escapeHTML(post.id)}">♥ ${liked ? "أعجبني" : "إعجاب"} (${(post.likes || []).length})</button>
+        <button class="action toggle-comments" data-id="${escapeHTML(post.id)}">💬 التعليقات (${comments.length})</button>
+        <button class="action share-post" data-id="${escapeHTML(post.id)}">↗ مشاركة</button>
+      </div>
+      <div class="comments hidden" id="comments-${escapeHTML(post.id)}">
+        ${comments.slice(-30).map(c => `
+          <div class="comment">
+            <strong>${escapeHTML(c.name || "مستخدم")}</strong>
+            <span>${escapeHTML(c.text || "")}</span>
+          </div>`).join("")}
+        <form class="comment-form" data-id="${escapeHTML(post.id)}">
+          <input name="comment" maxlength="1000" placeholder="اكتب تعليقًا..." required>
+          <button class="btn">إرسال</button>
+        </form>
+      </div>
+    </article>`;
+  }).join("");
+}
+$("publish-post-btn").addEventListener("click", async () => {
+  const text = $("new-post-text").value.trim();
+  if (!text && !pendingImage) return toast("اكتب شيئًا أو أرفق صورة.");
+  if (!currentUser) return;
+  const button = $("publish-post-btn");
+  button.disabled = true;
+  try {
+    await addDoc(collection(db,"posts"), {
+      uid:currentUser.uid,
+      name:currentUserData.name || "مستخدم كلمات",
+      photoURL:avatarOf(currentUserData),
+      text, image:pendingImage || "",
+      likes:[], comments:[],
+      createdAt:serverTimestamp()
+    });
+    $("new-post-text").value = "";
+    pendingImage = "";
+    $("media-preview-container").classList.add("hidden");
+    $("media-preview-content").src = "";
+    toast("تم نشر منشورك.");
+  } catch(error) {
+    console.error(error);
+    toast("تعذر النشر. قد تكون الصورة كبيرة أو لا تسمح قواعد Firestore بالكتابة.");
+  } finally { button.disabled = false; }
+});
 
-        <!-- 3. الرفقاء وطلبات الصداقة -->
-        <div id="tab-friends" class="view-section">
-            <div class="card">
-                <h3>شبكة الرفقاء وطلبات المتابعة الواردة</h3>
-                <div id="friend-requests-list" style="margin-top: 12px;">
-                    <div style="text-align: center; color: var(--text-secondary); padding: 15px;">لا توجد طلبات متابعة معلقة في الوقت الحالي.</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 4. الإشعارات السحابية -->
-        <div id="tab-notifications" class="view-section">
-            <div class="card">
-                <h3>سجل التنبيهات والإشعارات الفكرية</h3>
-                <div id="notifications-list" style="margin-top: 15px;">
-                    <div style="text-align: center; color: var(--text-secondary); padding: 15px;">لا توجد إشعارات جديدة.</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 5. الخزانة -->
-        <div id="tab-menu" class="view-section">
-            <div class="card">
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
-                    <img src="" id="menu-user-avatar" class="user-avatar-img" style="width: 50px; height: 50px; font-size: 20px;" alt="صورة">
-                    <div>
-                        <h3 id="menu-profile-name">باحث عن المعرفة</h3>
-                        <span id="menu-profile-email" style="font-size: 12px; color: var(--text-secondary);">user@kalimat.com</span>
-                    </div>
-                </div>
-                <ul class="menu-list">
-                    <li class="menu-item" id="menu-settings-btn"><i class="fa-solid fa-gear" style="color: var(--accent-color);"></i> إعدادات الهوية والمعلومات</li>
-                    <li class="menu-item" id="menu-install-btn"><i class="fa-solid fa-download" style="color: var(--success-color);"></i> تثبيت التطبيق على الشاشة الرئيسية</li>
-                    <li class="menu-item" id="menu-chat-btn"><i class="fa-brands fa-facebook-messenger" style="color: #2980b9;"></i> الصالونات الفكرية والرسائل</li>
-                    <li class="menu-item" id="menu-welcome-btn"><i class="fa-solid fa-feather-pointed" style="color: var(--success-color);"></i> فلسفة منصة كلمات</li>
-                    <li class="menu-item" id="logout-btn" style="color: var(--danger-color);"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- 6. البروفايل الشخصي -->
-        <div id="tab-profile" class="view-section">
-            <div class="card" style="text-align: center; padding: 25px;">
-                <img src="" id="profile-view-avatar" class="user-avatar-img" style="width: 75px; height: 75px; font-size: 30px; margin: 0 auto 10px auto;" alt="صورة">
-                <h2 id="profile-view-name">اسم الباحث</h2>
-                <p id="profile-view-email" style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;"></p>
-                <p id="profile-view-bio" style="color: var(--text-secondary); font-size: 13px; margin-top: 8px; margin-bottom: 15px;">باحث عن المعرفة في واحة كلمات الفكرية</p>
-                
-                <div id="profile-action-container" style="display: none; margin-bottom: 15px; justify-content: center; gap: 8px;">
-                    <button class="btn-publish" id="follow-user-btn" style="padding: 6px 16px; font-size: 13px;">+ إرسال طلب متابعة وصداقة</button>
-                    <button class="action-icon-btn" id="message-user-btn" style="width: auto; padding: 6px 14px; border-radius: 6px; background: var(--accent-color); color: white; border: none; font-size: 13px;" title="مراسلة"><i class="fa-brands fa-facebook-messenger"></i> مراسلة</button>
-                </div>
-            </div>
-
-            <h4 style="margin-bottom: 10px; font-size: 15px; color: var(--accent-color);">منشورات الباحث</h4>
-            <div id="user-profile-posts-feed"></div>
-        </div>
-    </div>
-
-    <!-- شريط التنقل السفلي -->
-    <nav class="bottom-nav">
-        <div class="nav-item active" id="nav-home" title="الخلاصة"><i class="fa-solid fa-book-open nav-icon"></i></div>
-        <div class="nav-item" id="nav-chat" title="الصالونات الفكرية"><i class="fa-brands fa-facebook-messenger nav-icon"></i></div>
-        <div class="nav-item" id="nav-friends" title="الرفقاء"><i class="fa-solid fa-users nav-icon"></i></div>
-        <div class="nav-item" id="nav-notifications" title="الإشعارات"><i class="fa-solid fa-bolt nav-icon"></i></div>
-        <div class="nav-item" id="nav-menu" title="الخزانة">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" style="width:24px; height:24px; border-radius:50%; vertical-align:middle;">
-                <rect width="100" height="100" rx="50" fill="#2980b9"/>
-                <path d="M35 70 C35 70 30 40 50 25 C70 40 65 70 65 70 Z" fill="#ffffff"/>
-            </svg>
-        </div>
-    </nav>
-
-    <!-- الجافاسكريبت المدعوم بالمزامنة السحابية -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, getDoc, setDoc, doc, query, orderBy, onSnapshot, deleteDoc, updateDoc, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAPjMSa60LLeM0gse8UEfr21xly0dCk5gM",
-            authDomain: "gogi1982-1982.firebaseapp.com",
-            projectId: "gogi1982-1982",
-            storageBucket: "gogi1982-1982.firebasestorage.app",
-            messagingSenderId: "233752528773",
-            appId: "1:233752528773:web:b77ec97d0c83c7a23966ec",
-            measurementId: "G-P4VE7LJMDD"
+/* ضغط الصور قبل حفظها */
+function compressImage(file) {
+  return new Promise((resolve,reject) => {
+    if (!file.type.startsWith("image/")) return reject(new Error("اختر ملف صورة."));
+    if (file.size > 12 * 1024 * 1024) return reject(new Error("حجم الصورة الأصلية كبير جدًا."));
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("تعذرت قراءة الصورة."));
+    reader.onload = () => {
+      const image = new Image();
+      image.onerror = () => reject(new Error("ملف الصورة غير صالح."));
+      image.onload = () => {
+        const maxSide = 1000;
+        const scale = Math.min(1,maxSide / Math.max(image.width,image.height));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.round(image.width * scale);
+        canvas.height = Math.round(image.height * scale);
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(image,0,0,canvas.width,canvas.height);
+        let quality = .75;
+        const tryCompress = () => {
+          canvas.toBlob(blob => {
+            if (!blob) return reject(new Error("تعذر ضغط الصورة."));
+            if (blob.size <= 250 * 1024) {
+              const r = new FileReader();
+              r.onload = () => resolve(r.result);
+              r.onerror = () => reject(new Error("تعذر تجهيز الصورة."));
+              r.readAsDataURL(blob);
+            } else if (quality > .35) {
+              quality -= .1;
+              tryCompress();
+            } else {
+              resolve(null);
+            }
+          },"image/jpeg",quality);
         };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        let deferredPrompt;
-        const installBtns = [document.getElementById('install-app-btn'), document.getElementById('menu-install-btn')];
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-        });
-
-        async function triggerAppInstall() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt = null;
-            } else {
-                alert("لتثبيت تطبيق «كلمات»:\n1. افتح قائمة المتصفح (النقاط الثلاث).\n2. اختر (إضافة إلى الشاشة الرئيسية).");
-            }
-        }
-
-        installBtns.forEach(btn => { if(btn) btn.addEventListener('click', triggerAppInstall); });
-
-        let isSignUpMode = false;
-        let currentUserData = { name: "باحث عن المعرفة", email: "", uid: "", bio: "باحث عن المعرفة في واحة كلمات الفكرية", avatar: "" };
-        let selectedMediaData = { url: "", type: "" };
-        let newAvatarBase64 = "";
-
-        const defaultFeatherAvatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='50' fill='%232980b9'/><path d='M35 70 C35 70 30 40 50 25 C70 40 65 70 65 70 Z' fill='%23ffffff'/></svg>";
-
-        function compressImage(file, maxWidth = 400, maxHeight = 400, quality = 0.7) {
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = function(event) {
-                    const img = new Image();
-                    img.src = event.target.result;
-                    img.onload = function() {
-                        const canvas = document.createElement('canvas');
-                        let width = img.width;
-                        let height = img.height;
-
-                        if (width > height) {
-                            if (width > maxWidth) { height *= maxWidth / width; width = maxWidth; }
-                        } else {
-                            if (height > maxHeight) { width *= maxHeight / height; height = maxHeight; }
-                        }
-
-                        canvas.width = width;
-                        canvas.height = height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-                        resolve(canvas.toDataURL('image/jpeg', quality));
-                    }
-                };
-            });
-        }
-
-        document.getElementById('theme-toggle-btn').addEventListener('click', () => {
-            const body = document.body;
-            const themeIcon = document.getElementById('theme-icon');
-            if(body.getAttribute('data-theme') === 'light') {
-                body.setAttribute('data-theme', 'dark');
-                themeIcon.className = "fa-solid fa-sun";
-            } else {
-                body.setAttribute('data-theme', 'light');
-                themeIcon.className = "fa-solid fa-moon";
-            }
-        });
-
-        function showWelcomeMessage() {
-            alert("مرحباً بك في واحة كلمات الفكرية الثقافية العالمية!\n\n«دائماً هناك كلمات لا يجيد كتابتها القلم تغوص في قعر النفس ولا تطفو»");
-        }
-
-        document.getElementById('logo-main-btn').addEventListener('click', showWelcomeMessage);
-        document.getElementById('menu-welcome-btn').addEventListener('click', showWelcomeMessage);
-
-        const authSwitchText = document.getElementById('auth-switch-text');
-        const authSubmitBtn = document.getElementById('auth-submit-btn');
-        const authNameInput = document.getElementById('auth-name');
-
-        authSwitchText.addEventListener('click', () => {
-            isSignUpMode = !isSignUpMode;
-            if (isSignUpMode) {
-                authNameInput.style.display = "block";
-                authSubmitBtn.innerText = "إنشاء حساب عالمي والانضمام";
-                authSwitchText.innerText = "لديك حساب بالفعل؟ سجل دخولك";
-            } else {
-                authNameInput.style.display = "none";
-                authSubmitBtn.innerText = "تسجيل الدخول";
-                authSwitchText.innerText = "ليس لديك حساب؟ انضم إلى الواحة الفكرية";
-            }
-        });
-
-        authSubmitBtn.addEventListener('click', async () => {
-            const email = document.getElementById('auth-email').value.trim();
-            const password = document.getElementById('auth-password').value.trim();
-            const name = authNameInput.value.trim();
-
-            if (!email || !password || (isSignUpMode && !name)) {
-                alert("الرجاء تعبئة كافة الحقول المطلوبة بشكل صحيح!");
-                return;
-            }
-
-            try {
-                authSubmitBtn.disabled = true;
-                authSubmitBtn.innerText = "جاري الاتصال بالسحابة...";
-
-                if (isSignUpMode) {
-                    const res = await createUserWithEmailAndPassword(auth, email, password);
-                    await updateProfile(res.user, { displayName: name });
-                    
-                    await setDoc(doc(db, "users", res.user.uid), {
-                        uid: res.user.uid,
-                        name: name,
-                        email: email,
-                        bio: "باحث عن المعرفة في واحة كلمات الفكرية",
-                        avatar: defaultFeatherAvatar
-                    });
-                    alert("تم إنشاء حسابك الحقيقي والانضمام بنجاح!");
-                } else {
-                    await signInWithEmailAndPassword(auth, email, password);
-                    alert("مرحباً بك مجدداً في واحة كلمات!");
-                }
-                document.getElementById('auth-screen').style.display = 'none';
-            } catch (error) {
-                alert("تعذر الاتصال:\n\n" + error.message);
-            } finally {
-                authSubmitBtn.disabled = false;
-                authSubmitBtn.innerText = isSignUpMode ? "إنشاء حساب عالمي والانضمام" : "تسجيل الدخول";
-            }
-        });
-
-        onAuthStateChanged(auth, async (user) => {
-            const authScreen = document.getElementById('auth-screen');
-            if (user) {
-                authScreen.style.display = 'none';
-                currentUserData.uid = user.uid;
-                
-                const userDocRef = doc(db, "users", user.uid);
-                const userDocSnap = await getDoc(userDocRef);
-                
-                if(userDocSnap.exists()) {
-                    const data = userDocSnap.data();
-                    currentUserData.name = data.name || user.displayName || "باحث";
-                    currentUserData.email = data.email || user.email;
-                    currentUserData.bio = data.bio || "باحث عن المعرفة في واحة كلمات الفكرية";
-                    currentUserData.avatar = data.avatar || defaultFeatherAvatar;
-                } else {
-                    currentUserData.name = user.displayName || user.email.split('@')[0];
-                    currentUserData.email = user.email;
-                    currentUserData.avatar = defaultFeatherAvatar;
-                    await setDoc(userDocRef, currentUserData);
-                }
-                updateUIAvatarAndNames();
-                listenToUserNotifications(user.uid);
-            } else {
-                authScreen.style.display = 'flex';
-            }
-        });
-
-        function updateUIAvatarAndNames() {
-            document.querySelectorAll('#header-user-avatar, #post-user-avatar, #menu-user-avatar').forEach(img => img.src = currentUserData.avatar);
-            document.getElementById('menu-profile-name').innerText = currentUserData.name;
-            document.getElementById('menu-profile-email').innerText = currentUserData.email;
-            document.getElementById('new-post-text').placeholder = `شارك فكرة، يا ${currentUserData.name}...`;
-        }
-
-        function listenToUserNotifications(uid) {
-            const qNotif = query(collection(db, "notifications"), where("targetUid", "==", uid));
-            onSnapshot(qNotif, (snapshot) => {
-                const notifList = document.getElementById('notifications-list');
-                const friendReqList = document.getElementById('friend-requests-list');
-                
-                notifList.innerHTML = '';
-                friendReqList.innerHTML = '';
-
-                if (snapshot.empty) {
-                    notifList.innerHTML = `<div style="text-align: center; color: var(--text-secondary); padding: 15px;">لا توجد إشعارات جديدة.</div>`;
-                    friendReqList.innerHTML = `<div style="text-align: center; color: var(--text-secondary); padding: 15px;">لا توجد طلبات متابعة معلقة حالياً.</div>`;
-                    return;
-                }
-
-                snapshot.forEach(docSnap => {
-                    const n = docSnap.data();
-                    const notifDiv = document.createElement('div');
-                    notifDiv.style.cssText = "display: flex; gap: 10px; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 10px;";
-                    notifDiv.innerHTML = `
-                        <img src="${n.senderAvatar || defaultFeatherAvatar}" class="user-avatar-img" style="width: 32px; height: 32px;" alt="صورة">
-                        <div><p style="font-size: 13px;"><b>${n.senderName}:</b> ${n.text}</p><span style="font-size: 11px; color: var(--text-secondary);">${n.time || 'منذ قليل'}</span></div>
-                    `;
-                    notifList.appendChild(notifDiv);
-
-                    if(n.type === 'friend_request') {
-                        const reqDiv = document.createElement('div');
-                        reqDiv.style.cssText = "display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-color);";
-                        reqDiv.innerHTML = `
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <img src="${n.senderAvatar || defaultFeatherAvatar}" class="user-avatar-img" style="width: 40px; height: 40px;">
-                                <div>
-                                    <div style="font-weight: bold; font-size: 14px;">${n.senderName}</div>
-                                    <div style="font-size: 11px; color: var(--text-secondary);">${n.text}</div>
-                                </div>
-                            </div>
-                            <button class="btn-publish" style="padding: 5px 12px; font-size: 12px;" onclick="alert('تم قبول طلب الصداقة بنجاح!')">قبول</button>
-                        `;
-                        friendReqList.appendChild(reqDiv);
-                    }
-                });
-            });
-        }
-
-        const globalSearchInput = document.getElementById('global-search-input');
-        const searchResultsDropdown = document.getElementById('search-results-dropdown');
-
-        globalSearchInput.addEventListener('input', async (e) => {
-            const keyword = e.target.value.trim().toLowerCase();
-            if(!keyword) {
-                searchResultsDropdown.style.display = 'none';
-                return;
-            }
-
-            const usersSnap = await getDocs(collection(db, "users"));
-            searchResultsDropdown.innerHTML = '';
-            let count = 0;
-
-            usersSnap.forEach(docSnap => {
-                const u = docSnap.data();
-                if(u.name && u.name.toLowerCase().includes(keyword)) {
-                    count++;
-                    const div = document.createElement('div');
-                    div.className = 'search-result-item';
-                    div.innerHTML = `<img src="${u.avatar || defaultFeatherAvatar}" class="user-avatar-img" style="width: 26px; height: 26px;"> <span>${u.name}</span>`;
-                    div.addEventListener('click', () => {
-                        searchResultsDropdown.style.display = 'none';
-                        globalSearchInput.value = '';
-                        openUserProfile(u);
-                    });
-                    searchResultsDropdown.appendChild(div);
-                }
-            });
-
-            searchResultsDropdown.style.display = count > 0 ? 'block' : 'none';
-        });
-
-        async function openUserProfile(targetUser) {
-            document.getElementById('profile-view-name').innerText = targetUser.name;
-            document.getElementById('profile-view-email').innerText = targetUser.email || "scholar@kalimat.com";
-            document.getElementById('profile-view-avatar').src = targetUser.avatar || defaultFeatherAvatar;
-            document.getElementById('profile-view-bio').innerText = targetUser.bio || "باحث عن المعرفة في واحة كلمات الفكرية";
-
-            const actionContainer = document.getElementById('profile-action-container');
-            const followBtn = document.getElementById('follow-user-btn');
-            const msgBtn = document.getElementById('message-user-btn');
-
-            if(targetUser.uid === currentUserData.uid) {
-                actionContainer.style.display = 'none';
-            } else {
-                actionContainer.style.display = 'flex';
-                
-                followBtn.onclick = async () => {
-                    followBtn.disabled = true;
-                    followBtn.innerText = "جاري الإرسال...";
-                    try {
-                        await addDoc(collection(db, "notifications"), {
-                            targetUid: targetUser.uid,
-                            senderName: currentUserData.name,
-                            senderAvatar: currentUserData.avatar,
-                            type: "friend_request",
-                            text: `يرغب بالانضمام لشبكتك المعرفية`,
-                            time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
-                            timestamp: serverTimestamp()
-                        });
-                        alert(`تم إرسال طلب المتابعة إلى الباحث: ${targetUser.name} بنجاح!`);
-                        followBtn.innerText = "✓ تم إرسال الطلب";
-                        followBtn.style.background = "var(--success-color)";
-                    } catch(err) {
-                        alert("حدث خطأ أثناء إرسال الطلب.");
-                        followBtn.disabled = false;
-                        followBtn.innerText = "+ إرسال طلب متابعة وصداقة";
-                    }
-                };
-
-                msgBtn.onclick = () => {
-                    openChatWithUser(targetUser);
-                };
-            }
-
-            const userFeed = document.getElementById('user-profile-posts-feed');
-            userFeed.innerHTML = `<div class="card" style="text-align: center;"><i class="fa-solid fa-spinner fa-spin"></i> جاري تحميل منشورات الباحث...</div>`;
-            
-            const qPosts = query(collection(db, "posts"), where("uid", "==", targetUser.uid));
-            const postsSnap = await getDocs(qPosts);
-            userFeed.innerHTML = '';
-
-            if(postsSnap.empty) {
-                userFeed.innerHTML = `<div class="card" style="text-align: center; color: var(--text-secondary);">لا توجد منشورات لهذا الباحث بعد.</div>`;
-            } else {
-                postsSnap.forEach(docSnap => {
-                    const p = docSnap.data();
-                    const postCard = document.createElement('div');
-                    postCard.className = 'card';
-                    postCard.innerHTML = `
-                        <div class="post-header">
-                            <div class="post-user-info">
-                                <img src="${targetUser.avatar || defaultFeatherAvatar}" class="user-avatar-img" style="width: 35px; height: 35px;">
-                                <div>
-                                    <div class="post-author-name">${targetUser.name}</div>
-                                    <div class="post-meta-info"><span>${p.timeStr || 'منذ قليل'}</span> • <span class="post-category-tag"><i class="fa-solid fa-feather" style="font-size:10px;"></i> فكرة</span></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="post-body">${p.text}</div>
-                        ${p.media ? `<img src="${p.media}" class="post-media">` : ''}
-                    `;
-                    userFeed.appendChild(postCard);
-                });
-            }
-
-            switchTab('profile');
-        }
-
-        function openChatWithUser(targetUser) {
-            switchTab('chat');
-            const chatList = document.getElementById('chat-rooms-list');
-            const chatId = currentUserData.uid < targetUser.uid ? `${currentUserData.uid}_${targetUser.uid}` : `${targetUser.uid}_${currentUserData.uid}`;
-
-            chatList.innerHTML = `
-                <div class="card" style="padding: 12px;">
-                    <div style="font-weight: bold; margin-bottom: 8px; color: var(--accent-color); display:flex; align-items:center; gap:8px;">
-                        <img src="${targetUser.avatar || defaultFeatherAvatar}" class="user-avatar-img" style="width:30px; height:30px;">
-                        محادثة حية مع: ${targetUser.name}
-                    </div>
-                    <div id="direct-chat-messages" style="height: 220px; overflow-y: auto; background: var(--bg-color); padding: 10px; border-radius: 6px; margin-bottom: 10px; font-size: 13px; border: 1px solid var(--border-color);">
-                        <div style="color: var(--text-secondary); text-align: center;"><i class="fa-solid fa-spinner fa-spin"></i> جاري تحميل الرسائل...</div>
-                    </div>
-                    <div style="display: flex; gap: 6px;">
-                        <input type="text" id="direct-msg-input" class="modal-input" style="margin:0;" placeholder="اكتب رسالتك الفكرية...">
-                        <button class="btn-publish" id="send-direct-msg-btn">إرسال</button>
-                    </div>
-                </div>
-            `;
-
-            const qMessages = query(collection(db, "chats", chatId, "messages"), orderBy("timestamp", "asc"));
-            onSnapshot(qMessages, (snapshot) => {
-                const msgBox = document.getElementById('direct-chat-messages');
-                if(!msgBox) return;
-                msgBox.innerHTML = '';
-
-                if(snapshot.empty) {
-                    msgBox.innerHTML = `<div style="color: var(--text-secondary); text-align: center; padding: 20px;">لا توجد رسائل سابقة. ابدأ الحوار الفكري الآن!</div>`;
-                    return;
-                }
-
-                snapshot.forEach(docSnap => {
-                    const m = docSnap.data();
-                    const isMe = m.senderUid === currentUserData.uid;
-                    const msgDiv = document.createElement('div');
-                    msgDiv.style.cssText = `margin-bottom: 8px; display: flex; flex-direction: column; align-items: ${isMe ? 'flex-end' : 'flex-start'};`;
-                    msgDiv.innerHTML = `
-                        <div style="max-width: 80%; background: ${isMe ? 'var(--accent-color)' : 'var(--card-bg)'}; color: ${isMe ? '#fff' : 'var(--text-color)'}; padding: 8px 12px; border-radius: 10px; font-size: 13px; border: 1px solid var(--border-color);">
-                            ${m.text}
-                        </div>
-                        <span style="font-size: 10px; color: var(--text-secondary); margin-top: 2px;">${m.timeStr || ''}</span>
-                    `;
-                    msgBox.appendChild(msgDiv);
-                });
-                msgBox.scrollTop = msgBox.scrollHeight;
-            });
-
-            document.getElementById('send-direct-msg-btn').onclick = async () => {
-                const input = document.getElementById('direct-msg-input');
-                const val = input.value.trim();
-                if(!val) return;
-
-                input.value = '';
-                try {
-                    await addDoc(collection(db, "chats", chatId, "messages"), {
-                        senderUid: currentUserData.uid,
-                        senderName: currentUserData.name,
-                        text: val,
-                        timeStr: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
-                        timestamp: serverTimestamp()
-                    });
-                } catch(err) {
-                    alert("تعذر إرسال الرسالة.");
-                }
-            };
-        }
-
-        document.getElementById('modal-pick-avatar-btn').addEventListener('click', () => {
-            document.getElementById('modal-avatar-file').click();
-        });
-
-        document.getElementById('modal-avatar-file').addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if(!file) return;
-            newAvatarBase64 = await compressImage(file, 200, 200, 0.6);
-            document.getElementById('modal-preview-avatar').src = newAvatarBase64;
-        });
-
-        const qPosts = query(collection(db, "posts"), orderBy("timestamp", "desc"));
-        onSnapshot(qPosts, (snapshot) => {
-            const feedContainer = document.getElementById('posts-feed');
-            feedContainer.innerHTML = '';
-            
-            if (snapshot.empty) {
-                feedContainer.innerHTML = `<div class="card" style="text-align: center; color: var(--text-secondary);">لا توجد أفكار منشورة في الواحة بعد. كن أول المساهمين!</div>`;
-                return;
-            }
-
-            snapshot.forEach((docSnap) => {
-                const post = docSnap.data();
-                const postId = docSnap.id;
-                const isMyPost = post.uid === currentUserData.uid;
-                const authorAvatar = post.avatar || defaultFeatherAvatar;
-                const likesCount = post.likes ? Object.keys(post.likes).length : 0;
-                const userHasLiked = post.likes && post.likes[currentUserData.uid];
-
-                const postCard = document.createElement('div');
-                postCard.className = 'card';
-                postCard.innerHTML = `
-                    <div class="post-header">
-                        <div class="post-user-info" data-action="visit-profile" data-uid="${post.uid}" data-name="${post.author || 'باحث'}" data-avatar="${authorAvatar}" data-email="${post.email || 'scholar@kalimat.com'}" data-bio="${post.bio || 'باحث معرفي'}">
-                            <img src="${authorAvatar}" class="user-avatar-img" style="width: 38px; height: 38px;" alt="صورة">
-                            <div>
-                                <div class="post-author-name">${post.author || 'باحث معرفي'}</div>
-                                <div class="post-meta-info">
-                                    <span>${post.timeStr || 'منذ قليل'}</span> • 
-                                    <span class="post-category-tag"><i class="fa-solid fa-feather" style="font-size:10px;"></i> فكرة</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div style="position:relative;">
-                            <i class="fa-solid fa-ellipsis" style="color: var(--text-secondary); cursor: pointer; padding: 5px;" data-action="toggle-menu" data-id="${postId}"></i>
-                            <div class="post-menu" id="menu-${postId}">
-                                <div data-action="share" data-text="${post.text}"><i class="fa-solid fa-share"></i> مشاركة الفكرة</div>
-                                ${isMyPost ? `
-                                    <div data-action="edit" data-id="${postId}" data-text="${post.text}"><i class="fa-solid fa-pen"></i> تعديل</div>
-                                    <div data-action="delete" data-id="${postId}" style="color:var(--danger-color);"><i class="fa-solid fa-trash"></i> حذف</div>
-                                ` : ''}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="post-body">${post.text}</div>
-                    ${post.media ? (post.mediaType === 'video' ? `<video src="${post.media}" controls class="post-media"></video>` : `<img src="${post.media}" class="post-media" alt="صورة">`) : ''}
-                    <div class="post-footer-actions" style="position: relative;">
-                        <div class="interaction-btn ${userHasLiked ? 'active-reaction' : ''}" id="like-btn-${postId}" data-action="toggle-reactions" data-id="${postId}">
-                            <i class="fa-regular fa-thumbs-up"></i> 
-                            <span id="like-text-${postId}">${userHasLiked ? (post.likes[currentUserData.uid] || 'أعجبني') : 'أعجبني'}</span> 
-                            <span style="font-size:11px; background:var(--bg-color); padding:1px 6px; border-radius:10px;" id="likes-count-${postId}">${likesCount > 0 ? likesCount : ''}</span>
-                        </div>
-                        <div class="reactions-popup" id="reactions-${postId}">
-                            <span class="reaction-option" data-action="react" data-id="${postId}" data-text="👍 أعجبني">👍</span>
-                            <span class="reaction-option" data-action="react" data-id="${postId}" data-text="💡 فكرة عميقة">💡</span>
-                            <span class="reaction-option" data-action="react" data-id="${postId}" data-text="❤️ إحساس ملهم">❤️</span>
-                            <span class="reaction-option" data-action="react" data-id="${postId}" data-text="🌟 إثراء معرفي">🌟</span>
-                        </div>
-                        <div class="interaction-btn" data-action="toggle-comments" data-id="${postId}"><i class="fa-regular fa-comment"></i> نقاش</div>
-                        <div class="interaction-btn" data-action="share" data-text="${post.text}"><i class="fa-solid fa-share"></i> مشاركة</div>
-                    </div>
-                    <div class="comments-section" id="comments-${postId}">
-                        <div id="comments-list-${postId}"></div>
-                        <div class="comment-input-box">
-                            <input type="text" class="comment-input" id="comment-input-${postId}" placeholder="أضف مداخلتك الفكرية...">
-                            <button class="btn-publish" data-action="add-comment" data-id="${postId}" style="padding: 4px 12px; font-size: 12px;">إرسال</button>
-                        </div>
-                    </div>
-                `;
-                feedContainer.appendChild(postCard);
-                loadPostComments(postId);
-            });
-        });
-
-        function loadPostComments(postId) {
-            const qComments = query(collection(db, "posts", postId, "comments"), orderBy("timestamp", "asc"));
-            onSnapshot(qComments, (snapshot) => {
-                const list = document.getElementById(`comments-list-${postId}`);
-                if(!list) return;
-                list.innerHTML = '';
-
-                if(snapshot.empty) {
-                    list.innerHTML = `<div style="font-size:12px; color:var(--text-secondary); text-align:center; margin-bottom:6px;">لا توجد تعليقات بعد. كن أول المناقشين!</div>`;
-                    return;
-                }
-
-                snapshot.forEach(docSnap => {
-                    const c = docSnap.data();
-                    const item = document.createElement('div');
-                    item.className = 'comment-item';
-                    item.innerHTML = `
-                        <img src="${c.avatar || defaultFeatherAvatar}" class="user-avatar-img" style="width: 28px; height: 28px;" alt="صورة">
-                        <div class="comment-bubble">
-                            <div style="font-weight: bold; font-size: 12px; color: var(--accent-color);">${c.authorName}</div>
-                            <div style="font-size: 13px;">${c.text}</div>
-                            <span style="font-size: 10px; color: var(--text-secondary);">${c.timeStr || ''}</span>
-                        </div>
-                    `;
-                    list.appendChild(item);
-                });
-            });
-        }
-
-        document.getElementById('posts-feed').addEventListener('click', async (e) => {
-            const target = e.target.closest('[data-action]');
-            if(!target) return;
-            const action = target.getAttribute('data-action');
-            const postId = target.getAttribute('data-id');
-
-            if(action === 'toggle-menu') {
-                const menu = document.getElementById('menu-' + postId);
-                document.querySelectorAll('.post-menu').forEach(m => { if(m !== menu) m.style.display = 'none'; });
-                menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-            } else if(action === 'share') {
-                const postText = target.getAttribute('data-text') || "فكرة من منصة كلمات الثقافية";
-                if (navigator.share) {
-                    try { await navigator.share({ title: 'منصة كلمات', text: postText, url: window.location.href }); } catch (err) {}
-                } else {
-                    navigator.clipboard?.writeText(window.location.href);
-                    alert("تم نسخ رابط الفكرة إلى الحافظة!");
-                }
-            } else if(action === 'delete') {
-                if(confirm("هل أنت متأكد من حذف هذه الفكرة؟")) { await deleteDoc(doc(db, "posts", postId)); }
-            } else if(action === 'edit') {
-                const oldText = target.getAttribute('data-text');
-                const newText = prompt("تعديل محتوى الفكرة:", oldText);
-                if(newText !== null && newText.trim() !== "") { await updateDoc(doc(db, "posts", postId), { text: newText }); }
-            } else if(action === 'toggle-reactions') {
-                const popup = document.getElementById('reactions-' + postId);
-                popup.style.display = popup.style.display === 'flex' ? 'none' : 'flex';
-            } else if(action === 'react') {
-                const reactionText = target.getAttribute('data-text');
-                document.getElementById('reactions-' + postId).style.display = 'none';
-                
-                const postRef = doc(db, "posts", postId);
-                const postSnap = await getDoc(postRef);
-                if(postSnap.exists()) {
-                    let likes = postSnap.data().likes || {};
-                    likes[currentUserData.uid] = reactionText;
-                    await updateDoc(postRef, { likes: likes });
-                }
-            } else if(action === 'toggle-comments') {
-                const sec = document.getElementById('comments-' + postId);
-                sec.style.display = sec.style.display === 'block' ? 'none' : 'block';
-            } else if(action === 'add-comment') {
-                const input = document.getElementById(`comment-input-${postId}`);
-                const val = input.value.trim();
-                if(!val) return;
-                
-                input.value = '';
-                await addDoc(collection(db, "posts", postId, "comments"), {
-                    authorUid: currentUserData.uid,
-                    authorName: currentUserData.name,
-                    avatar: currentUserData.avatar,
-                    text: val,
-                    timeStr: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
-                    timestamp: serverTimestamp()
-                });
-            } else if(action === 'visit-profile') {
-                const uData = {
-                    uid: target.getAttribute('data-uid'),
-                    name: target.getAttribute('data-name'),
-                    avatar: target.getAttribute('data-avatar'),
-                    email: target.getAttribute('data-email'),
-                    bio: target.getAttribute('data-bio')
-                };
-                openUserProfile(uData);
-            }
-        });
-
-        document.getElementById('attach-media-trigger').addEventListener('click', () => {
-            document.getElementById('post-media-file').click();
-        });
-
-        document.getElementById('post-media-file').addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            if (file.type.startsWith('video')) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    selectedMediaData = { url: event.target.result, type: 'video' };
-                    const previewContainer = document.getElementById('media-preview-container');
-                    const previewContent = document.getElementById('media-preview-content');
-                    previewContent.innerHTML = `<video src="${selectedMediaData.url}" controls></video>`;
-                    previewContainer.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            } else {
-                const compressedUrl = await compressImage(file, 600, 600, 0.7);
-                selectedMediaData = { url: compressedUrl, type: 'image' };
-                
-                const previewContainer = document.getElementById('media-preview-container');
-                const previewContent = document.getElementById('media-preview-content');
-                previewContent.innerHTML = `<img src="${selectedMediaData.url}" alt="معيّن">`;
-                previewContainer.style.display = 'block';
-            }
-        });
-
-        document.getElementById('remove-media-btn').addEventListener('click', () => {
-            selectedMediaData = { url: "", type: "" };
-            document.getElementById('media-preview-container').style.display = 'none';
-            document.getElementById('post-media-file').value = "";
-        });
-
-        document.getElementById('settings-open-btn').addEventListener('click', openEditProfileModal);
-        document.getElementById('menu-settings-btn').addEventListener('click', openEditProfileModal);
-
-        function openEditProfileModal() {
-            document.getElementById('modal-edit-name').value = currentUserData.name;
-            document.getElementById('modal-edit-email').value = currentUserData.email;
-            document.getElementById('modal-edit-bio').value = currentUserData.bio;
-            document.getElementById('modal-preview-avatar').src = currentUserData.avatar || defaultFeatherAvatar;
-            newAvatarBase64 = "";
-            document.getElementById('edit-profile-modal').style.display = 'flex';
-        }
-
-        document.getElementById('modal-cancel-btn').addEventListener('click', () => {
-            document.getElementById('edit-profile-modal').style.display = 'none';
-        });
-
-        document.getElementById('modal-save-btn').addEventListener('click', async () => {
-            const newName = document.getElementById('modal-edit-name').value.trim();
-            const newBio = document.getElementById('modal-edit-bio').value.trim();
-
-            if(!newName) { alert('الاسم مطلوب!'); return; }
-
-            try {
-                const saveBtn = document.getElementById('modal-save-btn');
-                saveBtn.disabled = true;
-                saveBtn.innerText = "جاري الحفظ وضغط البيانات...";
-
-                if(auth.currentUser && newName !== currentUserData.name) {
-                    await updateProfile(auth.currentUser, { displayName: newName });
-                }
-
-                currentUserData.name = newName;
-                currentUserData.bio = newBio || currentUserData.bio;
-                if(newAvatarBase64) {
-                    currentUserData.avatar = newAvatarBase64;
-                }
-
-                await setDoc(doc(db, "users", currentUserData.uid), currentUserData, { merge: true });
-                
-                updateUIAvatarAndNames();
-                document.getElementById('edit-profile-modal').style.display = 'none';
-                alert("تم تحديث هويتك بنجاح!");
-            } catch (e) {
-                alert("خطأ أثناء الحفظ: " + e.message);
-            } finally {
-                const saveBtn = document.getElementById('modal-save-btn');
-                saveBtn.disabled = false;
-                saveBtn.innerText = "حفظ التغييرات";
-            }
-        });
-
-        document.getElementById('publish-post-btn').addEventListener('click', async () => {
-            const textInput = document.getElementById('new-post-text');
-            const text = textInput.value.trim();
-
-            if(!text && !selectedMediaData.url) { alert('الرجاء كتابة نص فكري أو إرفاق وسائط أولاً!'); return; }
-
-            try {
-                const publishBtn = document.getElementById('publish-post-btn');
-                publishBtn.disabled = true;
-                publishBtn.innerText = "جاري النشر...";
-
-                await addDoc(collection(db, "posts"), {
-                    text: text,
-                    category: "فكرة",
-                    media: selectedMediaData.url,
-                    mediaType: selectedMediaData.type,
-                    author: currentUserData.name,
-                    avatar: currentUserData.avatar,
-                    email: currentUserData.email,
-                    bio: currentUserData.bio,
-                    uid: currentUserData.uid,
-                    timeStr: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
-                    timestamp: serverTimestamp(),
-                    likes: {}
-                });
-                textInput.value = '';
-                selectedMediaData = { url: "", type: "" };
-                document.getElementById('media-preview-container').style.display = 'none';
-            } catch (error) {
-                alert("حدث خطأ أثناء نشر الفكرة.");
-            } finally {
-                const publishBtn = document.getElementById('publish-post-btn');
-                publishBtn.disabled = false;
-                publishBtn.innerText = "نشر الفكرة";
-            }
-        });
-
-        function switchTab(tabName) {
-            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
-            
-            const targetTab = document.getElementById('tab-' + tabName);
-            if(targetTab) targetTab.classList.add('active');
-            
-            const targetNav = document.getElementById('nav-' + tabName);
-            if(targetNav) targetNav.classList.add('active');
-            
-            window.scrollTo(0, 0);
-        }
-
-        document.getElementById('nav-home').addEventListener('click', () => switchTab('home'));
-        document.getElementById('nav-chat').addEventListener('click', () => switchTab('chat'));
-        document.getElementById('menu-chat-btn').addEventListener('click', () => switchTab('chat'));
-        document.getElementById('nav-friends').addEventListener('click', () => switchTab('friends'));
-        document.getElementById('nav-notifications').addEventListener('click', () => switchTab('notifications'));
-        document.getElementById('nav-menu').addEventListener('click', () => switchTab('menu'));
-
-        document.getElementById('logout-btn').addEventListener('click', async () => {
-            await signOut(auth);
-        });
-    </script>
+        tryCompress();
+      };
+      image.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+$("attach-media-trigger").addEventListener("click", () => $("post-media-file").click());
+$("post-media-file").addEventListener("change", async e => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  try {
+    toast("جارٍ تجهيز الصورة...");
+    const result = await compressImage(file);
+    if (!result) throw new Error("الصورة أكبر من الحد المسموح بعد الضغط. اختر صورة أصغر.");
+    pendingImage = result;
+    $("media-preview-content").src = result;
+    $("media-preview-container").classList.remove("hidden");
+    toast("أصبحت الصورة جاهزة للنشر.");
+  } catch(error) {
+    toast(error.message);
+  } finally {
+    e.target.value = "";
+  }
+});
+$("remove-media-btn").addEventListener("click", () => {
+  pendingImage = "";
+  $("media-preview-content").src = "";
+  $("media-preview-container").classList.add("hidden");
+});
+
+/* أزرار المنشورات والتعليقات */
+$("posts-feed").addEventListener("click", async e => {
+  const likeButton = e.target.closest(".like-post");
+  const deleteButton = e.target.closest(".delete-post");
+  const commentToggle = e.target.closest(".toggle-comments");
+  const shareButton = e.target.closest(".share-post");
+  if (likeButton) {
+    try {
+      const postRef = doc(db,"posts",likeButton.dataset.id);
+      await runTransaction(db,async transaction => {
+        const snap = await transaction.get(postRef);
+        if (!snap.exists()) throw new Error("المنشور غير موجود.");
+        const data = snap.data();
+        const likes = data.likes || [];
+        const next = likes.includes(currentUser.uid)
+          ? likes.filter(id => id !== currentUser.uid)
+          : [...likes,currentUser.uid];
+        transaction.update(postRef,{likes:next});
+      });
+    } catch(error) { toast("تعذر تحديث الإعجاب."); }
+  }
+  if (deleteButton) {
+    if (!confirm("هل تريد حذف هذا المنشور؟")) return;
+    try {
+      await deleteDoc(doc(db,"posts",deleteButton.dataset.id));
+      toast("تم حذف المنشور.");
+    } catch(error) { toast("تعذر حذف المنشور."); }
+  }
+  if (commentToggle) {
+    $("comments-" + commentToggle.dataset.id)?.classList.toggle("hidden");
+  }
+  if (shareButton) {
+    const post = postsCache.find(p => p.id === shareButton.dataset.id);
+    if (!post) return;
+    const text = `${post.name || "مستخدم كلمات"}:\n${post.text || ""}`;
+    try {
+      if (navigator.share) await navigator.share({title:"كلمات",text});
+      else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(text);
+        toast("تم نسخ نص المنشور.");
+      } else toast(text);
+    } catch {}
+  }
+});
+$("posts-feed").addEventListener("submit", async e => {
+  const form = e.target.closest(".comment-form");
+  if (!form) return;
+  e.preventDefault();
+  const input = form.elements.comment;
+  const text = input.value.trim();
+  if (!text) return;
+  try {
+    const postRef = doc(db,"posts",form.dataset.id);
+    await runTransaction(db,async transaction => {
+      const snap = await transaction.get(postRef);
+      if (!snap.exists()) throw new Error("المنشور غير موجود.");
+      const data = snap.data();
+      transaction.update(postRef,{
+        comments:[...(data.comments || []),{
+          uid:currentUser.uid,
+          name:currentUserData.name || "مستخدم",
+          text,createdAt:new Date().toISOString()
+        }]
+      });
+    });
+    input.value = "";
+  } catch(error) {
+    console.error(error);
+    toast("تعذر إضافة التعليق.");
+  }
+});
+
+/* الملف الشخصي */
+function renderProfilePosts(uid) {
+  const posts = postsCache.filter(p => p.uid === uid);
+  renderPosts($("user-profile-posts-feed"),posts);
+}
+$("edit-profile-btn").addEventListener("click", openEditModal);
+$("settings-open-btn").addEventListener("click", openEditModal);
+function openEditModal() {
+  if (!currentUserData) return;
+  $("modal-root").innerHTML = `
+    <div class="modal-backdrop" id="edit-backdrop">
+      <div class="modal">
+        <h2>إعدادات الملف الشخصي</h2>
+        <form id="edit-profile-form">
+          <label>الاسم</label>
+          <input id="edit-name" maxlength="60" required value="${escapeHTML(currentUserData.name || "")}">
+          <label>نبذة عنك</label>
+          <textarea id="edit-bio" maxlength="500">${escapeHTML(currentUserData.bio || "")}</textarea>
+          <label>صورة شخصية</label>
+          <input id="edit-avatar-file" type="file" accept="image/*">
+          <p class="small muted">يمكنك اختيار صورة جديدة. ستُضغط الصورة قبل حفظها.</p>
+          <div class="row" style="margin-top:18px">
+            <button type="button" class="btn secondary" id="cancel-edit">إلغاء</button>
+            <button class="btn" id="save-edit">حفظ التعديلات</button>
+          </div>
+        </form>
+      </div>
+    </div>`;
+  $("cancel-edit").onclick = () => $("modal-root").innerHTML = "";
+  $("edit-profile-form").onsubmit = async e => {
+    e.preventDefault();
+    const button = $("save-edit");
+    button.disabled = true;
+    try {
+      let photoURL = currentUserData.photoURL || "";
+      const file = $("edit-avatar-file").files?.[0];
+      if (file) {
+        const compressed = await compressImage(file);
+        if (!compressed) throw new Error("الصورة كبيرة جدًا بعد الضغط.");
+        photoURL = compressed;
+      }
+      const name = $("edit-name").value.trim();
+      const bio = $("edit-bio").value.trim();
+      await updateDoc(doc(db,"users",currentUser.uid),{name,bio,photoURL});
+      await updateProfile(currentUser,{displayName:name,photoURL:photoURL || null});
+      currentUserData = {...currentUserData,name,bio,photoURL};
+      updateUserUI();
+      openOwnProfile();
+      $("modal-root").innerHTML = "";
+      toast("تم تحديث ملفك الشخصي.");
+    } catch(error) {
+      console.error(error);
+      toast(error.message || "تعذر حفظ التعديلات.");
+    } finally { button.disabled = false; }
+  };
+}
+
+/* البحث عن المستخدمين */
+let searchTimer;
+$("global-search-input").addEventListener("input", () => {
+  clearTimeout(searchTimer);
+  const term = $("global-search-input").value.trim().toLowerCase();
+  const dropdown = $("search-results-dropdown");
+  if (term.length < 2) {
+    dropdown.classList.add("hidden");
+    dropdown.innerHTML = "";
+    return;
+  }
+  searchTimer = setTimeout(async () => {
+    try {
+      const snapshot = await getDocs(query(collection(db,"users"),limit(100)));
+      usersCache = snapshot.docs.map(d => ({uid:d.id,...d.data()}));
+      const results = usersCache.filter(u =>
+        u.uid !== currentUser.uid &&
+        (u.name || "").toLowerCase().includes(term)
+      ).slice(0,12);
+      dropdown.innerHTML = results.length ? results.map(u => `
+        <div class="search-result user-line" data-user="${escapeHTML(u.uid)}">
+          <img class="avatar" src="${escapeHTML(avatarOf(u))}" alt="">
+          <div class="user-info"><strong>${escapeHTML(u.name || "مستخدم")}</strong>
+          <span class="small muted">${escapeHTML(u.bio || "")}</span></div>
+        </div>`).join("") : '<div class="empty">لا توجد نتائج.</div>';
+      dropdown.classList.remove("hidden");
+    } catch(error) {
+      toast("تعذر البحث عن المستخدمين.");
+    }
+  },300);
+});
+$("search-results-dropdown").addEventListener("click", e => {
+  const item = e.target.closest("[data-user]");
+  if (!item) return;
+  $("search-results-dropdown").classList.add("hidden");
+  $("global-search-input").value = "";
+  openUserProfile(item.dataset.user);
+});
+document.addEventListener("click", e => {
+  if (!e.target.closest(".search-wrap")) $("search-results-dropdown").classList.add("hidden");
+});
+
+async function openUserProfile(uid) {
+  try {
+    const snap = await getDoc(doc(db,"users",uid));
+    if (!snap.exists()) return toast("المستخدم غير موجود.");
+    const user = {uid,...snap.data()};
+    viewedProfile = user;
+    $("profile-view-name").textContent = user.name || "مستخدم كلمات";
+    $("profile-view-email").textContent = "";
+    $("profile-view-bio").textContent = user.bio || "لم يضف نبذة شخصية بعد.";
+    $("profile-view-avatar").src = avatarOf(user);
+    $("edit-profile-btn").classList.toggle("hidden",uid !== currentUser.uid);
+    const isFriend = (currentUserData.friends || []).includes(uid);
+    const requestSnap = await getDoc(doc(db,"friendRequests",`${currentUser.uid}_${uid}`));
+    const outgoing = requestSnap.exists();
+    $("profile-action-container")?.remove();
+    const actions = document.createElement("div");
+    actions.id = "profile-action-container";
+    actions.className = "row";
+    actions.style.justifyContent = "center";
+    if (uid !== currentUser.uid) {
+      if (isFriend) {
+        actions.innerHTML = '<button class="btn" id="profile-message-btn">💬 مراسلة</button>';
+        actions.querySelector("#profile-message-btn").onclick = () => startChat(user);
+      } else if (outgoing) {
+        actions.innerHTML = '<button class="btn secondary" disabled>تم إرسال الطلب</button>';
+      } else {
+        actions.innerHTML = '<button class="btn" id="profile-add-friend">➕ إضافة صديق</button>';
+        actions.querySelector("#profile-add-friend").onclick = () => sendFriendRequest(user);
+      }
+    }
+    $("profile-view-bio").after(actions);
+    renderProfilePosts(uid);
+    showPage("profile");
+  } catch(error) {
+    console.error(error);
+    toast("تعذر فتح الملف الشخصي.");
+  }
+}
+
+/* طلبات الصداقة */
+function subscribeFriendRequests() {
+  listen(query(collection(db,"friendRequests"),where("to","==",currentUser.uid)), snapshot => {
+    const requests = snapshot.docs.map(d => ({id:d.id,...d.data()}));
+    $("friend-requests-list").innerHTML = requests.length ? requests.map(r => `
+      <div class="notice row between">
+        <div><strong>${escapeHTML(r.fromName || "مستخدم")}</strong><div class="small muted">يريد إضافتك إلى قائمة أصدقائه</div></div>
+        <div class="row">
+          <button class="btn accept-request" data-id="${escapeHTML(r.id)}" data-from="${escapeHTML(r.from)}">قبول</button>
+          <button class="btn secondary reject-request" data-id="${escapeHTML(r.id)}">رفض</button>
+        </div>
+      </div>`).join("") : '<div class="empty">لا توجد طلبات صداقة جديدة.</div>';
+    loadFriends();
+  }, () => toast("تعذر تحميل طلبات الصداقة."));
+}
+async function sendFriendRequest(user) {
+  try {
+    const id = `${currentUser.uid}_${user.uid}`;
+    await setDoc(doc(db,"friendRequests",id),{
+      from:currentUser.uid,
+      fromName:currentUserData.name || "مستخدم",
+      to:user.uid,
+      createdAt:serverTimestamp()
+    });
+    await addDoc(collection(db,"notifications"),{
+      to:user.uid,from:currentUser.uid,
+      text:`أرسل لك ${currentUserData.name || "مستخدم"} طلب صداقة.`,
+      type:"friendRequest",read:false,createdAt:serverTimestamp()
+    });
+    toast("تم إرسال طلب الصداقة.");
+  } catch(error) {
+    console.error(error);
+    toast("تعذر إرسال طلب الصداقة.");
+  }
+}
+$("friend-requests-list").addEventListener("click", async e => {
+  const accept = e.target.closest(".accept-request");
+  const reject = e.target.closest(".reject-request");
+  if (!accept && !reject) return;
+  const id = (accept || reject).dataset.id;
+  try {
+    if (accept) {
+      const otherUid = accept.dataset.from;
+      await runTransaction(db,async transaction => {
+        const myRef = doc(db,"users",currentUser.uid);
+        const otherRef = doc(db,"users",otherUid);
+        const [mySnap,otherSnap] = await Promise.all([
+          transaction.get(myRef),transaction.get(otherRef)
+        ]);
+        if (!mySnap.exists() || !otherSnap.exists()) throw new Error("الحساب غير موجود.");
+        transaction.update(myRef,{friends:arrayUnion(otherUid)});
+        transaction.update(otherRef,{friends:arrayUnion(currentUser.uid)});
+        transaction.delete(doc(db,"friendRequests",id));
+      });
+      await addDoc(collection(db,"notifications"),{
+        to:otherUid,from:currentUser.uid,
+        text:`قبل ${currentUserData.name || "مستخدم"} طلب صداقتك.`,
+        type:"friendAccepted",read:false,createdAt:serverTimestamp()
+      });
+      toast("أصبحتما صديقين.");
+    } else {
+      await deleteDoc(doc(db,"friendRequests",id));
+      toast("تم رفض الطلب.");
+    }
+  } catch(error) {
+    console.error(error);
+    toast("تعذر تحديث طلب الصداقة.");
+  }
+});
+async function loadFriends() {
+  try {
+    const ids = currentUserData?.friends || [];
+    if (!ids.length) {
+      $("friends-list").innerHTML = '<div class="empty">لم تضف أصدقاء بعد. ابحث عن مستخدمين لإضافتهم.</div>';
+      return;
+    }
+    const snaps = await Promise.all(ids.slice(0,50).map(id => getDoc(doc(db,"users",id))));
+    const friends = snaps.filter(s => s.exists()).map(s => ({uid:s.id,...s.data()}));
+    $("friends-list").innerHTML = friends.map(u => `
+      <div class="notice row between">
+        <div class="user-line">
+          <img class="avatar" src="${escapeHTML(avatarOf(u))}" alt="">
+          <strong>${escapeHTML(u.name || "مستخدم")}</strong>
+        </div>
+        <button class="btn friend-message" data-uid="${escapeHTML(u.uid)}">مراسلة</button>
+      </div>`).join("");
+  } catch(error) {
+    console.error(error);
+    $("friends-list").innerHTML = '<div class="empty">تعذر تحميل الأصدقاء.</div>';
+  }
+}
+$("friends-list").addEventListener("click",async e => {
+  const button = e.target.closest(".friend-message");
+  if (!button) return;
+  const snap = await getDoc(doc(db,"users",button.dataset.uid));
+  if (snap.exists()) startChat({uid:snap.id,...snap.data()});
+});
+
+/* الإشعارات */
+function subscribeNotifications() {
+  listen(query(collection(db,"notifications"),where("to","==",currentUser.uid)), snapshot => {
+    const items = snapshot.docs.map(d => ({id:d.id,...d.data()}));
+    items.sort((a,b) => {
+      const ta = a.createdAt?.toMillis?.() || 0;
+      const tb = b.createdAt?.toMillis?.() || 0;
+      return tb-ta;
+    });
+    $("notifications-list").innerHTML = items.length ? items.slice(0,100).map(n => `
+      <div class="notice">
+        ${n.read ? "" : '<span class="badge">جديد</span> '}
+        ${escapeHTML(n.text || "إشعار جديد")}
+        <div class="small muted">${escapeHTML(formatDate(n.createdAt))}</div>
+      </div>`).join("") : '<div class="empty">لا توجد إشعارات حتى الآن.</div>';
+    items.filter(n => !n.read).forEach(n => {
+      updateDoc(doc(db,"notifications",n.id),{read:true}).catch(()=>{});
+    });
+  }, () => toast("تعذر تحميل الإشعارات."));
+}
+
+/* المحادثات */
+function conversationId(uid1,uid2) {
+  return [uid1,uid2].sort().join("_");
+}
+async function startChat(user) {
+  selectedChatUser = user;
+  selectedChat = conversationId(currentUser.uid,user.uid);
+  showPage("chat");
+  $("chat-heading").innerHTML = `<img class="avatar" src="${escapeHTML(avatarOf(user))}" alt=""><strong>${escapeHTML(user.name || "مستخدم")}</strong>`;
+  $("chat-input").disabled = false;
+  $("chat-send-btn").disabled = false;
+  if (chatUnsubscribe) chatUnsubscribe();
+  const messagesRef = query(
+    collection(db,"chats",selectedChat,"messages"),
+    orderBy("createdAt","asc"),limit(100)
+  );
+  chatUnsubscribe = onSnapshot(messagesRef,snapshot => {
+    const messages = snapshot.docs.map(d => ({id:d.id,...d.data()}));
+    $("chat-messages").innerHTML = messages.length ? messages.map(m => `
+      <div class="bubble ${m.from === currentUser.uid ? "mine":"theirs"}">
+        ${escapeHTML(m.text || "")}
+        <div class="small" style="opacity:.7;margin-top:4px">${escapeHTML(formatDate(m.createdAt))}</div>
+      </div>`).join("") : '<div class="empty">ابدأ المحادثة برسالة لطيفة.</div>';
+    $("chat-messages").scrollTop = $("chat-messages").scrollHeight;
+  },error => {
+    console.error(error);
+    toast("تعذر تحميل الرسائل. تحقق من صلاحيات Firestore.");
+  });
+  loadChatRooms();
+}
+async function loadChatRooms() {
+  if (!currentUser || !currentUserData) return;
+  const ids = currentUserData.friends || [];
+  if (!ids.length) {
+    $("chat-rooms-list").innerHTML = '<div class="empty">أضف أصدقاء أولًا لبدء المراسلة.</div>';
+    return;
+  }
+  try {
+    const snaps = await Promise.all(ids.slice(0,50).map(id => getDoc(doc(db,"users",id))));
+    const friends = snaps.filter(s => s.exists()).map(s => ({uid:s.id,...s.data()}));
+    $("chat-rooms-list").innerHTML = friends.map(u => `
+      <div class="chat-person ${selectedChatUser?.uid === u.uid ? "selected":""}" data-uid="${escapeHTML(u.uid)}">
+        <div class="user-line">
+          <img class="avatar" src="${escapeHTML(avatarOf(u))}" alt="">
+          <div class="user-info"><strong>${escapeHTML(u.name || "مستخدم")}</strong></div>
+        </div>
+      </div>`).join("");
+  } catch(error) {
+    console.error(error);
+  }
+}
+$("chat-rooms-list").addEventListener("click",async e => {
+  const item = e.target.closest("[data-uid]");
+  if (!item) return;
+  const snap = await getDoc(doc(db,"users",item.dataset.uid));
+  if (snap.exists()) startChat({uid:snap.id,...snap.data()});
+});
+$("chat-form").addEventListener("submit",async e => {
+  e.preventDefault();
+  const text = $("chat-input").value.trim();
+  if (!text || !selectedChat || !selectedChatUser) return;
+  const button = $("chat-send-btn");
+  button.disabled = true;
+  try {
+    await addDoc(collection(db,"chats",selectedChat,"messages"),{
+      from:currentUser.uid,to:selectedChatUser.uid,text,
+      createdAt:serverTimestamp()
+    });
+    $("chat-input").value = "";
+  } catch(error) {
+    console.error(error);
+    toast("تعذر إرسال الرسالة.");
+  } finally { button.disabled = false; }
+});
+
+/* الوضع الليلي */
+function setTheme(dark) {
+  document.body.classList.toggle("dark",dark);
+  $("theme-icon").textContent = dark ? "☀️" : "🌙";
+  try { localStorage.setItem("kalimat-theme",dark ? "dark":"light"); } catch {}
+}
+try { setTheme(localStorage.getItem("kalimat-theme") === "dark"); } catch {}
+$("theme-toggle-btn").addEventListener("click",() => {
+  setTheme(!document.body.classList.contains("dark"));
+});
+</script>
 </body>
 </html>
