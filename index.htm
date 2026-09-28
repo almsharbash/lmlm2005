@@ -3,73 +3,345 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة كلمات - واحة الفكر والأدب</title>
-
-    <!-- الأيقونات والشعارات (Favicon & App Icons) -->
+    <title>Kalimat | كلمات - الواحة الفكرية العالمية</title>
+    
     <link rel="icon" type="image/x-icon" href="1000228262.ico">
     <link rel="shortcut icon" type="image/x-icon" href="1000228262.ico">
     <link rel="apple-touch-icon" href="1000228262.ico">
 
-    <!-- روابط التصميم والتنسيق (CSS) والخطوط الأساسية للمنصة -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <meta name="theme-color" content="#2980b9">
+
     <style>
-        /* التنسيقات الأساسية المتوافقة مع هيكل المنصة الحالي */
         :root {
-            --primary-color: #2b78c5;
-            --secondary-color: #f4f6f9;
-            --text-color: #333333;
+            --primary-color: #2c3e50;
+            --accent-color: #2980b9;
+            --bg-color: #f7f9fa;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --text-secondary: #7f8c8d;
+            --border-color: #e2e8f0;
+            --danger-color: #c0392b;
+            --success-color: #27ae60;
         }
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+        [data-theme="dark"] {
+            --primary-color: #3498db;
+            --accent-color: #2980b9;
+            --bg-color: #12181b;
+            --card-bg: #1e262c;
+            --text-color: #ecf0f1;
+            --text-secondary: #95a5a6;
+            --border-color: #2c3e50;
+            --danger-color: #e74c3c;
+            --success-color: #2ecc71;
         }
-        body {
-            background-color: var(--secondary-color);
-            color: var(--text-color);
-            direction: rtl;
-            text-align: right;
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); padding-bottom: 70px; }
+
+        #auth-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color); z-index: 2000;
+            display: flex; align-items: center; justify-content: center; padding: 15px;
+            overflow-y: auto;
         }
-        /* يمكنك إضافة بقية أكواد وتنسيقات المنصة الخاصة بك هنا بكل أمان */
+        .auth-card {
+            background: var(--card-bg); padding: 25px; border-radius: 16px; width: 100%; max-width: 380px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; border: 1px solid var(--border-color);
+            margin: auto;
+        }
+        .auth-card h1 { color: var(--accent-color); margin-bottom: 8px; font-size: 24px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .auth-subtitle { font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5; }
+        .auth-input {
+            width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color);
+            border-radius: 8px; outline: none; font-size: 14px; background: var(--bg-color); color: var(--text-color);
+        }
+        .auth-btn {
+            width: 100%; padding: 12px; background: var(--accent-color); color: white; border: none;
+            border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; margin-bottom: 12px;
+        }
+        .auth-switch { color: var(--accent-color); font-size: 13px; cursor: pointer; margin-top: 10px; display: inline-block; font-weight: 700; padding: 5px; }
+
+        header {
+            position: sticky; top: 0; background: var(--card-bg); padding: 10px 15px;
+            display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 3px rgba(0,0,0,0.05); z-index: 100;
+            border-bottom: 1px solid var(--border-color); gap: 10px;
+        }
+        .logo { font-size: 20px; font-weight: 900; color: var(--accent-color); cursor: pointer; display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+        .logo-icon-img {
+            width: 34px; height: 34px; border-radius: 8px; object-fit: cover;
+        }
+        
+        .search-container { position: relative; flex: 1; max-width: 280px; }
+        .search-box {
+            background: var(--bg-color); border-radius: 20px; padding: 6px 12px;
+            display: flex; align-items: center; gap: 8px; width: 100%; color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+        .search-box input { border: none; background: transparent; outline: none; width: 100%; font-size: 13px; color: var(--text-color); }
+        
+        #search-results-dropdown {
+            position: absolute; top: 45px; right: 0; width: 100%; background: var(--card-bg);
+            border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none; z-index: 300; max-height: 200px; overflow-y: auto;
+        }
+        .search-result-item { padding: 8px 12px; font-size: 13px; cursor: pointer; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 8px; }
+        .search-result-item:hover { background: var(--bg-color); }
+
+        .header-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .action-icon-btn, .user-avatar-img {
+            width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 14px; flex-shrink: 0; cursor: pointer; object-fit: cover; position: relative;
+        }
+        .action-icon-btn { background: var(--bg-color); color: var(--text-secondary); border: 1px solid var(--border-color); }
+        .user-avatar-img { background-color: var(--accent-color); color: #fff; }
+
+        .container { max-width: 500px; margin: 12px auto; padding: 0 10px; }
+        .view-section { display: none; }
+        .view-section.active { display: block; }
+
+        .card {
+            background: var(--card-bg); border-radius: 12px; padding: 15px;
+            margin-bottom: 14px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02); position: relative;
+            border: 1px solid var(--border-color);
+        }
+
+        .wisdom-card {
+            background: linear-gradient(135deg, #2c3e50, #2980b9);
+            color: white; border-radius: 12px; padding: 18px; margin-bottom: 14px;
+            box-shadow: 0 4px 12px rgba(41, 128, 185, 0.2); position: relative; overflow: hidden;
+        }
+        .wisdom-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .wisdom-card h4 { font-size: 14px; opacity: 0.95; font-weight: bold; display: flex; align-items: center; gap: 6px; }
+        .wisdom-card p { font-size: 15px; line-height: 1.6; font-weight: 500; }
+
+        .create-post { display: flex; flex-direction: column; gap: 10px; }
+        .post-input-container { display: flex; align-items: center; gap: 10px; }
+        .post-input { width: 100%; border: none; background: var(--bg-color); color: var(--text-color); padding: 10px 16px; border-radius: 20px; outline: none; font-size: 14px; border: 1px solid var(--border-color); }
+        
+        .post-actions-bar { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 10px; margin-top: 4px; }
+        .btn-publish { background: var(--accent-color); color: white; border: none; padding: 6px 20px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; }
+
+        #media-preview-container { position: relative; display: none; margin-top: 4px; }
+        #media-preview-container img, #media-preview-container video { width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; }
+        .remove-media-btn { position: absolute; top: 5px; left: 5px; background: rgba(0,0,0,0.7); color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; }
+
+        .post-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .post-user-info { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .post-author-name { font-weight: bold; font-size: 14px; }
+        .post-meta-info { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-secondary); }
+        .post-category-tag { background: rgba(41, 128, 185, 0.1); color: var(--accent-color); padding: 2px 8px; border-radius: 4px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
+        
+        .post-body { font-size: 14px; line-height: 1.6; margin-bottom: 12px; word-break: break-word; }
+        .post-media { width: 100%; max-height: 320px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; }
+        .post-footer-actions { display: flex; justify-content: space-around; border-top: 1px solid var(--border-color); padding-top: 8px; color: var(--text-secondary); font-size: 13px; font-weight: 600; }
+        .interaction-btn { display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 6px 12px; border-radius: 4px; }
+        .interaction-btn:hover { background: var(--bg-color); }
+        .interaction-btn.active-reaction { color: var(--accent-color); font-weight: bold; }
+
+        .reactions-popup {
+            position: absolute; bottom: 40px; background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 20px; padding: 5px 10px; display: none; gap: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 20;
+        }
+        .reaction-option { cursor: pointer; font-size: 18px; transition: transform 0.2s; }
+        .reaction-option:hover { transform: scale(1.3); }
+
+        .post-menu {
+            position: absolute; left: 15px; top: 40px; background: var(--card-bg); border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: none; z-index: 10; width: 150px; border: 1px solid var(--border-color);
+        }
+        .post-menu div { padding: 10px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border-color); color: var(--text-color); }
+        .post-menu div:hover { background: var(--bg-color); }
+
+        .comments-section { margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 10px; display: none; }
+        .comment-item { display: flex; gap: 8px; margin-bottom: 8px; font-size: 13px; align-items: flex-start; }
+        .comment-bubble { background: var(--bg-color); padding: 8px 12px; border-radius: 12px; flex: 1; border: 1px solid var(--border-color); }
+        .comment-input-box { display: flex; gap: 8px; margin-top: 8px; }
+        .comment-input { flex: 1; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 16px; outline: none; font-size: 13px; background: var(--bg-color); color: var(--text-color); }
+
+        #edit-profile-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 1500; display: none; align-items: center; justify-content: center; padding: 20px;
+        }
+        .modal-card { background: var(--card-bg); width: 100%; max-width: 400px; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); border: 1px solid var(--border-color); max-height: 90vh; overflow-y: auto; }
+        .modal-card h3 { margin-bottom: 15px; color: var(--accent-color); }
+        .modal-input { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; outline: none; background: var(--bg-color); color: var(--text-color); }
+        .modal-btns { display: flex; justify-content: flex-end; gap: 8px; }
+
+        nav.bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg);
+            display: flex; justify-content: space-around; padding: 10px 0; box-shadow: -1px 3px rgba(0,0,0,0.05); z-index: 100;
+            border-top: 1px solid var(--border-color);
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; width: 20%; }
+        .nav-item.active { color: var(--accent-color); }
+        .nav-item:not(.active) { color: var(--text-secondary); }
+        .nav-icon { font-size: 24px; }
+        
+        .menu-list { list-style: none; padding: 0; }
+        .menu-item { display: flex; align-items: center; gap: 15px; padding: 12px; border-bottom: 1px solid var(--border-color); cursor: pointer; font-weight: 600; color: var(--text-color); }
     </style>
 </head>
-<body>
+<body data-theme="light">
 
-    <!-- الهيكل البرمجي الرئيسي للمنصة والتطبيق -->
-    <div id="app-container">
-        <!-- شريط التنقل العلوي -->
-        <header style="background: #fff; padding: 10px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;">
-            <div class="logo-area" style="display: flex; align-items: center; gap: 10px;">
-                <img src="1000228262.ico" alt="شعار كلمات" style="width: 40px; height: 40px; object-fit: contain; border-radius: 8px;">
-                <h1 style="font-size: 20px; color: var(--primary-color);">كلمات</h1>
-            </div>
-            <!-- عناصر التحكم والبحث -->
-        </header>
-
-        <!-- محتوى المنصة (الومضات، الأفكار، المنشورات) -->
-        <main style="max-width: 800px; margin: 20px auto; padding: 0 15px;">
-            <!-- ومضة معرفية اليوم -->
-            <section style="background: linear-gradient(135deg, #2b78c5, #1b4f8a); color: #fff; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-                <h3 style="margin-bottom: 10px; font-size: 16px;"><i class="fa-solid fa-feather"></i> ومضة معرفية اليوم</h3>
-                <p style="font-size: 15px; line-height: 1.6;">«دائماً هناك كلمات لا يجيد كتابتها القلم تغوص في قعر النفس ولا تطفو»</p>
-            </section>
-
-            <!-- صندوق مشاركة الفكرة -->
-            <div style="background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 20px;">
-                <input type="text" placeholder="شارك فكرة، يا جوجو نون..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; outline: none; margin-bottom: 10px;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <button style="background: #eef2f7; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; color: #555;"><i class="fa-regular fa-image"></i> إرفاق وضغط صورة</button>
-                    <button style="background: var(--primary-color); color: #fff; border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer;">نشر الفكرة</button>
-                </div>
-            </div>
-        </main>
+    <div id="auth-screen">
+        <div class="auth-card">
+            <h1>
+                <img src="1000228262.ico" class="logo-icon-img" alt="شعار"> كلمات
+            </h1>
+            <div class="auth-subtitle">«دائماً هناك كلمات لا يجيد كتابتها القلم تغوص في قعر النفس ولا تطفو»</div>
+            
+            <input type="text" id="auth-name" class="auth-input" placeholder="الاسم الكامل (مطلوب عند التسجيل الجديد)" style="display:none;">
+            <input type="email" id="auth-email" class="auth-input" placeholder="البريد الإلكتروني الحقيقي (مثال: user@gmail.com)">
+            <input type="password" id="auth-password" class="auth-input" placeholder="كلمة المرور">
+            
+            <button class="auth-btn" id="auth-submit-btn">تسجيل الدخول</button>
+            <div class="auth-switch" id="auth-switch-text">ليس لديك حساب؟ انضم إلى الواحة الفكرية</div>
+        </div>
     </div>
 
-    <!-- السكريبتات البرمجية والوظائف الديناميكية للمنصة -->
-    <script>
-        // كود تشغيل المنصة والتطبيق التفاعلي
-        console.log("تم تحميل منصة كلمات بنجاح مع الشعار الجديد والأيقونات.");
-    </script>
-</body>
-</html>
+    <div id="edit-profile-modal">
+        <div class="modal-card">
+            <h3>إعدادات الهوية والمعلومات</h3>
+            
+            <div style="text-align: center; margin-bottom: 12px;">
+                <img src="" id="modal-preview-avatar" class="user-avatar-img" style="width: 70px; height: 70px; margin: 0 auto 8px auto; font-size: 24px;" alt="صورة البروفايل">
+                <input type="file" id="modal-avatar-file" accept="image/*" style="display: none;">
+                <button type="button" class="action-icon-btn" id="modal-pick-avatar-btn" style="width: auto; padding: 6px 14px; border-radius: 6px; font-size: 12px; margin: 0 auto; background: var(--accent-color); color: white; border: none;">
+                    <i class="fa-solid fa-camera"></i> اختيار وضغط صورة البروفايل
+                </button>
+            </div>
+
+            <label style="font-size: 12px; color: var(--text-secondary);">الاسم الكامل</label>
+            <input type="text" id="modal-edit-name" class="modal-input">
+            <label style="font-size: 12px; color: var(--text-secondary);">البريد الإلكتروني</label>
+            <input type="email" id="modal-edit-email" class="modal-input" disabled style="opacity: 0.7;">
+            <label style="font-size: 12px; color: var(--text-secondary);">النبذة المعرفية (البايو)</label>
+            <input type="text" id="modal-edit-bio" class="modal-input" placeholder="اكتب نبذة عن اهتماماتك الفكرية...">
+            <div class="modal-btns">
+                <button class="action-icon-btn" style="width:auto; padding: 0 15px; border-radius: 6px;" id="modal-cancel-btn">إلغاء</button>
+                <button class="btn-publish" id="modal-save-btn">حفظ التغييرات</button>
+            </div>
+        </div>
+    </div>
+
+    <header>
+        <div class="logo" id="logo-main-btn">
+            <img src="1000228262.ico" class="logo-icon-img" alt="شعار"> كلمات
+        </div>
+        <div class="search-container">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="global-search-input" placeholder="بحث عن باحث...">
+            </div>
+            <div id="search-results-dropdown"></div>
+        </div>
+        <div class="header-actions">
+            <div class="action-icon-btn" id="settings-open-btn" title="الإعدادات"><i class="fa-solid fa-gear"></i></div>
+            <img src="" id="header-user-avatar" class="user-avatar-img" alt="بروفايل">
+        </div>
+    </header>
+
+    <div class="container">
+        <div id="tab-home" class="view-section active">
+            <div class="wisdom-card">
+                <div class="wisdom-card-header">
+                    <h4><img src="1000228262.ico" style="width:20px; height:20px; border-radius:4px; object-fit:cover;" alt="رمز"> ومضة معرفية اليوم</h4>
+                </div>
+                <p>«دائماً هناك كلمات لا يجيد كتابتها القلم تغوص في قعر النفس ولا تطفو»</p>
+            </div>
+
+            <div class="card create-post">
+                <div class="post-input-container">
+                    <img src="" id="post-user-avatar" class="user-avatar-img" alt="صورة">
+                    <div style="flex: 1;"><input type="text" id="new-post-text" class="post-input" placeholder="شارك فكرة..."></div>
+                </div>
+
+                <div id="media-preview-container">
+                    <button class="remove-media-btn" id="remove-media-btn"><i class="fa-solid fa-xmark"></i></button>
+                    <div id="media-preview-content"></div>
+                </div>
+
+                <input type="file" id="post-media-file" accept="image/*,video/*" style="display: none;">
+
+                <div class="post-actions-bar">
+                    <div class="post-option" id="attach-media-trigger" style="cursor: pointer; font-size: 13px; color: var(--text-secondary);"><i class="fa-solid fa-image" style="color: var(--success-color); font-size: 16px;"></i> <span>إرفاق وضغط صورة</span></div>
+                    <button class="btn-publish" id="publish-post-btn">نشر الفكرة</button>
+                </div>
+            </div>
+
+            <div id="posts-feed">
+                <div class="card" style="text-align: center; color: var(--text-secondary); padding: 25px;"><i class="fa-solid fa-spinner fa-spin"></i> جاري استدعاء الأفكار المضيئة...</div>
+            </div>
+        </div>
+
+        <div id="tab-chat" class="view-section">
+            <div class="card">
+                <h3>الصناديق الفكرية والرسائل الحية</h3>
+                <div id="chat-rooms-list" style="margin-top: 10px;">
+                    <div style="text-align: center; color: var(--text-secondary); padding: 15px;">اختر باحثاً من قائمة البحث أو البروفايلات لبدء أو متابعة الدردشة الثابتة.</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-friends" class="view-section">
+            <div class="card">
+                <h3>شبكة الرفقاء وطلبات المتابعة الواردة</h3>
+                <div id="friend-requests-list" style="margin-top: 12px;">
+                    <div style="text-align: center; color: var(--text-secondary); padding: 15px;">لا توجد طلبات متابعة معلقة في الوقت الحالي.</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-notifications" class="view-section">
+            <div class="card">
+                <h3>سجل التنبيهات والإشعارات الفكرية</h3>
+                <div id="notifications-list" style="margin-top: 15px;">
+                    <div style="text-align: center; color: var(--text-secondary); padding: 15px;">لا توجد إشعارات جديدة.</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-menu" class="view-section">
+            <div class="card">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                    <img src="" id="menu-user-avatar" class="user-avatar-img" style="width: 50px; height: 50px; font-size: 20px;" alt="صورة">
+                    <div>
+                        <h3 id="menu-profile-name">باحث عن المعرفة</h3>
+                        <span id="menu-profile-email" style="font-size: 12px; color: var(--text-secondary);">user@kalimat.com</span>
+                    </div>
+                </div>
+                <ul class="menu-list">
+                    <li class="menu-item" id="menu-settings-btn"><i class="fa-solid fa-gear" style="color: var(--accent-color);"></i> إعدادات الهوية والمعلومات</li>
+                    <li class="menu-item" id="menu-theme-toggle"><i class="fa-solid fa-moon" id="menu-theme-icon" style="color: var(--accent-color);"></i> تبديل المظهر (فاتح / داكن)</li>
+                    <li class="menu-item" id="menu-install-btn"><i class="fa-solid fa-download" style="color: var(--success-color);"></i> تثبيت التطبيق على الشاشة الرئيسية</li>
+                    <li class="menu-item" id="menu-chat-btn"><i class="fa-brands fa-facebook-messenger" style="color: #2980b9;"></i> الصالونات الفكرية والرسائل</li>
+                    <li class="menu-item" id="menu-welcome-btn"><img src="1000228262.ico" style="width:20px; height:20px; border-radius:4px; object-fit:cover;" alt="رمز"> فلسفة منصة كلمات</li>
+                    <li class="menu-item" id="logout-btn" style="color: var(--danger-color);"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="tab-profile" class="view-section">
+            <div class="card" style="text-align: center; padding: 25px;">
+                <img src="" id="profile-view-avatar" class="user-avatar-img" style="width: 75px; height: 75px; font-size: 30px; margin: 0 auto 10px auto;" alt="صورة">
+                <h2 id="profile-view-name">اسم الباحث</h2>
+                <p id="profile-view-email" style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;"></p>
+                <p id="profile-view-bio" style="color: var(--text-secondary); font-size: 13px; margin-top: 8px; margin-bottom: 15px;">باحث عن المعرفة في واحة كلمات الفكرية</p>
+                
+                <div id="profile-action-container" style="display: none; margin-bottom: 15px; justify-content: center; gap: 8px;">
+                    <button class="btn-publish" id="follow-user-btn" style="padding: 6px 16px; font-size: 13px;">+ إرسال طلب متابعة وصداقة</button>
+                    <button class="action-icon-btn" id="message-user-btn" style="width: auto; padding: 6px 14px; border-radius: 6px; background: var(--accent-color); color: white; border: none; font-size: 13px;" title="مراسلة"><i class="fa-brands fa-facebook-messenger"></i> مراسلة</button>
+                </div>
+            </div>
+
+            <h4 style="margin-bottom: 10px; font-size: 15px; color: var(--accent-color);">منشورات الباحث</h4>
+            <div id="user-profile-posts-feed"></div>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active" id="nav-home" title="الخلاصة"><i class="fa-solid fa-book-open nav-icon"></i></div>
+        <div class="nav-item" id="nav-chat" title="الصالونات الفكرية"><i class="fa-brands
