@@ -36,7 +36,7 @@ body.dark{--p:#38bdf8;--p-bright:#7dd3fc;--p-soft:#123448;--bg:#0b1720;--s:#1426
 <body>
 <section id="auth-screen" class="auth-screen">
 <form id="auth-form" class="card auth-card">
-<div class="brand">كلمات<span>.</span></div><h1 id="auth-title">مرحبًا بك في كلمات</h1><p class="muted" style="text-align:center;margin:0">الواحة الفكرية العالمية</p>
+<div class="brand">كلمات</div><h1 id="auth-title">مرحبًا بك في كلمات</h1><p class="muted" style="text-align:center;margin:0">الواحة الفكرية العالمية</p>
 <label id="name-field" class="hidden">الاسم<input id="auth-name" class="field" maxlength="60" autocomplete="name" placeholder="اسمك"></label>
 <label>البريد الإلكتروني<input id="auth-email" class="field" type="email" required autocomplete="email" placeholder="name@example.com"></label>
 <label>كلمة المرور<input id="auth-password" class="field" type="password" required minlength="6" autocomplete="current-password" placeholder="6 أحرف على الأقل"></label>
@@ -45,7 +45,7 @@ body.dark{--p:#38bdf8;--p-bright:#7dd3fc;--p-soft:#123448;--bg:#0b1720;--s:#1426
 </form></section>
 <div id="app" class="hidden">
 <header class="topbar"><div class="topbar-inner">
-<button id="logo-main-btn" class="brand" style="border:0;background:none" aria-label="الرئيسية">كلمات<span>.</span></button>
+<button id="logo-main-btn" class="brand" style="border:0;background:none" aria-label="الرئيسية">كلمات</button>
 <div class="search-wrap"><input id="global-search-input" class="field" placeholder="ابحث عن الأعضاء..." autocomplete="off"><div id="search-results-dropdown" class="hidden"></div></div>
 <button id="settings-open-btn" class="btn secondary icon-btn" title="الإعدادات" aria-label="الإعدادات"><i class="fa-solid fa-gear"></i></button>
 <button id="header-profile-btn" class="btn secondary icon-btn" title="ملفي الشخصي" aria-label="ملفي الشخصي"><img id="header-user-avatar" class="avatar" alt="صورتي" style="width:28px;height:28px"></button>
@@ -109,7 +109,7 @@ function showPage(p,preserve=false){
  if(p==="profile"&&!preserve)openUserProfile(currentUser.uid);
 }
 document.querySelectorAll("[data-page]").forEach(b=>b.addEventListener("click",()=>showPage(b.dataset.page)));
-$("logo-main-btn").onclick=()=>showPage("home");$("header-profile-btn").onclick=()=>showPage("profile");$("settings-open-btn").onclick=openSettings;$("sidebar-settings-btn").onclick=openSettings;$("right-settings-btn").onclick=openSettings;
+$("logo-main-btn").onclick=()=>{showModal("كلمات",`<div style="text-align:center;padding:18px 8px 10px"><div style="font-size:27px;font-weight:900;color:var(--p);margin-bottom:14px">كلمات</div><p style="font-size:18px;line-height:2;margin:0 0 20px">«دائماً هناك كلمات لا يجيد كتابتها القلم، تغوص في قعر النفس ولا تطفو»</p><button id="slogan-home-btn" class="btn" type="button">العودة إلى الرئيسية</button></div>`);$("slogan-home-btn").onclick=()=>{closeModal();showPage("home")}};$("header-profile-btn").onclick=()=>showPage("profile");$("settings-open-btn").onclick=openSettings;$("sidebar-settings-btn").onclick=openSettings;$("right-settings-btn").onclick=openSettings;
 async function fetchUser(uid){const s=await getDoc(doc(db,"users",uid));return s.exists()?{uid,...s.data()}:null}
 function startFeed(){subscribe(onSnapshot(query(collection(db,"posts"),orderBy("createdAt","desc"),limit(60)),s=>{lastPosts=s.docs.map(d=>({id:d.id,...d.data()}));renderFeed($("posts-feed"),lastPosts)},showError))}
 function renderPost(p){const uid=p.uid||p.author?.uid||p.userId;if(isBlocked(uid))return"";const author=p.author||{},liked=(p.likes||[]).includes(currentUser.uid),comments=Array.isArray(p.comments)?p.comments:[],own=uid===currentUser.uid;const original=p.repostOf?p.originalPost:null;const body=original?`<div class="muted small"><i class="fa-solid fa-retweet"></i> أعاد ${esc(nameOf(author))} نشر هذا المنشور</div><div class="card post" style="box-shadow:none;background:var(--bg);padding:12px"><div class="row"><img class="avatar" src="${avatarOf(original.author||{})}" alt=""><div><strong>${esc(nameOf(original.author||{}))}</strong><div class="muted small">المنشور الأصلي</div></div></div>${original.text?`<div class="post-body">${br(original.text)}</div>`:""}${original.image?`<img class="post-image" src="${safeUrl(original.image)}" alt="صورة المنشور الأصلي" loading="lazy">`:""}</div>`:`${p.text?`<div class="post-body">${br(p.text)}</div>`:""}${p.image?`<img class="post-image" src="${safeUrl(p.image)}" alt="صورة المنشور" loading="lazy">`:""}`;return `<article class="card post" data-post-id="${esc(p.id)}"><div class="row between"><div class="row"><img class="avatar" src="${avatarOf(author)}" alt=""><div><button type="button" class="open-profile" data-uid="${esc(uid)}" style="padding:0;border:0;background:none;color:var(--t);font-weight:bold">${esc(nameOf(author))}</button><div class="muted small">${esc(timeLabel(p.createdAt))}</div></div></div>${own?`<button class="btn secondary delete-post" type="button" title="حذف المنشور"><i class="fa-regular fa-trash-can"></i></button>`:""}</div>${body}<div class="post-actions"><button class="action-btn ${liked?"liked":""} like-post" type="button"><i class="fa-${liked?"solid":"regular"} fa-heart"></i> ${liked?"أعجبني":"إعجاب"} (${(p.likes||[]).length})</button><button class="action-btn focus-comment" type="button"><i class="fa-regular fa-comment"></i> التعليقات (${comments.length})</button><button class="action-btn share-post" type="button"><i class="fa-solid fa-share-nodes"></i> مشاركة</button></div><div class="comment-list">${comments.slice(-20).map(c=>`<div class="comment"><strong>${esc(c.name||"عضو")}</strong><div>${br(c.text||"")}</div><span class="muted small">${esc(timeLabel(c.createdAt))}</span></div>`).join("")}</div><form class="comment-form"><input class="field comment-input" maxlength="1000" placeholder="اكتب تعليقًا..." aria-label="تعليق"><button class="btn" type="submit" aria-label="إرسال التعليق"><i class="fa-solid fa-paper-plane"></i></button></form></article>`}
@@ -187,4 +187,4 @@ document.addEventListener("focusout",()=>setTimeout(()=>{
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});setAuthMode("login");
 </script>
 </body>
-                                                                                                                                                                                                                                               </html>
+ </html>
