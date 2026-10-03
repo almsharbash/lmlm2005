@@ -1,4 +1,4 @@
-const CACHE_NAME = "kalimat-shell-v2";
+const CACHE_NAME = "kalimat-shell-v3";
 
 const SHELL_FILES = [
   "./index.htm",
@@ -45,6 +45,36 @@ self.addEventListener("fetch", (event) => {
 
   if (!isSameOrigin && !isStaticExternal) return;
 
+  /*
+   * صفحة التطبيق الرئيسية:
+   * مع الإنترنت نحاول دائمًا الحصول على أحدث نسخة من GitHub.
+   * عند انقطاع الإنترنت نستخدم النسخة المحفوظة.
+   */
+  if (request.mode === "navigate") {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response && response.ok) {
+            const copy = response.clone();
+
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put("./index.htm", copy);
+            });
+          }
+
+          return response;
+        })
+        .catch(() => caches.match("./index.htm"))
+    );
+
+    return;
+  }
+
+  /*
+   * الملفات الثابتة:
+   * نستخدم النسخة الموجودة في الكاش أولًا،
+   * ثم نحاول تحميلها من الشبكة إذا لم تكن موجودة.
+   */
   event.respondWith(
     caches.match(request).then((cached) => {
       if (cached) return cached;
@@ -62,10 +92,6 @@ self.addEventListener("fetch", (event) => {
           return response;
         })
         .catch(() => {
-          if (request.mode === "navigate") {
-            return caches.match("./index.htm");
-          }
-
           return new Response("", {
             status: 503,
             statusText: "Offline"
