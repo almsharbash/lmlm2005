@@ -123,6 +123,10 @@ onAuthStateChanged(auth,async user=>{
  if(lastPosts.length)renderFeed($("posts-feed"),lastPosts);
  showPage("home",true,true);
  startFeed();
+ setTimeout(()=>{
+   if(!currentUser||!navigator.onLine)return;
+   try{startFriends();startRequests();startNotifications();startChatRooms()}catch(e){console.warn("Background services skipped",e)}
+ },1500);
  (async()=>{
    try{
      const ref=doc(db,"users",user.uid),snap=await getDoc(ref);
@@ -162,7 +166,23 @@ history.replaceState({...(history.state||{}),kalimatPage:"home"},"",location.hre
 window.addEventListener("popstate",e=>{if(!$("modal-root").classList.contains("hidden")){closeModal(true);return;}if(!$("app").classList.contains("hidden")&&e.state?.kalimatPage){handlingPopState=true;showPage(e.state.kalimatPage,true,true);handlingPopState=false;}});
 $("logo-main-btn").onclick=()=>{showModal("كلمات",`<div style="text-align:center;padding:18px 8px 10px"><div style="font-size:27px;font-weight:900;color:var(--p);margin-bottom:14px">كلمات</div><p style="font-size:18px;line-height:2;margin:0 0 20px">«دائماً هناك كلمات لا يجيد كتابتها القلم، تغوص في قعر النفس ولا تطفو»</p><button id="slogan-home-btn" class="btn" type="button">العودة إلى الرئيسية</button></div>`);$("slogan-home-btn").onclick=()=>{closeModal();showPage("home")}};$("header-profile-btn").onclick=()=>showPage("profile");$("settings-open-btn").onclick=openSettings;$("sidebar-settings-btn").onclick=openSettings;$("right-settings-btn").onclick=openSettings;
 async function fetchUser(uid){const s=await getDoc(doc(db,"users",uid));return s.exists()?{uid,...s.data()}:null}
-function startFeed(){subscribe(onSnapshot(query(collection(db,"posts"),orderBy("createdAt","desc"),limit(60)),s=>{lastPosts=s.docs.map(d=>({id:d.id,...d.data()}));saveOfflinePosts(lastPosts);renderFeed($("posts-feed"),lastPosts)},e=>{console.warn("Feed offline",e);if(!lastPosts.length){lastPosts=loadOfflinePosts();if(lastPosts.length)renderFeed($("posts-feed"),lastPosts)}}))}
+function startFeed(){
+ if(!currentUser)return;
+ if(!lastPosts.length){lastPosts=loadOfflinePosts();if(lastPosts.length)renderFeed($("posts-feed"),lastPosts)}
+ const q=query(collection(db,"posts"),orderBy("createdAt","desc"),limit(60));
+ subscribe(onSnapshot(q,s=>{
+   lastPosts=s.docs.map(d=>({id:d.id,...d.data()}));
+   saveOfflinePosts(lastPosts);
+   renderFeed($("posts-feed"),lastPosts);
+ },e=>{
+   console.warn("Feed listener skipped",e);
+   if(!lastPosts.length){const cached=loadOfflinePosts();if(cached.length){lastPosts=cached;renderFeed($("posts-feed"),lastPosts)}}
+ }));
+ getDocs(q).then(s=>{
+   const posts=s.docs.map(d=>({id:d.id,...d.data()}));
+   if(posts.length){lastPosts=posts;saveOfflinePosts(posts);renderFeed($("posts-feed"),posts)}
+ }).catch(e=>console.warn("Feed initial fetch skipped",e));
+}
 function renderPost(p){const uid=p.uid||p.author?.uid||p.userId;if(isBlocked(uid))return"";const author=p.author||{},likes=asArray(p.likes),liked=likes.includes(currentUser.uid),comments=asArray(p.comments),own=uid===currentUser.uid;const original=p.repostOf?p.originalPost:null;const body=original?`<div class="muted small"><i class="fa-solid fa-retweet"></i> أعاد ${esc(nameOf(author))} نشر هذا المنشور</div><div class="card post" style="box-shadow:none;background:var(--bg);padding:12px"><div class="row"><img class="avatar" src="${avatarOf(original.author||{})}" alt=""><div><strong>${esc(nameOf(original.author||{}))}</strong><div class="muted small">المنشور الأصلي</div></div></div>${original.text?`<div class="post-body">${br(original.text)}</div>`:""}${original.image?`<img class="post-image" src="${safeUrl(original.image)}" alt="صورة المنشور الأصلي" loading="lazy">`:""}</div>`:`${p.text?`<div class="post-body">${br(p.text)}</div>`:""}${p.image?`<img class="post-image" src="${safeUrl(p.image)}" alt="صورة المنشور" loading="lazy">`:""}`;return `<article class="card post" data-post-id="${esc(p.id)}"><div class="row between"><div class="row"><img class="avatar" src="${avatarOf(author)}" alt=""><div><button type="button" class="open-profile" data-uid="${esc(uid)}" style="padding:0;border:0;background:none;color:var(--t);font-weight:bold">${esc(nameOf(author))}</button><div class="muted small">${esc(timeLabel(p.createdAt))}</div></div></div>${own?`<button class="btn secondary delete-post" type="button" title="حذف المنشور"><i class="fa-regular fa-trash-can"></i></button>`:""}</div>${body}<div class="post-actions"><button class="action-btn ${liked?"liked":""} like-post" type="button"><i class="fa-${liked?"solid":"regular"} fa-heart"></i> ${liked?"أعجبني":"إعجاب"} (${likes.length})</button><button class="action-btn focus-comment" type="button"><i class="fa-regular fa-comment"></i> التعليقات (${comments.length})</button><button class="action-btn share-post" type="button"><i class="fa-solid fa-share-nodes"></i> مشاركة</button></div><div class="comment-list">${comments.slice(-20).map(c=>`<div class="comment"><strong>${esc(c.name||"عضو")}</strong><div>${br(c.text||"")}</div><span class="muted small">${esc(timeLabel(c.createdAt))}</span></div>`).join("")}</div><form class="comment-form"><input class="field comment-input" maxlength="1000" placeholder="اكتب تعليقًا..." aria-label="تعليق"><button class="btn" type="submit" aria-label="إرسال التعليق"><i class="fa-solid fa-paper-plane"></i></button></form></article>`}
 function renderFeed(el,posts){const list=posts.filter(p=>!isBlocked(p.uid||p.author?.uid||p.userId));el.innerHTML=list.length?list.map(renderPost).join(""):'<div class="card feed-empty">لا توجد منشورات بعد. كن أول من يشارك فكرة!</div>'}
 $("new-post-form").addEventListener("submit",async e=>{e.preventDefault();const text=$("new-post-text").value.trim();if(!text&&!selectedImage)return toast("اكتب نصًا أو أرفق صورة أولًا.");const b=$("publish-post-btn");b.disabled=true;try{await addDoc(collection(db,"posts"),{uid:currentUser.uid,author:{uid:currentUser.uid,displayName:nameOf(currentUserData),name:nameOf(currentUserData),photoURL:currentUserData.photoURL||""},text,image:selectedImage||"",likes:[],comments:[],createdAt:serverTimestamp()});$("new-post-text").value="";selectedImage="";$("media-preview-container").classList.add("hidden");$("media-preview-content").src="";$("post-media-file").value="";toast("تم نشر المنشور.")}catch(e){showError(e)}finally{b.disabled=false}});
@@ -238,4 +258,4 @@ document.addEventListener("focusout",()=>setTimeout(()=>{
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});setAuthMode("login");
 </script>
 </body>
-                                                                                                                                        </html>
+ </html>
