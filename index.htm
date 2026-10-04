@@ -88,13 +88,31 @@ function validUserName(v,email=""){
 }
 function normalizeUserData(user,data={}){
  const email=String(user?.email||data.email||"").trim().toLowerCase();
- const name=validUserName(user?.displayName,email)||validUserName(data.displayName,email)||validUserName(data.name,email)||"عضو";
+ const name=validUserName(data.name,email)||validUserName(data.displayName,email)||validUserName(user?.displayName,email)||"عضو";
  return {uid:user?.uid||data.uid||"",name,displayName:name,email,photoURL:data.photoURL||user?.photoURL||"",bio:data.bio||"",friends:asArray(data.friends),blockedUsers:asArray(data.blockedUsers)};
 }
 const avatarOf=u=>safeUrl(u?.photoURL||u?.avatar||DEFAULT_AVATAR),nameOf=u=>validUserName(u?.displayName,u?.email)||validUserName(u?.name,u?.email)||"عضو";
 const br=v=>esc(v).replace(/\n/g,"<br>");
 const asArray=v=>Array.isArray(v)?v:[];
 const OFFLINE_POSTS_KEY="kalimat-offline-posts-v2";
+function mergeUserIdentity(base={},...sources){
+ const all=[base,...sources].filter(Boolean);
+ const email=all.map(x=>String(x.email||"").trim().toLowerCase()).find(Boolean)||"";
+ let name="";
+ for(const x of all){
+  const candidate=validUserName(x.name,email)||validUserName(x.displayName,email);
+  if(candidate){name=candidate;break;}
+ }
+ let photoURL="";
+ for(const x of all){if(x.photoURL){photoURL=x.photoURL;break;}}
+ const out={...base};
+ for(const x of all)Object.assign(out,x);
+ out.uid=base.uid||all.find(x=>x.uid)?.uid||"";
+ out.email=email;out.name=name||"عضو";out.displayName=out.name;out.photoURL=photoURL||"";
+ out.friends=asArray(out.friends);out.blockedUsers=asArray(out.blockedUsers);
+ return out;
+}
+
 const OFFLINE_USER_PREFIX="kalimat-offline-user-v2-";
 function cacheMillis(v){try{return v?.toMillis?v.toMillis():(v instanceof Date?v.getTime():(typeof v==="number"?v:(typeof v==="string"?Date.parse(v):null)))}catch{return null}}
 function cacheComment(c){return {name:c?.name||"عضو",text:c?.text||"",createdAt:cacheMillis(c?.createdAt)}}
@@ -179,17 +197,18 @@ window.addEventListener("popstate",e=>{if(!$("modal-root").classList.contains("h
 $("logo-main-btn").onclick=()=>{showModal("كلمات",`<div style="text-align:center;padding:18px 8px 10px"><div style="font-size:27px;font-weight:900;color:var(--p);margin-bottom:14px">كلمات</div><p style="font-size:18px;line-height:2;margin:0 0 20px">«دائماً هناك كلمات لا يجيد كتابتها القلم، تغوص في قعر النفس ولا تطفو»</p><button id="slogan-home-btn" class="btn" type="button">العودة إلى الرئيسية</button></div>`);$("slogan-home-btn").onclick=()=>{closeModal();showPage("home")}};$("header-profile-btn").onclick=()=>showPage("profile");$("settings-open-btn").onclick=openSettings;$("sidebar-settings-btn").onclick=openSettings;$("right-settings-btn").onclick=openSettings;
 async function fetchUser(uid){
  if(!uid)return null;
- if(userCache.has(uid))return userCache.get(uid);
+ const cached=userCache.get(uid)||loadOfflineUser(uid)||null;
  try{
   const s=await getDoc(doc(db,"users",uid));
   if(s.exists()){
    const data=s.data();
-   const u={...data,...normalizeUserData({uid,email:data.email,displayName:data.displayName,photoURL:data.photoURL},data),uid};
+   const u=mergeUserIdentity({uid},cached||{},normalizeUserData({uid,email:data.email,displayName:data.displayName,photoURL:data.photoURL},data),data);
    userCache.set(uid,u);saveOfflineUser(u);return u;
   }
  }catch(e){console.warn("fetchUser skipped",uid,e)}
- const cached=loadOfflineUser(uid);
- if(cached){const u=offlineUserOf({...cached,uid});userCache.set(uid,u);return u}
+ if(cached){const u=mergeUserIdentity({uid},cached);userCache.set(uid,u);return u}
+ const post=lastPosts.find(p=>(p.uid||p.author?.uid||p.userId)===uid);
+ if(post){const u=offlineAuthorFromPost(post);if(u){userCache.set(uid,u);saveOfflineUser(u);return u}}
  return null;
 }
 async function enrichPostAuthors(posts){
@@ -197,14 +216,11 @@ async function enrichPostAuthors(posts){
  const pairs=await Promise.all(ids.map(async uid=>[uid,await fetchUser(uid)]));
  const map=new Map(pairs);
  return posts.map(p=>{
-  const uid=p.uid||p.author?.uid||p.userId,u=map.get(uid);
-  const embedded=p.author||{};
-  if(!u){
-   const fallback=offlineAuthorFromPost(p);
-   return fallback?{...p,author:{...embedded,uid,displayName:fallback.displayName,name:fallback.name,photoURL:fallback.photoURL||embedded.photoURL||""}}:p;
-  }
-  const old=embedded;
-  return {...p,author:{...old,uid,displayName:nameOf(u),name:nameOf(u),photoURL:u.photoURL||old.photoURL||""}};
+  const uid=p.uid||p.author?.uid||p.userId,u=map.get(uid),embedded=p.author||{};
+  if(!uid)return p;
+  const fallback=offlineAuthorFromPost(p)||{};
+  const identity=mergeUserIdentity({uid},fallback,embedded,u||{});
+  return {...p,author:{...embedded,uid,name:identity.name,displayName:identity.displayName,photoURL:identity.photoURL||""}};
  });
 }
 function startFeed(){
@@ -243,7 +259,7 @@ async function openUserProfile(uid){try{
  catch(e){profilePosts=loadOfflinePosts().filter(p=>(p.uid||p.author?.uid||p.userId)===uid)}
  renderFeed($("user-profile-posts-feed"),await enrichPostAuthors(profilePosts))}catch(e){showError(e)}}
 async function compressProfileImage(file,maxBytes=100*1024){
- if(!file.type.startsWith("image/"))throw Error("يرجى اختيار ملف صورة صالح.");
+ if(file.type&&!file.type.startsWith("image/"))throw Error("يرجى اختيار ملف صورة صالح.");
  const img=await new Promise((resolve,reject)=>{const objectUrl=URL.createObjectURL(file),image=new Image();image.onload=()=>{URL.revokeObjectURL(objectUrl);resolve(image)};image.onerror=()=>{URL.revokeObjectURL(objectUrl);reject(Error("تعذر قراءة الصورة."))};image.src=objectUrl});
  const side=512,canvas=document.createElement("canvas");canvas.width=side;canvas.height=side;const ctx=canvas.getContext("2d");if(!ctx)throw Error("تعذر تجهيز الصورة على هذا الجهاز.");
  const w=img.naturalWidth,h=img.naturalHeight,crop=Math.min(w,h),sx=(w-crop)/2,sy=(h-crop)/2;ctx.drawImage(img,sx,sy,crop,crop,0,0,side,side);
@@ -252,13 +268,17 @@ async function compressProfileImage(file,maxBytes=100*1024){
 }
 async function editOwnProfile(){
  const u=currentUserData;let selectedProfileImage=u.photoURL||"",profileImageChanged=false;
- showModal("تعديل الملف الشخصي",`<form id="edit-profile-form" class="post"><label>الاسم<input class="field" name="name" required maxlength="60" value="${esc(nameOf(u))}"></label><label>نبذة عنك<textarea class="field" name="bio" rows="4" maxlength="500">${esc(u.bio||"")}</textarea></label><div class="setting-section"><strong>صورة الملف الشخصي</strong><div class="row" style="align-items:center"><img id="profile-edit-preview" class="avatar big" src="${avatarOf(u)}" alt="معاينة صورة الملف الشخصي"><div class="post" style="flex:1"><button class="btn secondary" id="profile-pick-image" type="button"><i class="fa-regular fa-image"></i> اختيار صورة من المعرض</button><button class="btn secondary" id="profile-remove-image" type="button">إزالة الصورة</button></div></div><input id="profile-image-file" class="hidden" type="file" accept="image/jpeg,image/png,image/webp,image/gif"><p class="muted small" style="margin:0">ستُقص الصورة إلى شكل مربع وتُضغط إلى نحو 100 كيلوبايت كحد أقصى قبل الحفظ.</p></div><button class="btn" id="profile-save-btn" type="submit">حفظ التغييرات</button></form>`);
+ showModal("تعديل الملف الشخصي",`<form id="edit-profile-form" class="post"><label>الاسم<input class="field" name="name" required maxlength="60" value="${esc(nameOf(u))}"></label><label>نبذة عنك<textarea class="field" name="bio" rows="4" maxlength="500">${esc(u.bio||"")}</textarea></label><div class="setting-section"><strong>صورة الملف الشخصي</strong><div class="row" style="align-items:center"><img id="profile-edit-preview" class="avatar big" src="${avatarOf(u)}" alt="معاينة صورة الملف الشخصي"><div class="post" style="flex:1"><button class="btn secondary" id="profile-pick-image" type="button"><i class="fa-regular fa-image"></i> اختيار صورة من المعرض</button><button class="btn secondary" id="profile-remove-image" type="button">إزالة الصورة</button></div></div><input id="profile-image-file" class="hidden" type="file" accept="image/*"><p class="muted small" style="margin:0">ستُقص الصورة إلى شكل مربع وتُضغط إلى نحو 100 كيلوبايت كحد أقصى قبل الحفظ.</p></div><button class="btn" id="profile-save-btn" type="submit">حفظ التغييرات</button></form>`);
  $("profile-pick-image").onclick=()=>$("profile-image-file").click();
  $("profile-remove-image").onclick=()=>{selectedProfileImage="";profileImageChanged=true;$("profile-edit-preview").src=DEFAULT_AVATAR;$("profile-image-file").value=""};
  $("profile-image-file").onchange=async e=>{const file=e.target.files?.[0];if(!file)return;const button=$("profile-pick-image");button.disabled=true;try{selectedProfileImage=await compressProfileImage(file);profileImageChanged=true;$("profile-edit-preview").src=selectedProfileImage;toast("تم تجهيز الصورة وضغطها.")}catch(err){
    try{const raw=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result||""));r.onerror=()=>reject(Error("تعذر قراءة الصورة."));r.readAsDataURL(file)});if(!/^data:image\//i.test(raw))throw Error("يرجى اختيار صورة صالحة.");selectedProfileImage=raw;profileImageChanged=true;$("profile-edit-preview").src=raw;toast("تم تجهيز الصورة.")}catch(fallbackErr){showError(fallbackErr);e.target.value=""}
   }finally{button.disabled=false}};
- $("edit-profile-form").onsubmit=async e=>{e.preventDefault();const f=e.currentTarget,n=f.elements.name.value.trim(),bio=f.elements.bio.value.trim(),photoURL=profileImageChanged?selectedProfileImage:(u.photoURL||"");if(n.length<2)return toast("يرجى إدخال اسم من حرفين على الأقل.");const save=$("profile-save-btn");save.disabled=true;try{await setDoc(doc(db,"users",currentUser.uid),{uid:currentUser.uid,name:n,displayName:n,email:currentUser.email||u.email||"",bio,photoURL,friends:asArray(u.friends),blockedUsers:asArray(u.blockedUsers)},{merge:true});await updateProfile(currentUser,{displayName:n});currentUserData={...currentUserData,name:n,displayName:n,bio,photoURL};userCache.set(currentUser.uid,{...currentUserData});saveOfflineUser(currentUserData);updateAccountUI();closeModal();await openUserProfile(currentUser.uid);toast("تم تحديث الملف.")}catch(err){showError(err)}finally{save.disabled=false}}
+ $("edit-profile-form").onsubmit=async e=>{e.preventDefault();const f=e.currentTarget,n=f.elements.name.value.trim(),bio=f.elements.bio.value.trim(),photoURL=profileImageChanged?selectedProfileImage:(u.photoURL||"");if(n.length<2)return toast("يرجى إدخال اسم من حرفين على الأقل.");const save=$("profile-save-btn");save.disabled=true;try{const email=currentUser.email||u.email||"";
+   await updateProfile(currentUser,{displayName:n});
+   await setDoc(doc(db,"users",currentUser.uid),{uid:currentUser.uid,name:n,displayName:n,email,bio,photoURL,friends:asArray(u.friends),blockedUsers:asArray(u.blockedUsers)},{merge:true});
+   currentUserData=mergeUserIdentity(currentUserData,{uid:currentUser.uid,name:n,displayName:n,email,bio,photoURL});
+   userCache.set(currentUser.uid,{...currentUserData});saveOfflineUser(currentUserData);updateAccountUI();closeModal();await openUserProfile(currentUser.uid);toast("تم تحديث الملف.")}catch(err){showError(err)}finally{save.disabled=false}}
 }
 async function sendFriendRequest(u){try{if(isBlocked(u.uid)||blockedBy(currentUser.uid,u))return toast("لا يمكن إرسال الطلب بسبب الحظر.");if((currentUserData.friends||[]).includes(u.uid))return toast("هذا العضو صديق بالفعل.");const q=query(collection(db,"friendRequests"),where("from","==",currentUser.uid),where("to","==",u.uid),where("status","==","pending"),limit(1));if(!(await getDocs(q)).empty)return toast("الطلب مرسل بالفعل.");await addDoc(collection(db,"friendRequests"),{from:currentUser.uid,to:u.uid,status:"pending",fromName:nameOf(currentUserData),toName:nameOf(u),createdAt:serverTimestamp()});await addDoc(collection(db,"notifications"),{to:u.uid,from:currentUser.uid,type:"friend_request",text:nameOf(currentUserData)+" أرسل إليك طلب صداقة.",read:false,createdAt:serverTimestamp()});toast("تم إرسال الطلب.")}catch(e){showError(e)}}
 function startRequests(){if(requestsStarted)return;requestsStarted=true;subscribe(onSnapshot(query(collection(db,"friendRequests"),where("to","==",currentUser.uid),where("status","==","pending")),async s=>{const items=await Promise.all(s.docs.map(async d=>({...d.data(),id:d.id,user:await fetchUser(d.data().from)})));$("friend-requests-list").innerHTML=items.length?items.map(r=>!r.user||isBlocked(r.from)||blockedBy(currentUser.uid,r.user)?"":`<div class="person-row"><img class="avatar" src="${avatarOf(r.user)}" alt=""><div class="person-info"><strong>${esc(nameOf(r.user))}</strong><span class="muted small">طلب صداقة</span></div><div class="person-actions"><button class="btn accept-request" data-id="${esc(r.id)}" data-uid="${esc(r.from)}">قبول</button><button class="btn secondary reject-request" data-id="${esc(r.id)}">رفض</button></div></div>`).join("")||'<div class="feed-empty">لا توجد طلبات جديدة.</div>':'<div class="feed-empty">لا توجد طلبات جديدة.</div>'},showError))}
@@ -307,4 +327,4 @@ document.addEventListener("focusout",()=>setTimeout(()=>{
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});setAuthMode("login");
 </script>
 </body>
-                                                                                                                                                                                                                               </html>
+ </html>
