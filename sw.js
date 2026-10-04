@@ -1,6 +1,6 @@
 /* عامل الخدمة لمنصة كلمات: يخزّن الواجهة ومكتبات Firebase وFont Awesome للعمل دون اتصال.
    عند نشر نسخة جديدة من index.html غيّر رقم VERSION ليُحدَّث التخزين عند المستخدمين. */
-const VERSION = "kalimat-v4";
+const VERSION = "kalimat-v5";
 const SHELL = ["./", "./index.html", "./manifest.json", "./favicon.ico", "./icon-192.png"];
 const CDN_HOSTS = ["www.gstatic.com", "cdnjs.cloudflare.com"];
 
