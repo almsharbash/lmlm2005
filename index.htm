@@ -31,7 +31,7 @@ body.dark{--p:#38bdf8;--p-bright:#7dd3fc;--p-soft:#123448;--bg:#0b1720;--s:#1426
 .app-layout{max-width:1200px;min-height:calc(100vh - 150px);min-height:calc(100dvh - 150px);margin:20px auto;padding:0 14px;display:grid;grid-template-columns:220px minmax(0,1fr) 220px;gap:16px}.sidebar{position:sticky;top:82px;align-self:start}.nav-list{display:grid;gap:5px}.nav-btn{position:relative;width:100%;border:0;border-radius:10px;padding:11px;display:flex;align-items:center;gap:11px;color:var(--t);background:transparent;text-align:right}.nav-btn:hover,.nav-btn.active{background:var(--p);color:white}.nav-btn i{width:20px;text-align:center}.main-column{min-width:0;display:grid;gap:14px;align-content:start}.right-column{display:grid;gap:14px;align-content:start}.page-title{font-size:21px;margin:0 0 12px}
 .nbadge{background:var(--danger);color:#fff;border-radius:99px;font-size:10px;min-width:17px;height:17px;line-height:17px;text-align:center;padding:0 4px;font-style:normal;font-weight:bold}
 .boot-screen{min-height:100vh;min-height:100dvh;display:grid;place-items:center;text-align:center;background:var(--bg);color:var(--p)}.boot-screen .boot-brand{font-size:30px;font-weight:900}.boot-screen .boot-note{font-size:13px;color:var(--m);margin-top:8px}.boot-spinner{width:24px;height:24px;border:3px solid var(--b);border-top-color:var(--p);border-radius:50%;margin:18px auto 0;animation:bootspin .8s linear infinite}@keyframes bootspin{to{transform:rotate(360deg)}}.auth-screen{min-height:100vh;display:grid;place-items:center;padding:18px;background:linear-gradient(140deg,var(--bg),#e0f2fe)}.auth-card{width:100%;max-width:440px;display:grid;gap:14px}.auth-card h1{text-align:center;margin:0}.auth-card .brand{text-align:center;font-size:34px}.auth-card label{display:grid;gap:5px}.auth-card .btn.full{width:100%}
-.post{display:grid;gap:11px}.post-body{white-space:pre-wrap;overflow-wrap:anywhere}.post-image{width:100%;max-height:500px;object-fit:contain;border-radius:11px;background:var(--bg)}.post-actions{display:flex;gap:7px;flex-wrap:wrap;border-top:1px solid var(--b);padding-top:9px}.action-btn{border:0;border-radius:9px;padding:7px 10px;background:var(--bg);color:var(--m)}.action-btn.liked{color:#cf465b}.comment-list{display:grid;gap:7px}.comment{background:var(--bg);border-radius:10px;padding:8px 10px;overflow-wrap:anywhere}.comment-form{display:flex;gap:7px}.comment-form .field{min-width:0}.feed-empty{text-align:center;padding:28px 12px;color:var(--m)}
+.post{display:grid;gap:11px}.post-body{white-space:pre-wrap;overflow-wrap:anywhere}.post-image{width:100%;max-height:500px;object-fit:contain;border-radius:11px;background:var(--bg)}.post-actions{display:flex;gap:7px;flex-wrap:wrap;border-top:1px solid var(--b);padding-top:9px}.action-btn{border:0;border-radius:9px;padding:7px 10px;background:var(--bg);color:var(--m)}.action-btn.liked{color:#cf465b}.action-btn.active{background:var(--p);color:#fff}.comment-list{display:grid;gap:7px}.comment{background:var(--bg);border-radius:10px;padding:8px 10px;overflow-wrap:anywhere}.comment-form{display:flex;gap:7px}.comment-form .field{min-width:0}.feed-empty{text-align:center;padding:28px 12px;color:var(--m)}
 .quoted{box-shadow:none;background:var(--bg);padding:12px}
 .skeleton{height:130px;border-radius:var(--r);background:linear-gradient(90deg,var(--s) 25%,var(--bg) 50%,var(--s) 75%);background-size:200% 100%;animation:shimmer 1.3s infinite;border:1px solid var(--b)}@keyframes shimmer{to{background-position:-200% 0}}
 .person-row{display:flex;align-items:center;gap:9px;padding:10px 0;border-bottom:1px solid var(--b)}.person-row:last-child{border-bottom:0}.person-row.unread{background:var(--p-soft);border-radius:10px;padding:10px}.person-info{flex:1;min-width:0}.person-info strong{display:block;overflow-wrap:anywhere}.person-actions{display:flex;gap:5px;flex-wrap:wrap}
@@ -88,7 +88,7 @@ body.dark{--p:#38bdf8;--p-bright:#7dd3fc;--p-soft:#123448;--bg:#0b1720;--s:#1426
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import{getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,updateProfile,sendPasswordResetEmail}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import{initializeFirestore,getFirestore,persistentLocalCache,persistentMultipleTabManager,doc,getDoc,setDoc,updateDoc,addDoc,collection,query,where,orderBy,limit,startAfter,startAt,endAt,onSnapshot,serverTimestamp,arrayUnion,arrayRemove,deleteDoc,deleteField,getDocs,writeBatch}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import{initializeFirestore,getFirestore,persistentLocalCache,persistentMultipleTabManager,doc,getDoc,getDocFromServer,setDoc,updateDoc,addDoc,collection,query,where,orderBy,limit,startAfter,startAt,endAt,onSnapshot,serverTimestamp,arrayUnion,arrayRemove,deleteDoc,deleteField,getDocs,writeBatch}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 /* ============ إعدادات Firebase ============ */
 const firebaseConfig={apiKey:"AIzaSyAPjMSa60LLeM0gse8UEfr21xly0dCk5gM",authDomain:"gogi1982-1982.firebaseapp.com",projectId:"gogi1982-1982",storageBucket:"gogi1982-1982.firebasestorage.app",messagingSenderId:"233752528773",appId:"1:233752528773:web:b77ec97d0c83c7a23966ec",measurementId:"G-P4VE7LJMDD"};
@@ -127,7 +127,7 @@ let activeChatId=null,activeChatUser=null,unsubs=[],unsubMessages=null,installPr
 let registering=false,lastPostAt=0,currentPageName="home",handlingPopState=false;
 let livePosts=[],olderPosts=[],lastLiveDoc=null,olderCursor=null,feedHasMore=true,loadingMore=false;
 let profilePosts=[],profileReq=0,notifs=[],unreadCount=0,modalPostId=null,saveTimer=null;
-const postsCache=new Map(),userCache=new Map(),profileCache=new Map(),repostImg=new Map(),expandedComments=new Set(),pageScroll={};
+const postsCache=new Map(),userCache=new Map(),profileCache=new Map(),repostImg=new Map(),expandedComments=new Set(),openComments=new Set(),pageScroll={};
 let requestsStarted=false,friendsStarted=false,notificationsStarted=false,chatRoomsStarted=false,ownDocStarted=false;
 
 /* ============ رسائل الخطأ والإشعارات المنبثقة ============ */
@@ -195,7 +195,7 @@ async function fetchUser(uid){
  try{
   const s=await getDoc(doc(db,"users",uid));
   const u=s.exists()?{uid,...s.data()}:null;
-  userCache.set(uid,{u,t:Date.now()});
+  userCache.set(uid,{u,t:u?Date.now():Date.now()-USER_TTL+30000});
   if(u)saveOfflineProfile(u,false);
   return u;
  }catch(e){
@@ -426,10 +426,11 @@ function renderPost(p){
   const img=safeUrlRaw(p.image);
   body=(p.text?`<div class="post-body">${br(p.text)}</div>`:"")+(img?`<img class="post-image" src="${esc(img)}" alt="صورة المنشور" loading="lazy" decoding="async">`:"");
  }
+ const open=openComments.has(p.id);
  const shown=expanded?comments:comments.slice(-3);
  const toggle=comments.length>3?`<button type="button" class="link-btn small muted toggle-comments">${expanded?"إخفاء التعليقات القديمة":"عرض كل التعليقات ("+comments.length+")"}</button>`:"";
  const commentsHtml=toggle+shown.map(c=>`<div class="comment"><strong>${esc(c.name||"عضو")}</strong><div>${br(c.text||"")}</div><span class="muted small">${esc(timeLabel(c.createdAt))}</span></div>`).join("");
- return `<article class="card post" data-post-id="${esc(p.id)}"><div class="row between"><div class="row"><img class="avatar" src="${avatarOf(author)}" alt="" loading="lazy" decoding="async"><div><button type="button" class="open-profile link-btn" data-uid="${esc(uid||"")}">${esc(nameOf(author))}</button><div class="muted small">${esc(timeLabel(p.createdAt))}</div></div></div>${own?`<button class="btn secondary delete-post" type="button" title="حذف المنشور" aria-label="حذف المنشور"><i class="fa-regular fa-trash-can"></i></button>`:""}</div>${body}<div class="post-actions"><button class="action-btn ${liked?"liked":""} like-post" type="button"><i class="fa-${liked?"solid":"regular"} fa-heart"></i> ${liked?"أعجبني":"إعجاب"} (${likes.length})</button><button class="action-btn focus-comment" type="button"><i class="fa-regular fa-comment"></i> التعليقات (${comments.length})</button><button class="action-btn share-post" type="button"><i class="fa-solid fa-share-nodes"></i> مشاركة</button></div><div class="comment-list">${commentsHtml}</div><form class="comment-form"><input class="field comment-input" maxlength="1000" placeholder="اكتب تعليقًا..." aria-label="تعليق"><button class="btn" type="submit" aria-label="إرسال التعليق"><i class="fa-solid fa-paper-plane"></i></button></form></article>`;
+ return `<article class="card post" data-post-id="${esc(p.id)}"><div class="row between"><div class="row"><img class="avatar" src="${avatarOf(author)}" alt="" loading="lazy" decoding="async"><div><button type="button" class="open-profile link-btn" data-uid="${esc(uid||"")}">${esc(nameOf(author))}</button><div class="muted small">${esc(timeLabel(p.createdAt))}</div></div></div>${own?`<button class="btn secondary delete-post" type="button" title="حذف المنشور" aria-label="حذف المنشور"><i class="fa-regular fa-trash-can"></i></button>`:""}</div>${body}<div class="post-actions"><button class="action-btn ${liked?"liked":""} like-post" type="button"><i class="fa-${liked?"solid":"regular"} fa-heart"></i> ${liked?"أعجبني":"إعجاب"} (${likes.length})</button><button class="action-btn focus-comment ${open?"active":""}" type="button"><i class="fa-regular fa-comment"></i> التعليقات (${comments.length})</button><button class="action-btn share-post" type="button"><i class="fa-solid fa-share-nodes"></i> مشاركة</button></div>${open?`<div class="comment-list">${commentsHtml}</div><form class="comment-form"><input class="field comment-input" maxlength="1000" placeholder="اكتب تعليقًا..." aria-label="تعليق"><button class="btn" type="submit" aria-label="إرسال التعليق"><i class="fa-solid fa-paper-plane"></i></button></form>`:""}</article>`;
 }
 function renderFeed(el,posts,withMore){
  /* الحفاظ على نص التعليق قيد الكتابة عند تحديث القائمة */
@@ -575,21 +576,22 @@ async function openUserProfile(uid){
  try{
   if(modalOpen)await closeModal();
   const own=uid===currentUser.uid;
-  const u=own?currentUserData:await fetchUser(uid);
+  let u=own?currentUserData:await fetchUser(uid);
+  if(!u&&!own)u=fallbackUser(uid);
   if(!u)return toast("لم يتم العثور على العضو.");
   if(!own&&(isBlocked(uid)||blockedBy(currentUser.uid,u)))return toast("لا يمكن عرض الملف بسبب إعدادات الحظر.");
   viewedProfile=u;showPage("profile",true);
   $("profile-view-avatar").src=rawBigAvatar(u);$("profile-view-name").textContent=nameOf(u);
   $("profile-view-email").textContent=own?(currentUser.email||""):"";
-  $("profile-view-meta").textContent="عدد الأصدقاء: "+asArray(u.friends).length;
-  $("profile-view-bio").textContent=u.bio||"لم يضف نبذة شخصية بعد.";
+  $("profile-view-meta").textContent=u.missing?"":"عدد الأصدقاء: "+asArray(u.friends).length;
+  $("profile-view-bio").textContent=u.missing?"لم يُكمل هذا العضو إعداد ملفه بعد.":(u.bio||"لم يضف نبذة شخصية بعد.");
   const actions=$("profile-actions");
   if(own){
    actions.innerHTML='<button id="edit-profile-btn" class="btn"><i class="fa-solid fa-pen"></i> تعديل الملف</button>';
    $("edit-profile-btn").onclick=editOwnProfile;
   }else{
    const isFriend=asArray(currentUserData.friends).includes(uid);
-   actions.innerHTML=`<button class="btn" id="profile-message-btn">مراسلة</button>${isFriend?'<button class="btn secondary" id="remove-friend-btn">إزالة صديق</button>':'<button class="btn secondary" id="add-friend-btn">إضافة صديق</button>'}<button class="btn secondary" id="profile-block-btn">${isBlocked(uid)?"إلغاء الحظر":"حظر العضو"}</button>`;
+   actions.innerHTML=`<button class="btn" id="profile-message-btn">مراسلة</button>${isFriend?'<button class="btn secondary" id="remove-friend-btn">إزالة صديق</button>':(u.missing?'':'<button class="btn secondary" id="add-friend-btn">إضافة صديق</button>')}<button class="btn secondary" id="profile-block-btn">${isBlocked(uid)?"إلغاء الحظر":"حظر العضو"}</button>`;
    $("profile-message-btn").onclick=()=>openChatWith(u);
    $("profile-block-btn").onclick=()=>isBlocked(uid)?unblockUser(uid):blockUser(uid);
    $("add-friend-btn")?.addEventListener("click",()=>sendFriendRequest(u));
@@ -597,6 +599,12 @@ async function openUserProfile(uid){
   }
   loadProfilePosts(uid);
  }catch(e){showError(e)}
+}
+function fallbackUser(uid){
+ for(const p of postsCache.values()){
+  if(authorUid(p)===uid&&p.author){const a=p.author;return{uid,name:nameOf(a),displayName:nameOf(a),thumb:a.thumb||"",photoURL:a.photoURL||"",bio:"",friends:[],blockedUsers:[],missing:true}}
+ }
+ return null;
 }
 async function loadProfilePosts(uid){
  const req=++profileReq,box=$("user-profile-posts-feed");
@@ -651,6 +659,22 @@ async function editOwnProfile(){
   toast(online()?"تم تحديث الملف.":"سيُحفظ التحديث عند عودة الاتصال.");
  };
 }
+let ownDocMissing=false;
+async function ensureOwnDoc(){
+ if(!currentUser||!ownDocMissing||registering)return;
+ const ref=doc(db,"users",currentUser.uid);
+ try{
+  const s=await getDocFromServer(ref);
+  if(s.exists()){ownDocMissing=false;return}
+  const d=newUserDoc(currentUser.uid,nameOf(currentUserData));
+  d.bio=String(currentUserData.bio||"").slice(0,500);
+  const ph=safeUrlRaw(currentUserData.photoURL),th=safeUrlRaw(currentUserData.thumb);
+  d.photoURL=ph&&ph.length<=120000?ph:"";d.thumb=th&&th.length<=12000?th:"";
+  d.friends=asArray(currentUserData.friends);d.blockedUsers=asArray(currentUserData.blockedUsers);
+  await setDoc(ref,d);ownDocMissing=false;
+ }catch(e){console.warn("تعذر إنشاء ملف العضو",e)}
+}
+addEventListener("online",()=>{if(ownDocMissing)ensureOwnDoc()});
 function startOwnDoc(){
  if(ownDocStarted)return;ownDocStarted=true;
  const ref=doc(db,"users",currentUser.uid);let first=true;
@@ -662,10 +686,9 @@ function startOwnDoc(){
    if(first){first=false;migrateOwnDoc(d)}
    updateAccountUI();saveOfflineProfile(currentUserData);renderAll();
    if(!$("page-friends").classList.contains("hidden"))loadFriends();
-  }else if(first&&!registering&&!s.metadata.fromCache){
-   first=false;
-   const name=currentUser.displayName||"عضو";
-   setDoc(ref,newUserDoc(currentUser.uid,name),{merge:true}).catch(showError);
+  }else if(first&&!registering){
+   ownDocMissing=true;
+   if(online()){first=false;ensureOwnDoc()}
   }
  },listenErr("ownDoc")));
 }
@@ -897,7 +920,11 @@ document.addEventListener("click",async e=>{
  const id=a.dataset.postId;
  if(t.closest(".like-post"))toggleLike(id);
  else if(t.closest(".delete-post"))deletePost(id);
- else if(t.closest(".focus-comment"))a.querySelector(".comment-input")?.focus();
+ else if(t.closest(".focus-comment")){
+  if(openComments.has(id))openComments.delete(id);else openComments.add(id);
+  const p=postsCache.get(id);if(p)setPostLocal(p);
+  if(openComments.has(id))setTimeout(()=>document.querySelector(`article[data-post-id="${CSS.escape(id)}"] .comment-input`)?.focus(),60);
+ }
  else if(t.closest(".share-post"))openShareOptions(id);
  else if(t.closest(".toggle-comments")){expandedComments.has(id)?expandedComments.delete(id):expandedComments.add(id);const p=postsCache.get(id);if(p)setPostLocal(p)}
 });
@@ -910,12 +937,19 @@ document.addEventListener("submit",e=>{
 
 /* ============ لوحة المفاتيح والتثبيت وعامل الخدمة ============ */
 if("serviceWorker" in navigator&&location.protocol.startsWith("http"))addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(console.warn));
-if(window.visualViewport){
- const updateKeyboardState=()=>{const vv=window.visualViewport;document.body.classList.toggle("keyboard-open",!!vv&&window.innerWidth<900&&(window.innerHeight-vv.height)>140)};
- window.visualViewport.addEventListener("resize",updateKeyboardState);window.visualViewport.addEventListener("scroll",updateKeyboardState);
- window.addEventListener("resize",updateKeyboardState);updateKeyboardState();
+const NON_TEXT=["file","checkbox","radio","button","submit","range","color"];
+const isTyping=()=>{const f=document.activeElement;return !!f&&(f.tagName==="TEXTAREA"||(f.tagName==="INPUT"&&!NON_TEXT.includes(f.type)))};
+function updateKeyboardState(){
+ const vv=window.visualViewport,shrunk=!!vv&&(window.innerHeight-vv.height)>140;
+ document.body.classList.toggle("keyboard-open",window.innerWidth<900&&(isTyping()||shrunk));
 }
-document.addEventListener("focusout",()=>setTimeout(()=>{if(!document.activeElement||!["INPUT","TEXTAREA"].includes(document.activeElement.tagName))document.body.classList.remove("keyboard-open")},120));
+document.addEventListener("focusin",()=>{
+ updateKeyboardState();
+ setTimeout(()=>{const f=document.activeElement;if(isTyping()&&f.scrollIntoView&&window.innerWidth<900)f.scrollIntoView({block:"center",behavior:"smooth"})},350);
+});
+document.addEventListener("focusout",()=>setTimeout(updateKeyboardState,150));
+if(window.visualViewport){window.visualViewport.addEventListener("resize",updateKeyboardState);window.visualViewport.addEventListener("scroll",updateKeyboardState)}
+window.addEventListener("resize",updateKeyboardState);updateKeyboardState();
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
 window.addEventListener("unhandledrejection",e=>console.warn("وعد مرفوض:",e.reason));
 setAuthMode("login");
