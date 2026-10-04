@@ -104,6 +104,9 @@ function loadOfflinePosts(){try{const raw=localStorage.getItem(OFFLINE_POSTS_KEY
 function offlineUserOf(u){const email=u?.email||"",name=validUserName(u?.displayName,email)||validUserName(u?.name,email)||"عضو";return {uid:u?.uid||"",name,displayName:name,email,photoURL:u?.photoURL||"",bio:u?.bio||"",friends:asArray(u?.friends),blockedUsers:asArray(u?.blockedUsers)}}
 function saveOfflineUser(u){try{if(u?.uid)localStorage.setItem(OFFLINE_USER_PREFIX+u.uid,JSON.stringify(offlineUserOf(u)))}catch(e){console.warn("Offline user cache skipped",e)}}
 function loadOfflineUser(uid){try{const raw=localStorage.getItem(OFFLINE_USER_PREFIX+uid);return raw?JSON.parse(raw):null}catch{return null}}
+function saveOfflineAuthor(u){try{if(u?.uid){const p=offlineUserOf(u);localStorage.setItem(OFFLINE_USER_PREFIX+p.uid,JSON.stringify(p))}}catch(e){console.warn("Offline author cache skipped",e)}}
+function offlineAuthorFromPost(p){const a=p?.author||{};const uid=p?.uid||a.uid||p?.userId||"";if(!uid)return null;const email=a.email||"";const name=validUserName(a.displayName,email)||validUserName(a.name,email)||"عضو";return {uid,name,displayName:name,email,photoURL:a.photoURL||"",bio:"",friends:[],blockedUsers:[]}}
+function indexOfflinePostAuthors(posts){try{posts.forEach(p=>{const a=offlineAuthorFromPost(p);if(a&&a.name!=="عضو")saveOfflineAuthor(a)})}catch(e){console.warn("Offline author indexing skipped",e)}}
 
 function toast(s){$("toast").textContent=s;$("toast").classList.remove("hidden");clearTimeout(toastTimer);toastTimer=setTimeout(()=>$("toast").classList.add("hidden"),3500)}
 function showError(e){console.error(e);const m={"auth/invalid-credential":"البريد أو كلمة المرور غير صحيحة.","auth/user-not-found":"لا يوجد حساب بهذا البريد.","auth/wrong-password":"كلمة المرور غير صحيحة.","auth/email-already-in-use":"هذا البريد مسجل بالفعل.","auth/weak-password":"كلمة المرور يجب ألا تقل عن 6 أحرف.","auth/invalid-email":"صيغة البريد غير صحيحة.","auth/too-many-requests":"محاولات كثيرة؛ حاول لاحقًا.","permission-denied":"لا توجد صلاحية. راجع قواعد Firestore.","unavailable":"تعذر الاتصال؛ تحقق من الإنترنت."};toast(m[e?.code]||("حدث خطأ: "+(e?.message||"يرجى المحاولة مجددًا.")))}
@@ -117,7 +120,7 @@ function showAuth(){$("boot-screen").classList.add("hidden");$("auth-screen").cl
 function showApp(){$("boot-screen").classList.add("hidden");$("auth-screen").classList.add("hidden");$("app").classList.remove("hidden")}
 function setAuthMode(mode){authMode=mode;const r=mode==="register";$("auth-title").textContent=r?"إنشاء حساب جديد":"مرحبًا بك في كلمات";$("auth-submit-btn").textContent=r?"إنشاء الحساب":"تسجيل الدخول";$("auth-switch-text").textContent=r?"لديك حساب بالفعل؟":"ليس لديك حساب؟";$("auth-switch").textContent=r?"تسجيل الدخول":"إنشاء حساب";$("name-field").classList.toggle("hidden",!r);$("auth-name").required=r}
 $("auth-switch").addEventListener("click",()=>setAuthMode(authMode==="login"?"register":"login"));
-$("auth-form").addEventListener("submit",async e=>{e.preventDefault();const email=$("auth-email").value.trim().toLowerCase(),password=$("auth-password").value,name=$("auth-name").value.trim(),b=$("auth-submit-btn");b.disabled=true;try{if(authMode==="register"){if(name.length<2)throw Error("يرجى إدخال اسم من حرفين على الأقل.");const c=await createUserWithEmailAndPassword(auth,email,password);await updateProfile(c.user,{displayName:name});await setDoc(doc(db,"users",c.user.uid),{uid:c.user.uid,name,displayName:name,email,photoURL:"",bio:"",friends:[],blockedUsers:[],createdAt:serverTimestamp()},{merge:true});toast("تم إنشاء الحساب.")}else await signInWithEmailAndPassword(auth,email,password)}catch(e){showError(e)}finally{b.disabled=false}});
+$("auth-form").addEventListener("submit",async e=>{e.preventDefault();const email=$("auth-email").value.trim().toLowerCase(),password=$("auth-password").value,name=$("auth-name").value.trim(),b=$("auth-submit-btn");b.disabled=true;try{if(authMode==="register"){if(name.length<2)throw Error("يرجى إدخال اسم من حرفين على الأقل.");const c=await createUserWithEmailAndPassword(auth,email,password);await updateProfile(c.user,{displayName:name});await setDoc(doc(db,"users",c.user.uid),{uid:c.user.uid,name,displayName:name,email,photoURL:"",bio:"",friends:[],blockedUsers:[],createdAt:serverTimestamp()},{merge:true});currentUserData={uid:c.user.uid,name,displayName:name,email,photoURL:"",bio:"",friends:[],blockedUsers:[]};saveOfflineUser(currentUserData);userCache.set(c.user.uid,currentUserData);toast("تم إنشاء الحساب.")}else await signInWithEmailAndPassword(auth,email,password)}catch(e){showError(e)}finally{b.disabled=false}});
 onAuthStateChanged(auth,async user=>{
  clearSubs();
  currentUser=user;
@@ -180,12 +183,13 @@ async function fetchUser(uid){
  try{
   const s=await getDoc(doc(db,"users",uid));
   if(s.exists()){
-   const data=s.data(),u={...data,...normalizeUserData({uid,email:data.email,displayName:data.displayName,photoURL:data.photoURL},data),uid};
+   const data=s.data();
+   const u={...data,...normalizeUserData({uid,email:data.email,displayName:data.displayName,photoURL:data.photoURL},data),uid};
    userCache.set(uid,u);saveOfflineUser(u);return u;
   }
  }catch(e){console.warn("fetchUser skipped",uid,e)}
  const cached=loadOfflineUser(uid);
- if(cached){const u={...cached,uid};userCache.set(uid,u);return u}
+ if(cached){const u=offlineUserOf({...cached,uid});userCache.set(uid,u);return u}
  return null;
 }
 async function enrichPostAuthors(posts){
@@ -194,8 +198,12 @@ async function enrichPostAuthors(posts){
  const map=new Map(pairs);
  return posts.map(p=>{
   const uid=p.uid||p.author?.uid||p.userId,u=map.get(uid);
-  if(!u)return p;
-  const old=p.author||{};
+  const embedded=p.author||{};
+  if(!u){
+   const fallback=offlineAuthorFromPost(p);
+   return fallback?{...p,author:{...embedded,uid,displayName:fallback.displayName,name:fallback.name,photoURL:fallback.photoURL||embedded.photoURL||""}}:p;
+  }
+  const old=embedded;
   return {...p,author:{...old,uid,displayName:nameOf(u),name:nameOf(u),photoURL:u.photoURL||old.photoURL||""}};
  });
 }
@@ -206,7 +214,7 @@ function startFeed(){
  subscribe(onSnapshot(q,s=>{
   const token=++feedVersion;
   const raw=s.docs.map(d=>({id:d.id,...d.data()}));
-  lastPosts=raw;saveOfflinePosts(raw);renderFeed($("posts-feed"),raw);
+  lastPosts=raw;indexOfflinePostAuthors(raw);saveOfflinePosts(raw);renderFeed($("posts-feed"),raw);
   enrichPostAuthors(raw).then(enriched=>{if(token!==feedVersion)return;lastPosts=enriched;saveOfflinePosts(enriched);renderFeed($("posts-feed"),enriched)}).catch(e=>console.warn("Author enrichment skipped",e));
  },e=>{
   console.warn("Feed listener skipped",e);
@@ -224,7 +232,16 @@ async function copyText(text,success){try{if(navigator.clipboard?.writeText){awa
 function postShareText(p){return [p.text||"",p.image?"صورة مرفقة في كلمات":""].filter(Boolean).join("\n")}
 function openShareOptions(id){const p=lastPosts.find(x=>x.id===id);if(!p)return toast("لم يعد هذا المنشور متاحًا.");const url=location.href.split("#")[0]+"#post-"+id;showModal("مشاركة المنشور",`<div class="setting-section"><button class="btn" id="share-repost"><i class="fa-solid fa-retweet"></i> إعادة النشر في كلمات</button><button class="btn secondary" id="share-copy-text"><i class="fa-regular fa-copy"></i> نسخ نص المنشور</button><button class="btn secondary" id="share-copy-link"><i class="fa-solid fa-link"></i> نسخ رابط المنشور</button><button class="btn secondary" id="share-external"><i class="fa-solid fa-share-nodes"></i> مشاركة خارجية</button>${p.image?'<button class="btn secondary" id="share-save-image"><i class="fa-solid fa-download"></i> حفظ الصورة</button>':''}</div><p class="muted small">إعادة النشر تُظهر المنشور الأصلي وصاحبه، ولا تنشئ نسخة مستقلة من نصه أو صورته.</p>`);$("share-repost").onclick=async()=>{if(p.uid===currentUser.uid)return toast("هذا منشورك بالفعل؛ لا حاجة لإعادة نشره.");if(p.repostOf)return toast("هذا منشور معاد نشره بالفعل؛ افتح المنشور الأصلي لإعادة نشره.");try{await addDoc(collection(db,"posts"),{uid:currentUser.uid,author:{uid:currentUser.uid,displayName:nameOf(currentUserData),name:nameOf(currentUserData),photoURL:currentUserData.photoURL||""},text:"",image:"",repostOf:id,originalPost:{uid:p.uid,author:p.author||{},text:p.text||"",image:p.image||"",createdAt:p.createdAt||null},likes:[],comments:[],createdAt:serverTimestamp()});closeModal();toast("تمت إعادة النشر.")}catch(err){showError(err)}};$("share-copy-text").onclick=()=>copyText(postShareText(p),"تم نسخ نص المنشور.");$("share-copy-link").onclick=()=>copyText(url,"تم نسخ رابط المنشور.");$("share-external").onclick=async()=>{try{if(navigator.share)await navigator.share({title:"كلمات",text:postShareText(p)||"منشور من كلمات",url});else await copyText([postShareText(p),url].filter(Boolean).join("\n"),"تم نسخ النص والرابط للمشاركة.")}catch(err){if(err?.name!=="AbortError")showError(err)}};$("share-save-image")?.addEventListener("click",()=>{try{const a=document.createElement("a");a.href=p.image;a.download="kalimat-image.jpg";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();toast("إذا لم يبدأ الحفظ، افتح الصورة واضغط مطولًا لحفظها.")}catch(err){showError(err)}})}
 document.addEventListener("submit",async e=>{const f=e.target.closest(".comment-form");if(!f)return;e.preventDefault();const a=f.closest("article[data-post-id]"),i=f.querySelector(".comment-input"),text=i.value.trim();if(!text)return;try{await updateDoc(doc(db,"posts",a.dataset.postId),{comments:arrayUnion({uid:currentUser.uid,name:nameOf(currentUserData),text,createdAt:new Date().toISOString()})});i.value=""}catch(err){showError(err)}});
-async function openUserProfile(uid){try{const u=uid===currentUser.uid?currentUserData:await fetchUser(uid);if(!u)return toast("لم يتم العثور على العضو.");if(uid!==currentUser.uid&&(isBlocked(uid)||blockedBy(currentUser.uid,u)))return toast("لا يمكن عرض الملف بسبب إعدادات الحظر.");viewedProfile=u;showPage("profile",true);$("profile-view-avatar").src=avatarOf(u);$("profile-view-name").textContent=nameOf(u);$("profile-view-email").textContent=uid===currentUser.uid?(u.email||""):"";$("profile-view-bio").textContent=u.bio||"لم يضف نبذة شخصية بعد.";const actions=$("profile-actions");if(uid===currentUser.uid){actions.innerHTML='<button id="edit-profile-btn" class="btn"><i class="fa-solid fa-pen"></i> تعديل الملف</button>';$("edit-profile-btn").onclick=editOwnProfile}else{const friends=currentUserData.friends||[];actions.innerHTML=`<button class="btn" id="profile-message-btn">مراسلة</button>${friends.includes(uid)?'<button class="btn secondary" id="remove-friend-btn">إزالة صديق</button>':'<button class="btn secondary" id="add-friend-btn">إضافة صديق</button>'}<button class="btn secondary" id="profile-block-btn">${isBlocked(uid)?"إلغاء الحظر":"حظر العضو"}</button>`;$("profile-message-btn").onclick=()=>openChatWith(u);$("profile-block-btn").onclick=()=>isBlocked(uid)?unblockUser(uid):blockUser(uid);$("add-friend-btn")?.addEventListener("click",()=>sendFriendRequest(u));$("remove-friend-btn")?.addEventListener("click",()=>removeFriend(uid))}const s=await getDocs(query(collection(db,"posts"),where("uid","==",uid),limit(40)));const profilePosts=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.createdAt?.toMillis?.()||0)-(a.createdAt?.toMillis?.()||0));renderFeed($("user-profile-posts-feed"),await enrichPostAuthors(profilePosts))}catch(e){showError(e)}}
+async function openUserProfile(uid){try{
+ let u=uid===currentUser.uid?currentUserData:await fetchUser(uid);
+ if(!u){
+  const known=lastPosts.find(p=>(p.uid||p.author?.uid||p.userId)===uid);
+  u=known?offlineAuthorFromPost(known):null;
+ }
+ if(!u)return toast("لم يتم العثور على العضو.");if(uid!==currentUser.uid&&(isBlocked(uid)||blockedBy(currentUser.uid,u)))return toast("لا يمكن عرض الملف بسبب إعدادات الحظر.");viewedProfile=u;showPage("profile",true);$("profile-view-avatar").src=avatarOf(u);$("profile-view-name").textContent=nameOf(u);$("profile-view-email").textContent=uid===currentUser.uid?(u.email||""):"";$("profile-view-bio").textContent=u.bio||"لم يضف نبذة شخصية بعد.";const actions=$("profile-actions");if(uid===currentUser.uid){actions.innerHTML='<button id="edit-profile-btn" class="btn"><i class="fa-solid fa-pen"></i> تعديل الملف</button>';$("edit-profile-btn").onclick=editOwnProfile}else{const friends=currentUserData.friends||[];actions.innerHTML=`<button class="btn" id="profile-message-btn">مراسلة</button>${friends.includes(uid)?'<button class="btn secondary" id="remove-friend-btn">إزالة صديق</button>':'<button class="btn secondary" id="add-friend-btn">إضافة صديق</button>'}<button class="btn secondary" id="profile-block-btn">${isBlocked(uid)?"إلغاء الحظر":"حظر العضو"}</button>`;$("profile-message-btn").onclick=()=>openChatWith(u);$("profile-block-btn").onclick=()=>isBlocked(uid)?unblockUser(uid):blockUser(uid);$("add-friend-btn")?.addEventListener("click",()=>sendFriendRequest(u));$("remove-friend-btn")?.addEventListener("click",()=>removeFriend(uid))}let profilePosts=[];
+ try{const s=await getDocs(query(collection(db,"posts"),where("uid","==",uid),limit(40)));profilePosts=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.createdAt?.toMillis?.()||0)-(a.createdAt?.toMillis?.()||0));}
+ catch(e){profilePosts=loadOfflinePosts().filter(p=>(p.uid||p.author?.uid||p.userId)===uid)}
+ renderFeed($("user-profile-posts-feed"),await enrichPostAuthors(profilePosts))}catch(e){showError(e)}}
 async function compressProfileImage(file,maxBytes=100*1024){
  if(!file.type.startsWith("image/"))throw Error("يرجى اختيار ملف صورة صالح.");
  const img=await new Promise((resolve,reject)=>{const objectUrl=URL.createObjectURL(file),image=new Image();image.onload=()=>{URL.revokeObjectURL(objectUrl);resolve(image)};image.onerror=()=>{URL.revokeObjectURL(objectUrl);reject(Error("تعذر قراءة الصورة."))};image.src=objectUrl});
@@ -238,7 +255,9 @@ async function editOwnProfile(){
  showModal("تعديل الملف الشخصي",`<form id="edit-profile-form" class="post"><label>الاسم<input class="field" name="name" required maxlength="60" value="${esc(nameOf(u))}"></label><label>نبذة عنك<textarea class="field" name="bio" rows="4" maxlength="500">${esc(u.bio||"")}</textarea></label><div class="setting-section"><strong>صورة الملف الشخصي</strong><div class="row" style="align-items:center"><img id="profile-edit-preview" class="avatar big" src="${avatarOf(u)}" alt="معاينة صورة الملف الشخصي"><div class="post" style="flex:1"><button class="btn secondary" id="profile-pick-image" type="button"><i class="fa-regular fa-image"></i> اختيار صورة من المعرض</button><button class="btn secondary" id="profile-remove-image" type="button">إزالة الصورة</button></div></div><input id="profile-image-file" class="hidden" type="file" accept="image/jpeg,image/png,image/webp,image/gif"><p class="muted small" style="margin:0">ستُقص الصورة إلى شكل مربع وتُضغط إلى نحو 100 كيلوبايت كحد أقصى قبل الحفظ.</p></div><button class="btn" id="profile-save-btn" type="submit">حفظ التغييرات</button></form>`);
  $("profile-pick-image").onclick=()=>$("profile-image-file").click();
  $("profile-remove-image").onclick=()=>{selectedProfileImage="";profileImageChanged=true;$("profile-edit-preview").src=DEFAULT_AVATAR;$("profile-image-file").value=""};
- $("profile-image-file").onchange=async e=>{const file=e.target.files?.[0];if(!file)return;const button=$("profile-pick-image");button.disabled=true;try{selectedProfileImage=await compressProfileImage(file);profileImageChanged=true;$("profile-edit-preview").src=selectedProfileImage;toast("تم تجهيز الصورة وضغطها.")}catch(err){showError(err);e.target.value=""}finally{button.disabled=false}};
+ $("profile-image-file").onchange=async e=>{const file=e.target.files?.[0];if(!file)return;const button=$("profile-pick-image");button.disabled=true;try{selectedProfileImage=await compressProfileImage(file);profileImageChanged=true;$("profile-edit-preview").src=selectedProfileImage;toast("تم تجهيز الصورة وضغطها.")}catch(err){
+   try{const raw=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result||""));r.onerror=()=>reject(Error("تعذر قراءة الصورة."));r.readAsDataURL(file)});if(!/^data:image\//i.test(raw))throw Error("يرجى اختيار صورة صالحة.");selectedProfileImage=raw;profileImageChanged=true;$("profile-edit-preview").src=raw;toast("تم تجهيز الصورة.")}catch(fallbackErr){showError(fallbackErr);e.target.value=""}
+  }finally{button.disabled=false}};
  $("edit-profile-form").onsubmit=async e=>{e.preventDefault();const f=e.currentTarget,n=f.elements.name.value.trim(),bio=f.elements.bio.value.trim(),photoURL=profileImageChanged?selectedProfileImage:(u.photoURL||"");if(n.length<2)return toast("يرجى إدخال اسم من حرفين على الأقل.");const save=$("profile-save-btn");save.disabled=true;try{await setDoc(doc(db,"users",currentUser.uid),{uid:currentUser.uid,name:n,displayName:n,email:currentUser.email||u.email||"",bio,photoURL,friends:asArray(u.friends),blockedUsers:asArray(u.blockedUsers)},{merge:true});await updateProfile(currentUser,{displayName:n});currentUserData={...currentUserData,name:n,displayName:n,bio,photoURL};userCache.set(currentUser.uid,{...currentUserData});saveOfflineUser(currentUserData);updateAccountUI();closeModal();await openUserProfile(currentUser.uid);toast("تم تحديث الملف.")}catch(err){showError(err)}finally{save.disabled=false}}
 }
 async function sendFriendRequest(u){try{if(isBlocked(u.uid)||blockedBy(currentUser.uid,u))return toast("لا يمكن إرسال الطلب بسبب الحظر.");if((currentUserData.friends||[]).includes(u.uid))return toast("هذا العضو صديق بالفعل.");const q=query(collection(db,"friendRequests"),where("from","==",currentUser.uid),where("to","==",u.uid),where("status","==","pending"),limit(1));if(!(await getDocs(q)).empty)return toast("الطلب مرسل بالفعل.");await addDoc(collection(db,"friendRequests"),{from:currentUser.uid,to:u.uid,status:"pending",fromName:nameOf(currentUserData),toName:nameOf(u),createdAt:serverTimestamp()});await addDoc(collection(db,"notifications"),{to:u.uid,from:currentUser.uid,type:"friend_request",text:nameOf(currentUserData)+" أرسل إليك طلب صداقة.",read:false,createdAt:serverTimestamp()});toast("تم إرسال الطلب.")}catch(e){showError(e)}}
@@ -288,4 +307,4 @@ document.addEventListener("focusout",()=>setTimeout(()=>{
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});setAuthMode("login");
 </script>
 </body>
-  </html>
+                                                                                                                                                                                                                               </html>
