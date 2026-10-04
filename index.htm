@@ -253,7 +253,7 @@ onAuthStateChanged(auth,async user=>{
  clearSubs();currentUser=user;
  if(!user){
   currentUserData={};livePosts=[];olderPosts=[];lastLiveDoc=null;olderCursor=null;feedHasMore=true;profilePosts=[];notifs=[];unreadCount=0;
-  postsCache.clear();userCache.clear();profileCache.clear();updateBadge();showAuth();return;
+  postsCache.clear();userCache.clear();profileCache.clear();authorTried.clear();updateBadge();showAuth();return;
  }
  currentUserData={uid:user.uid,name:user.displayName||"عضو",displayName:user.displayName||"عضو",photoURL:"",thumb:"",bio:"",friends:[],blockedUsers:[]};
  const [prof,cached]=await Promise.all([getOfflineProfile(user.uid),getOfflinePosts()]);
@@ -391,12 +391,35 @@ async function loadMore(){
  finally{loadingMore=false;renderHome()}
 }
 
+/* صورة واسم صاحب المنشور تُؤخذ من بياناته الحالية (لا من نسخة قديمة محفوظة داخل المنشور) */
+const authorTried=new Set();let authorRenderT=null;
+function liveAuthor(a,uid){
+ a=a||{};
+ if(currentUser&&uid===currentUser.uid)return{...a,uid,displayName:nameOf(currentUserData),thumb:currentUserData.thumb||"",photoURL:currentUserData.photoURL||""};
+ const c=userCache.get(uid);
+ if(c?.u)return{...a,uid,displayName:nameOf(c.u),thumb:c.u.thumb||"",photoURL:c.u.photoURL||""};
+ return a;
+}
+async function hydrateAuthors(list){
+ /* نجلب فقط أصحاب المنشورات الذين لا تتوفر لهم صورة، بحد أقصى 10 في كل مرة لتوفير القراءات */
+ const need=[];
+ for(const p of list){
+  const uid=authorUid(p);
+  if(!uid||uid===currentUser.uid||authorTried.has(uid)||userCache.has(uid))continue;
+  if(safeUrlRaw(p.author?.thumb||p.author?.photoURL))continue;
+  authorTried.add(uid);need.push(uid);
+  if(need.length>=10)break;
+ }
+ if(!need.length)return;
+ await Promise.all(need.map(fetchUser));
+ clearTimeout(authorRenderT);authorRenderT=setTimeout(renderAll,200);
+}
 function renderPost(p){
- const uid=authorUid(p),author=p.author||{},likes=asArray(p.likes),comments=asArray(p.comments);
+ const uid=authorUid(p),author=liveAuthor(p.author,uid),likes=asArray(p.likes),comments=asArray(p.comments);
  const liked=likes.includes(currentUser.uid),own=uid===currentUser.uid,expanded=expandedComments.has(p.id);
  let body;
  if(p.repostOf){
-  const o=p.originalPost||{},oa=o.author||{},oimg=safeUrlRaw(o.image)||repostImg.get(p.repostOf)||"";
+  const o=p.originalPost||{},oa=liveAuthor(o.author,o.uid||o.author?.uid),oimg=safeUrlRaw(o.image)||repostImg.get(p.repostOf)||"";
   const imgHtml=oimg?`<img class="post-image" src="${esc(oimg)}" alt="صورة المنشور الأصلي" loading="lazy" decoding="async">`:(o.hasImage&&!repostImg.has(p.repostOf)?`<div class="repost-img" data-orig="${esc(p.repostOf)}"></div>`:"");
   body=`<div class="muted small"><i class="fa-solid fa-retweet"></i> أعاد ${esc(nameOf(author))} نشر هذا المنشور</div><div class="card post quoted"><div class="row"><img class="avatar" src="${avatarOf(oa)}" alt="" loading="lazy" decoding="async"><div><button type="button" class="open-profile link-btn" data-uid="${esc(o.uid||oa.uid||"")}">${esc(nameOf(oa))}</button><div class="muted small">المنشور الأصلي</div></div></div>${o.text?`<div class="post-body">${br(o.text)}</div>`:""}${imgHtml}</div>`;
  }else{
@@ -422,6 +445,7 @@ function renderFeed(el,posts,withMore){
   if(i&&focusId===id){i.focus();try{i.setSelectionRange(focusPos,focusPos)}catch{}}
  });
  hydrateReposts(el);
+ hydrateAuthors(list);
 }
 async function hydrateReposts(el){
  for(const box of el.querySelectorAll(".repost-img[data-orig]")){
