@@ -2,56 +2,55 @@
   "name": "كلمات - Kalimat",
   "short_name": "كلمات",
   "description": "منصة كلمات للتواصل الثقافي والفكري",
-  "start_url": "/",
-  "scope": "/",
+  "start_url": "/lmlm2005/",
+  "scope": "/lmlm2005/",
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#ffffff",
-  "theme_color": "#1e5a96",
+  "theme_color": "#0284c7",
+  "dir": "rtl",
+  "lang": "ar",
   "icons": [
     {
-      "src": "/images/kalimat_180x180.png",
+      "src": "/lmlm2005/kalimat_180x180.png",
       "sizes": "180x180",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/images/kalimat_192x192.png",
+      "src": "/lmlm2005/kalimat_192x192-1.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
-      "src": "/images/kalimat_256x256.png",
+      "src": "/lmlm2005/kalimat_256x256-1.png",
       "sizes": "256x256",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/images/kalimat_512x512.png",
+      "src": "/lmlm2005/kalimat_512x512-1.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
   ],
-  "categories": ["social", "productivity"],
-  "screenshots": [
-    {
-      "src": "/images/kalimat_512x512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
+  "categories": [
+    "social",
+    "productivity"
   ],
   "shortcuts": [
     {
       "name": "منصة كلمات",
       "short_name": "كلمات",
       "description": "الدخول إلى منصة كلمات",
-      "url": "/",
+      "url": "/lmlm2005/",
       "icons": [
         {
-          "src": "/images/kalimat_192x192.png",
-          "sizes": "192x192"
+          "src": "/lmlm2005/kalimat_192x192-1.png",
+          "sizes": "192x192",
+          "type": "image/png"
         }
       ]
     }
