@@ -4,11 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
 <meta name="theme-color" content="#0284c7">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="كلمات">
 <meta name="description" content="كلمات، منصة عربية للتواصل ومشاركة الأفكار والمعرفة وبناء مجتمع فكري.">
 <title>كلمات | الواحة الفكرية العالمية</title>
 <link rel="manifest" href="./manifest.json">
-<link rel="icon" href="./favicon.ico">
-<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="icon" type="image/png" sizes="256x256" href="./images/kalimat_256x256.png">
+<link rel="shortcut icon" href="./images/kalimat_256x256.png">
+<link rel="apple-touch-icon" href="./images/kalimat_180x180.png">
 <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js">
@@ -936,7 +940,7 @@ document.addEventListener("submit",e=>{
 });
 
 /* ============ لوحة المفاتيح والتثبيت وعامل الخدمة ============ */
-if("serviceWorker" in navigator&&location.protocol.startsWith("http"))addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(console.warn));
+if("serviceWorker" in navigator&&location.protocol.startsWith("http"))addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js").catch(console.warn));
 const NON_TEXT=["file","checkbox","radio","button","submit","range","color"];
 const isTyping=()=>{const f=document.activeElement;return !!f&&(f.tagName==="TEXTAREA"||(f.tagName==="INPUT"&&!NON_TEXT.includes(f.type)))};
 function updateKeyboardState(){
