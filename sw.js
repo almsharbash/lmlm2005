@@ -2,7 +2,7 @@
    Service Worker - كلمات | الواحة الفكرية العالمية
    ========================================================= */
 
-const VERSION = "kalimat-v6";
+const VERSION = "kalimat-v7";
 const BASE = "/lmlm2005/";
 
 const SHELL = [
