@@ -50,6 +50,7 @@ body.dark{--p:#38bdf8;--p-bright:#7dd3fc;--p-soft:#123448;--bg:#0b1720;--s:#1426
 .welcome-note{display:flex;align-items:center;gap:10px;padding:10px 12px;margin-bottom:12px;font-size:13.5px;line-height:1.7}.welcome-note .wn-text{flex:1;min-width:0}.welcome-note strong{color:var(--p)}.sg-btn{width:34px;height:34px;flex-shrink:0;border:0;border-radius:9px;background:var(--p);color:#fff;font-size:15px;display:inline-flex;align-items:center;justify-content:center}.sg-btn:active{transform:scale(.94)}.welcome-note .ib-close{flex-shrink:0}
 .auth-card label.consent{display:flex;align-items:flex-start;gap:8px;font-size:13px;line-height:1.8}.consent input{width:18px;height:18px;margin-top:4px;flex-shrink:0}.consent .link-btn{display:inline;font-size:13px;color:var(--p);text-decoration:underline}.auth-legal{text-align:center;margin:0;font-size:12px}.auth-legal .link-btn{display:inline;font-size:12px;color:var(--m);text-decoration:underline;font-weight:normal}
 .legal-body h3{font-size:16px;margin:16px 0 4px;color:var(--p)}.legal-body p,.legal-body li{font-size:14px;line-height:1.9;margin:4px 0}.legal-body ul{padding-inline-start:20px;margin:4px 0}.legal-note{background:var(--p-soft);border-radius:10px;padding:8px 11px;font-size:13px}
+.comment-tools{display:inline-flex;gap:14px;margin-inline-start:12px}.comment-tools .link-btn{font-weight:normal;text-decoration:underline;font-size:12px}
 </style>
 </head>
 <body>
@@ -111,7 +112,7 @@ body.dark{--p:#38bdf8;--p-bright:#7dd3fc;--p-soft:#123448;--bg:#0b1720;--s:#1426
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import{getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,updateProfile,sendPasswordResetEmail,sendEmailVerification,reload,deleteUser,reauthenticateWithCredential,EmailAuthProvider}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import{initializeFirestore,getFirestore,persistentLocalCache,persistentMultipleTabManager,doc,getDoc,getDocFromServer,setDoc,updateDoc,addDoc,collection,query,where,orderBy,limit,startAfter,startAt,endAt,onSnapshot,serverTimestamp,arrayUnion,arrayRemove,deleteDoc,deleteField,getDocs,writeBatch}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import{initializeFirestore,getFirestore,persistentLocalCache,persistentMultipleTabManager,doc,getDoc,getDocFromServer,setDoc,updateDoc,addDoc,collection,query,where,orderBy,limit,startAfter,startAt,endAt,onSnapshot,serverTimestamp,arrayUnion,arrayRemove,deleteDoc,deleteField,getDocs,writeBatch,increment}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 /* ============ إعدادات Firebase ============ */
 const firebaseConfig={apiKey:"AIzaSyAPjMSa60LLeM0gse8UEfr21xly0dCk5gM",authDomain:"gogi1982-1982.firebaseapp.com",projectId:"gogi1982-1982",storageBucket:"gogi1982-1982.firebasestorage.app",messagingSenderId:"233752528773",appId:"1:233752528773:web:b77ec97d0c83c7a23966ec",measurementId:"G-P4VE7LJMDD"};
@@ -150,7 +151,7 @@ let activeChatId=null,activeChatUser=null,unsubs=[],unsubMessages=null,installPr
 let registering=false,lastPostAt=0,currentPageName="home",handlingPopState=false;
 let livePosts=[],olderPosts=[],lastLiveDoc=null,olderCursor=null,feedHasMore=true,loadingMore=false;
 let profilePosts=[],profileReq=0,notifs=[],unreadCount=0,modalPostId=null,saveTimer=null;
-const postsCache=new Map(),userCache=new Map(),profileCache=new Map(),repostImg=new Map(),expandedComments=new Set(),openComments=new Set(),pageScroll={};
+const postsCache=new Map(),userCache=new Map(),profileCache=new Map(),repostImg=new Map(),expandedComments=new Set(),openComments=new Set(),pageScroll={},commentsByPost=new Map(),commentSubs=new Map();
 let requestsStarted=false,friendsStarted=false,notificationsStarted=false,chatRoomsStarted=false,ownDocStarted=false;
 
 /* ============ رسائل الخطأ والإشعارات المنبثقة ============ */
@@ -329,6 +330,7 @@ function updateAccountUI(){
 function subscribe(fn){if(typeof fn==="function")unsubs.push(fn)}
 function clearSubs(){
  unsubs.forEach(f=>{try{f()}catch{}});unsubs=[];
+ commentSubs.forEach(f=>{try{f()}catch{}});commentSubs.clear();commentsByPost.clear();openComments.clear();
  if(unsubMessages){try{unsubMessages()}catch{}}unsubMessages=null;
  activeChatId=null;activeChatUser=null;
  requestsStarted=friendsStarted=notificationsStarted=chatRoomsStarted=ownDocStarted=false;
@@ -469,7 +471,7 @@ async function hydrateAuthors(list){
  clearTimeout(authorRenderT);authorRenderT=setTimeout(renderAll,200);
 }
 function renderPost(p){
- const uid=authorUid(p),author=liveAuthor(p.author,uid),likes=asArray(p.likes),comments=asArray(p.comments);
+ const uid=authorUid(p),author=liveAuthor(p.author,uid),likes=asArray(p.likes),comments=postComments(p).filter(c=>!isBlocked(c.uid)),totalComments=(p.commentCount||0)+asArray(p.comments).length;
  const liked=likes.includes(currentUser.uid),own=uid===currentUser.uid,expanded=expandedComments.has(p.id);
  let body;
  if(p.repostOf){
@@ -483,8 +485,8 @@ function renderPost(p){
  const open=openComments.has(p.id);
  const shown=expanded?comments:comments.slice(-3);
  const toggle=comments.length>3?`<button type="button" class="link-btn small muted toggle-comments">${expanded?"إخفاء التعليقات القديمة":"عرض كل التعليقات ("+comments.length+")"}</button>`:"";
- const commentsHtml=toggle+shown.map(c=>`<div class="comment"><strong>${esc(c.name||"عضو")}</strong><div>${br(c.text||"")}</div><span class="muted small">${esc(timeLabel(c.createdAt))}</span></div>`).join("");
- return `<article class="card post" data-post-id="${esc(p.id)}"><div class="row between"><div class="row"><img class="avatar" src="${avatarOf(author)}" alt="" loading="lazy" decoding="async"><div><button type="button" class="open-profile link-btn" data-uid="${esc(uid||"")}">${esc(nameOf(author))}</button><div class="muted small">${esc(timeLabel(p.createdAt))}</div></div></div>${own?`<button class="btn secondary delete-post" type="button" title="حذف المنشور" aria-label="حذف المنشور"><i class="fa-regular fa-trash-can"></i></button>`:""}</div>${body}<div class="post-actions"><button class="action-btn ${liked?"liked":""} like-post" type="button"><i class="fa-${liked?"solid":"regular"} fa-heart"></i> ${liked?"أعجبني":"إعجاب"} (${likes.length})</button><button class="action-btn focus-comment ${open?"active":""}" type="button"><i class="fa-regular fa-comment"></i> التعليقات (${comments.length})</button><button class="action-btn share-post" type="button"><i class="fa-solid fa-share-nodes"></i> مشاركة</button></div>${open?`<div class="comment-list">${commentsHtml}</div><form class="comment-form"><input class="field comment-input" maxlength="1000" placeholder="اكتب تعليقًا..." aria-label="تعليق"><button class="btn" type="submit" aria-label="إرسال التعليق"><i class="fa-solid fa-paper-plane"></i></button></form>`:""}</article>`;
+ const commentsHtml=toggle+shown.map(c=>commentHtml(c,own)).join("");
+ return `<article class="card post" data-post-id="${esc(p.id)}"><div class="row between"><div class="row"><img class="avatar" src="${avatarOf(author)}" alt="" loading="lazy" decoding="async"><div><button type="button" class="open-profile link-btn" data-uid="${esc(uid||"")}">${esc(nameOf(author))}</button><div class="muted small">${esc(timeLabel(p.createdAt))}${p.editedAt?" · معدّل":""}</div></div></div>${own?`<div class="row">${p.repostOf?"":`<button class="btn secondary edit-post" type="button" title="تعديل المنشور" aria-label="تعديل المنشور"><i class="fa-regular fa-pen-to-square"></i></button>`}<button class="btn secondary delete-post" type="button" title="حذف المنشور" aria-label="حذف المنشور"><i class="fa-regular fa-trash-can"></i></button></div>`:""}</div>${body}<div class="post-actions"><button class="action-btn ${liked?"liked":""} like-post" type="button"><i class="fa-${liked?"solid":"regular"} fa-heart"></i> ${liked?"أعجبني":"إعجاب"} (${likes.length})</button><button class="action-btn focus-comment ${open?"active":""}" type="button"><i class="fa-regular fa-comment"></i> التعليقات (${totalComments})</button><button class="action-btn share-post" type="button"><i class="fa-solid fa-share-nodes"></i> مشاركة</button></div>${open?`<div class="comment-list">${commentsHtml}</div><form class="comment-form"><input class="field comment-input" maxlength="1000" placeholder="اكتب تعليقًا..." aria-label="تعليق"><button class="btn" type="submit" aria-label="إرسال التعليق"><i class="fa-solid fa-paper-plane"></i></button></form>`:""}</article>`;
 }
 function renderFeed(el,posts,withMore){
  /* الحفاظ على نص التعليق قيد الكتابة عند تحديث القائمة */
@@ -550,18 +552,23 @@ function toggleLike(id){
 function addComment(id,input){
  const text=input.value.trim();if(!text)return;
  const p=postsCache.get(id);if(!p)return toast("لم يعد هذا المنشور متاحًا.");
- const comments=asArray(p.comments);
- if(comments.length>=150)return toast("وصل المنشور إلى الحد الأقصى من التعليقات.");
- const c={uid:currentUser.uid,name:nameOf(currentUserData),text,createdAt:new Date().toISOString()};
+ if((p.commentCount||0)+asArray(p.comments).length>=300)return toast("وصل المنشور إلى الحد الأقصى من التعليقات.");
  input.value="";
- setPostLocal({...p,comments:[...comments,c]});
- updateDoc(doc(db,"posts",id),{comments:arrayUnion(c)}).catch(e=>{setPostLocal(p);showError(e)});
+ const b=writeBatch(db);
+ b.set(doc(collection(db,"posts",id,"comments")),{uid:currentUser.uid,name:nameOf(currentUserData).slice(0,60),text:text.slice(0,1000),createdAt:serverTimestamp()});
+ b.update(doc(db,"posts",id),{commentCount:increment(1)});
+ b.commit().catch(showError);
  addNotification(authorUid(p),"comment",nameOf(currentUserData)+" علّق على منشورك.");
 }
-function deletePost(id){
+async function deletePost(id){
  if(!confirm("هل تريد حذف المنشور؟"))return;
- deleteDoc(doc(db,"posts",id)).then(()=>toast("تم حذف المنشور.")).catch(showError);
+ stopComments(id);
  removePostLocal(id);
+ try{
+  if(online()){try{await deleteAllByQuery(query(collection(db,"posts",id,"comments"),limit(400)),400)}catch(e){console.warn(e)}}
+  await deleteDoc(doc(db,"posts",id));
+  toast("تم حذف المنشور.");
+ }catch(e){showError(e)}
 }
 
 $("new-post-form").addEventListener("submit",e=>{
@@ -977,6 +984,59 @@ function openSuggest(fromSettings){
  if(fromSettings)$("sg-back").onclick=openSettings;
 }
 
+/* ============ التعليقات (مجموعة فرعية) وتعديل المنشورات ============ */
+function postComments(p){
+ const legacy=asArray(p.comments).map(c=>({...c,legacy:true}));
+ return [...legacy,...(commentsByPost.get(p.id)||[])].sort((a,b)=>ms(a.createdAt)-ms(b.createdAt));
+}
+function commentHtml(c,postOwn){
+ const mine=c.uid===currentUser.uid,canEdit=mine&&!c.legacy,canDel=!c.legacy&&(mine||postOwn);
+ const tools=(canEdit||canDel)?`<span class="comment-tools">${canEdit?`<button type="button" class="link-btn muted edit-comment" data-cid="${esc(c.id)}">تعديل</button>`:""}${canDel?`<button type="button" class="link-btn muted delete-comment" data-cid="${esc(c.id)}">حذف</button>`:""}</span>`:"";
+ return `<div class="comment"><strong>${esc(c.name||"عضو")}</strong><div>${br(c.text||"")}</div><span class="muted small">${esc(timeLabel(c.createdAt))}${c.editedAt?" · معدّل":""}</span>${tools}</div>`;
+}
+function startComments(id){
+ if(commentSubs.has(id))return;
+ commentSubs.set(id,onSnapshot(query(collection(db,"posts",id,"comments"),orderBy("createdAt","desc"),limit(60)),s=>{
+  commentsByPost.set(id,s.docs.map(snapDoc).reverse());
+  const p=postsCache.get(id);if(p)setPostLocal(p);
+ },listenErr("comments")));
+}
+function stopComments(id){
+ const f=commentSubs.get(id);if(f){try{f()}catch{}commentSubs.delete(id)}
+ commentsByPost.delete(id);
+}
+function openEditPost(id){
+ const p=postsCache.get(id);if(!p||authorUid(p)!==currentUser.uid||p.repostOf)return;
+ showModal("تعديل المنشور",`<form id="edit-post-form" class="post"><textarea class="field" name="t" rows="6" maxlength="5000">${esc(p.text||"")}</textarea><button class="btn" type="submit">حفظ التعديل</button></form>`);
+ $("edit-post-form").onsubmit=async e=>{
+  e.preventDefault();
+  const t=e.currentTarget.elements.t.value.trim();
+  if(!t&&!safeUrlRaw(p.image))return toast("اكتب نصًا، أو احذف المنشور إن لم تعد تريده.");
+  if(t===String(p.text||"").trim()){await closeModal();return}
+  setPostLocal({...p,text:t,editedAt:new Date().toISOString()});
+  updateDoc(doc(db,"posts",id),{text:t,editedAt:serverTimestamp()}).catch(err=>{setPostLocal(p);showError(err)});
+  await closeModal();toast(online()?"تم تعديل المنشور.":"سيُحفظ التعديل عند عودة الاتصال.");
+ };
+}
+function openEditComment(pid,cid){
+ const c=(commentsByPost.get(pid)||[]).find(x=>x.id===cid);if(!c||c.uid!==currentUser.uid)return;
+ showModal("تعديل التعليق",`<form id="edit-comment-form" class="post"><textarea class="field" name="t" rows="4" maxlength="1000">${esc(c.text||"")}</textarea><button class="btn" type="submit">حفظ التعديل</button></form>`);
+ $("edit-comment-form").onsubmit=async e=>{
+  e.preventDefault();
+  const t=e.currentTarget.elements.t.value.trim();
+  if(!t)return toast("لا يمكن حفظ تعليق فارغ؛ يمكنك حذفه بدلًا من ذلك.");
+  if(t!==c.text)updateDoc(doc(db,"posts",pid,"comments",cid),{text:t,editedAt:serverTimestamp()}).catch(showError);
+  await closeModal();
+ };
+}
+function deleteComment(pid,cid){
+ if(!confirm("هل تريد حذف هذا التعليق؟"))return;
+ const p=postsCache.get(pid),b=writeBatch(db);
+ b.delete(doc(db,"posts",pid,"comments",cid));
+ if(p&&(p.commentCount||0)>0)b.update(doc(db,"posts",pid),{commentCount:increment(-1)});
+ b.commit().then(()=>toast("تم حذف التعليق.")).catch(showError);
+}
+
 /* ============ قائمة الأصدقاء: العرض والإخفاء ============ */
 function updateFriendsPrivacyUI(){
  const hid=!!currentUserData.hideFriends,s=$("hide-friends-state"),b=$("hide-friends-btn");
@@ -1012,7 +1072,7 @@ function legalHtml(kind){
 <h3>3. السلوك المقبول</h3><p>يُمنع في كلمات:</p><ul><li>التهديد والتحرش والتنمر والإساءة للآخرين.</li><li>خطاب الكراهية والتحريض على العنف.</li><li>المحتوى الجنسي أو أي محتوى يستغل القاصرين.</li><li>انتحال شخصية الآخرين.</li><li>الرسائل المزعجة والروابط الاحتيالية.</li><li>نشر معلومات خاصة بالآخرين دون إذنهم.</li><li>نشر محتوى تملك حقوقه جهة أخرى دون إذن.</li><li>محاولة اختراق المنصة أو تعطيلها.</li></ul>
 <h3>4. محتواك</h3><p>تبقى ملكية ما تنشره لك، وتأذن لكلمات بتخزينه وعرضه داخل المنصة لتشغيلها. منشوراتك وتعليقاتك وملفك الشخصي ظاهرة لأعضاء المنصة، وأنت مسؤول عما تنشره.</p>
 <h3>5. الإشراف</h3><p>يحق لإدارة المنصة حذف أي محتوى مخالف، وتقييد الحسابات المخالفة أو إغلاقها. للإبلاغ عن مخالفة راسلنا على ${mail}.</p>
-<h3>6. تحكمك بحسابك</h3><p>يمكنك حذف منشوراتك، وحظر أي عضو، وتحميل بياناتك، وحذف حسابك نهائيًا من «مركز الإعدادات».</p>
+<h3>6. تحكمك بحسابك</h3><p>يمكنك تعديل منشوراتك وتعليقاتك وحذفها، وحظر أي عضو، وتحميل بياناتك، وحذف حسابك نهائيًا من «مركز الإعدادات».</p>
 <h3>7. إخلاء المسؤولية</h3><p>تُقدَّم الخدمة مجانًا «كما هي» دون ضمان لاستمرارها أو خلوها من الأخطاء، وقد تتغير أو تتوقف. لا نتحمل مسؤولية محتوى الأعضاء. ننصحك بالاحتفاظ بنسخة من بياناتك المهمة.</p>
 <h3>8. التعديلات</h3><p>قد نعدّل هذه الشروط، واستمرارك في الاستخدام بعد التعديل يعني قبولك لها.</p>
 <h3>9. التواصل</h3><p>${mail}</p>`;
@@ -1022,7 +1082,7 @@ function legalHtml(kind){
 <h3>3. أين تُحفظ البيانات</h3><p>على خوادم Google Firebase (قاعدة بيانات Firestore). تُستضاف صفحة التطبيق على GitHub Pages، وتُحمَّل الأيقونات والمكتبات من شبكات توصيل المحتوى (CDN) التي قد ترى عنوان الاتصال الخاص بك كأي موقع آخر.</p>
 <h3>4. التخزين على جهازك</h3><p>نحفظ على جهازك نسخة من آخر المنشورات وملفات بعض الأعضاء ليعمل التطبيق دون اتصال، وتُحذف المنشورات المحفوظة عند تسجيل الخروج. كما نحفظ تفضيلات بسيطة مثل المظهر.</p>
 <h3>5. ما لا نفعله</h3><p>لا نعرض إعلانات، ولا نبيع بياناتك، ولا نستخدم أدوات تتبع أو تحليل سلوك.</p>
-<h3>6. حقوقك</h3><ul><li>تعديل ملفك ومنشوراتك وحذفها.</li><li>حظر أي عضو.</li><li>تحميل بياناتك: «مركز الإعدادات» ← «بياناتي».</li><li>حذف حسابك نهائيًا من المكان نفسه.</li></ul>
+<h3>6. حقوقك</h3><ul><li>تعديل ملفك ومنشوراتك وتعليقاتك وحذفها.</li><li>حظر أي عضو.</li><li>تحميل بياناتك: «مركز الإعدادات» ← «بياناتي».</li><li>حذف حسابك نهائيًا من المكان نفسه.</li></ul>
 <h3>7. عند حذف الحساب</h3><p>يُحذف ملفك ومنشوراتك وإشعاراتك وحساب الدخول. تبقى تعليقاتك على منشورات الآخرين، ورسائلك المرسلة في محادثاتهم، وقد تبقى آثار مؤقتة لدى مزودي الخدمة التقنيين بحسب سياساتهم.</p>
 <h3>8. الأطفال</h3><p>كلمات غير موجهة لمن هم دون 13 سنة.</p>
 <h3>9. التعديل والتواصل</h3><p>قد نحدّث هذه السياسة عند تطوير المنصة. للاستفسار: ${mail}</p>`;
@@ -1073,7 +1133,13 @@ async function deleteAccountData(){
  /* إزالة اسمي من قوائم أصدقائي (محاولة؛ لا توقف الحذف إن لم تُسمح) */
  for(const f of asArray(currentUserData.friends)){try{await updateDoc(doc(db,"users",f),{friends:arrayRemove(uid)})}catch(e){console.warn(e)}}
  /* منشوراتي: إلزامي */
- await deleteAllByQuery(query(collection(db,"posts"),where("uid","==",uid),limit(400)),400);
+ for(;;){
+  const s=await getDocs(query(collection(db,"posts"),where("uid","==",uid),limit(100)));
+  if(s.empty)break;
+  for(const d of s.docs){try{await deleteAllByQuery(query(collection(db,"posts",d.id,"comments"),limit(400)),400)}catch(e){console.warn(e)}}
+  const b=writeBatch(db);s.docs.forEach(d=>b.delete(d.ref));await b.commit();
+  if(s.size<100)break;
+ }
  /* الإشعارات وطلبات الصداقة: محاولة */
  try{await deleteAllByQuery(query(collection(db,"users",uid,"notifications"),limit(400)),400)}catch(e){console.warn(e)}
  try{await deleteAllByQuery(query(collection(db,"friendRequests"),where("from","==",uid),limit(400)),400)}catch(e){console.warn(e)}
@@ -1132,39 +1198,5 @@ document.addEventListener("click",async e=>{
  const id=a.dataset.postId;
  if(t.closest(".like-post"))toggleLike(id);
  else if(t.closest(".delete-post"))deletePost(id);
- else if(t.closest(".focus-comment")){
-  if(openComments.has(id))openComments.delete(id);else openComments.add(id);
-  const p=postsCache.get(id);if(p)setPostLocal(p);
-  if(openComments.has(id))setTimeout(()=>document.querySelector(`article[data-post-id="${CSS.escape(id)}"] .comment-input`)?.focus(),60);
- }
- else if(t.closest(".share-post"))openShareOptions(id);
- else if(t.closest(".toggle-comments")){expandedComments.has(id)?expandedComments.delete(id):expandedComments.add(id);const p=postsCache.get(id);if(p)setPostLocal(p)}
-});
-document.addEventListener("submit",e=>{
- const f=e.target.closest(".comment-form");if(!f)return;
- e.preventDefault();
- const a=f.closest("article[data-post-id]");
- if(a)addComment(a.dataset.postId,f.querySelector(".comment-input"));
-});
-
-/* ============ لوحة المفاتيح والتثبيت وعامل الخدمة ============ */
-if("serviceWorker" in navigator&&location.protocol.startsWith("http"))addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(console.warn));
-const NON_TEXT=["file","checkbox","radio","button","submit","range","color"];
-const isTyping=()=>{const f=document.activeElement;return !!f&&(f.tagName==="TEXTAREA"||(f.tagName==="INPUT"&&!NON_TEXT.includes(f.type)))};
-function updateKeyboardState(){
- const vv=window.visualViewport,shrunk=!!vv&&(window.innerHeight-vv.height)>140;
- document.body.classList.toggle("keyboard-open",window.innerWidth<900&&(isTyping()||shrunk));
-}
-document.addEventListener("focusin",()=>{
- updateKeyboardState();
- setTimeout(()=>{const f=document.activeElement;if(isTyping()&&f.scrollIntoView&&window.innerWidth<900)f.scrollIntoView({block:"center",behavior:"smooth"})},350);
-});
-document.addEventListener("focusout",()=>setTimeout(updateKeyboardState,150));
-if(window.visualViewport){window.visualViewport.addEventListener("resize",updateKeyboardState);window.visualViewport.addEventListener("scroll",updateKeyboardState)}
-window.addEventListener("resize",updateKeyboardState);updateKeyboardState();
-document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
-window.addEventListener("unhandledrejection",e=>console.warn("وعد مرفوض:",e.reason));
-setAuthMode("login");
-</script>
-</body>
-  </html>
+ else if(t.closest(".edit-post"))openEditPost(id);
+ else if(t.clos
