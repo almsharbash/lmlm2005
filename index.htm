@@ -48,6 +48,8 @@ body.dark{--p:#38bdf8;--p-bright:#7dd3fc;--p-soft:#123448;--bg:#0b1720;--s:#1426
 .install-banner{position:fixed;z-index:150;right:10px;left:10px;bottom:12px;max-width:520px;margin:auto;display:flex;align-items:center;gap:10px;background:var(--s);color:var(--t);border:1px solid var(--b);border-radius:14px;padding:10px 12px;box-shadow:0 8px 28px #0003}.install-banner img{width:40px;height:40px;border-radius:10px;flex-shrink:0}.install-banner .ib-text{flex:1;min-width:0;font-size:13px;line-height:1.5}.install-banner .ib-text strong{display:block;font-size:14px}.install-banner .btn{padding:7px 12px;white-space:nowrap}.install-banner .ib-close{border:0;background:none;color:var(--m);font-size:20px;line-height:1;padding:4px 6px}
 @media(max-width:680px){.install-banner{bottom:76px}}
 .welcome-note{display:flex;align-items:center;gap:10px;padding:10px 12px;margin-bottom:12px;font-size:13.5px;line-height:1.7}.welcome-note .wn-text{flex:1;min-width:0}.welcome-note strong{color:var(--p)}.sg-btn{width:34px;height:34px;flex-shrink:0;border:0;border-radius:9px;background:var(--p);color:#fff;font-size:15px;display:inline-flex;align-items:center;justify-content:center}.sg-btn:active{transform:scale(.94)}.welcome-note .ib-close{flex-shrink:0}
+.auth-card label.consent{display:flex;align-items:flex-start;gap:8px;font-size:13px;line-height:1.8}.consent input{width:18px;height:18px;margin-top:4px;flex-shrink:0}.consent .link-btn{display:inline;font-size:13px;color:var(--p);text-decoration:underline}.auth-legal{text-align:center;margin:0;font-size:12px}.auth-legal .link-btn{display:inline;font-size:12px;color:var(--m);text-decoration:underline;font-weight:normal}
+.legal-body h3{font-size:16px;margin:16px 0 4px;color:var(--p)}.legal-body p,.legal-body li{font-size:14px;line-height:1.9;margin:4px 0}.legal-body ul{padding-inline-start:20px;margin:4px 0}.legal-note{background:var(--p-soft);border-radius:10px;padding:8px 11px;font-size:13px}
 </style>
 </head>
 <body>
@@ -59,9 +61,11 @@ body.dark{--p:#38bdf8;--p-bright:#7dd3fc;--p-soft:#123448;--bg:#0b1720;--s:#1426
 <label id="name-field" class="hidden">الاسم<input id="auth-name" class="field" maxlength="60" autocomplete="name" placeholder="اسمك"></label>
 <label>البريد الإلكتروني<input id="auth-email" class="field" type="email" required autocomplete="email" placeholder="name@example.com"></label>
 <label>كلمة المرور<input id="auth-password" class="field" type="password" required minlength="6" autocomplete="current-password" placeholder="6 أحرف على الأقل"></label>
+<label id="consent-field" class="consent hidden"><input id="auth-consent" type="checkbox"><span>أوافق على <button type="button" class="link-btn" data-legal="terms">شروط الاستخدام</button> و<button type="button" class="link-btn" data-legal="privacy">سياسة الخصوصية</button>، وأؤكد أن عمري 13 سنة فأكثر.</span></label>
 <button id="auth-submit-btn" class="btn full" type="submit">تسجيل الدخول</button>
 <button id="auth-reset" type="button" class="link-btn small muted" style="text-align:center">نسيت كلمة المرور؟</button>
 <p style="text-align:center;margin:0"><span id="auth-switch-text">ليس لديك حساب؟</span> <button id="auth-switch" type="button" class="btn secondary">إنشاء حساب</button></p>
+<p class="auth-legal"><button type="button" class="link-btn" data-legal="terms">شروط الاستخدام</button> · <button type="button" class="link-btn" data-legal="privacy">سياسة الخصوصية</button></p>
 </form></section>
 
 <section id="verify-screen" class="auth-screen hidden">
@@ -106,7 +110,7 @@ body.dark{--p:#38bdf8;--p-bright:#7dd3fc;--p-soft:#123448;--bg:#0b1720;--s:#1426
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import{getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,updateProfile,sendPasswordResetEmail,sendEmailVerification,reload}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import{getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,updateProfile,sendPasswordResetEmail,sendEmailVerification,reload,deleteUser,reauthenticateWithCredential,EmailAuthProvider}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import{initializeFirestore,getFirestore,persistentLocalCache,persistentMultipleTabManager,doc,getDoc,getDocFromServer,setDoc,updateDoc,addDoc,collection,query,where,orderBy,limit,startAfter,startAt,endAt,onSnapshot,serverTimestamp,arrayUnion,arrayRemove,deleteDoc,deleteField,getDocs,writeBatch}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 /* ============ إعدادات Firebase ============ */
@@ -270,6 +274,7 @@ function setAuthMode(mode){
  $("name-field").classList.toggle("hidden",!r);$("auth-name").required=r;
  $("auth-password").autocomplete=r?"new-password":"current-password";
  $("auth-reset").classList.toggle("hidden",r);
+ $("consent-field").classList.toggle("hidden",!r);$("auth-consent").required=r;
 }
 $("auth-switch").addEventListener("click",()=>setAuthMode(authMode==="login"?"register":"login"));
 $("auth-reset").addEventListener("click",async()=>{
@@ -284,6 +289,7 @@ $("auth-form").addEventListener("submit",async e=>{
  try{
   if(authMode==="register"){
    if(name.length<2)throw Error("يرجى إدخال اسم من حرفين على الأقل.");
+   if(!$("auth-consent").checked)throw Error("يلزم الموافقة على شروط الاستخدام وسياسة الخصوصية.");
    registering=true;
    const c=await createUserWithEmailAndPassword(auth,email,password);
    try{await updateProfile(c.user,{displayName:name})}catch(x){console.warn(x)}
@@ -917,8 +923,12 @@ applyTheme(savedTheme());
 matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change",()=>{if(savedTheme()==="system")applyTheme("system")});
 function openSettings(){
  const blocked=asArray(currentUserData.blockedUsers);
- showModal("مركز الإعدادات",`<div class="setting-section"><div class="setting-row"><div><strong>الحساب</strong><p>إدارة ملفك وتسجيل الخروج.</p></div><button class="btn secondary" id="settings-profile">تعديل الملف</button></div><div class="setting-row"><div><strong>تسجيل الخروج</strong><p>الخروج من الحساب الحالي.</p></div><button class="btn danger" id="settings-logout">خروج</button></div></div><div class="setting-section"><strong><i class="fa-solid fa-display"></i> المظهر</strong><div class="setting-row"><div><strong>الوضع الليلي</strong><p>تبديل ألوان المنصة.</p></div><button class="btn secondary" id="settings-theme">${document.body.classList.contains("dark")?"الوضع الفاتح":"الوضع الداكن"}</button></div><div class="setting-row"><div><strong>مظهر الجهاز</strong><p>اتباع إعداد الجهاز.</p></div><button class="btn secondary" id="settings-system">تلقائي</button></div></div><div class="setting-section"><div class="setting-row"><div><strong><i class="fa-solid fa-download"></i> تثبيت التطبيق</strong><p>إضافة كلمات إلى الشاشة الرئيسية.</p></div><button class="btn gold" id="settings-install">تثبيت</button></div><p class="muted small">يحتاج التثبيت إلى HTTPS ومتصفح يدعم تطبيقات الويب.</p></div><div class="setting-section"><div class="setting-row"><div><strong><i class="fa-solid fa-shield-halved"></i> الخصوصية والحظر</strong><p>${blocked.length} عضوًا محظورًا.</p></div><button class="btn secondary" id="settings-blocked">إدارة الحظر</button></div></div><div class="setting-section"><strong>الإشعارات</strong><p class="muted small">الإشعارات الحالية داخل المنصة. إشعارات الهاتف تحتاج إعدادًا إضافيًا.</p><button class="btn secondary" id="settings-notifications">عرض الإشعارات</button></div><div class="setting-section"><strong>حول كلمات</strong><p class="muted small">كلمات — نسخة تجريبية قيد التطوير.</p><p class="muted small" dir="ltr" style="text-align:right;margin:0;overflow-wrap:anywhere">${SUGGEST_EMAIL}</p><button class="btn secondary" id="settings-suggest" type="button">أرسل اقتراحك</button></div>`);
+ showModal("مركز الإعدادات",`<div class="setting-section"><div class="setting-row"><div><strong>الحساب</strong><p>إدارة ملفك وتسجيل الخروج.</p></div><button class="btn secondary" id="settings-profile">تعديل الملف</button></div><div class="setting-row"><div><strong>تسجيل الخروج</strong><p>الخروج من الحساب الحالي.</p></div><button class="btn danger" id="settings-logout">خروج</button></div></div><div class="setting-section"><strong><i class="fa-solid fa-display"></i> المظهر</strong><div class="setting-row"><div><strong>الوضع الليلي</strong><p>تبديل ألوان المنصة.</p></div><button class="btn secondary" id="settings-theme">${document.body.classList.contains("dark")?"الوضع الفاتح":"الوضع الداكن"}</button></div><div class="setting-row"><div><strong>مظهر الجهاز</strong><p>اتباع إعداد الجهاز.</p></div><button class="btn secondary" id="settings-system">تلقائي</button></div></div><div class="setting-section"><div class="setting-row"><div><strong><i class="fa-solid fa-download"></i> تثبيت التطبيق</strong><p>إضافة كلمات إلى الشاشة الرئيسية.</p></div><button class="btn gold" id="settings-install">تثبيت</button></div><p class="muted small">يحتاج التثبيت إلى HTTPS ومتصفح يدعم تطبيقات الويب.</p></div><div class="setting-section"><div class="setting-row"><div><strong><i class="fa-solid fa-shield-halved"></i> الخصوصية والحظر</strong><p>${blocked.length} عضوًا محظورًا.</p></div><button class="btn secondary" id="settings-blocked">إدارة الحظر</button></div></div><div class="setting-section"><strong>الإشعارات</strong><p class="muted small">الإشعارات الحالية داخل المنصة. إشعارات الهاتف تحتاج إعدادًا إضافيًا.</p><button class="btn secondary" id="settings-notifications">عرض الإشعارات</button></div><div class="setting-section"><strong><i class="fa-solid fa-scale-balanced"></i> المساعدة والقانونية</strong><div class="setting-row"><div><strong>شروط الاستخدام</strong></div><button class="btn secondary" id="settings-terms" type="button">عرض</button></div><div class="setting-row"><div><strong>سياسة الخصوصية</strong></div><button class="btn secondary" id="settings-privacy" type="button">عرض</button></div></div><div class="setting-section"><strong><i class="fa-solid fa-database"></i> بياناتي</strong><div class="setting-row"><div><strong>تحميل بياناتي</strong><p>ملف يضم ملفك ومنشوراتك ومحادثاتك.</p></div><button class="btn secondary" id="settings-export" type="button">تحميل</button></div><div class="setting-row"><div><strong>حذف حسابي</strong><p>حذف نهائي لا يمكن التراجع عنه.</p></div><button class="btn danger" id="settings-delete" type="button">حذف</button></div></div><div class="setting-section"><strong>حول كلمات</strong><p class="muted small">كلمات — نسخة تجريبية قيد التطوير.</p><p class="muted small" dir="ltr" style="text-align:right;margin:0;overflow-wrap:anywhere">${SUGGEST_EMAIL}</p><button class="btn secondary" id="settings-suggest" type="button">أرسل اقتراحك</button></div>`);
  $("settings-suggest").onclick=()=>openSuggest(true);
+ $("settings-terms").onclick=()=>openLegal("terms",true);
+ $("settings-privacy").onclick=()=>openLegal("privacy",true);
+ $("settings-export").onclick=exportMyData;
+ $("settings-delete").onclick=openDeleteAccount;
  $("settings-profile").onclick=()=>editOwnProfile();
  $("settings-logout").onclick=async()=>{
   if(!confirm("هل تريد تسجيل الخروج؟"))return;
@@ -958,6 +968,106 @@ function openSuggest(fromSettings){
  $("sg-copy-link").onclick=()=>copyText(SITE_URL,"تم نسخ رابط المنصة.");
  $("sg-share").onclick=async()=>{try{if(navigator.share)await navigator.share({title:"كلمات",text:"منصة كلمات",url:SITE_URL});else copyText(SITE_URL,"تم نسخ رابط المنصة.")}catch(e){}};
  if(fromSettings)$("sg-back").onclick=openSettings;
+}
+
+/* ============ الشروط والخصوصية وبيانات الحساب ============ */
+function legalHtml(kind){
+ const mail=`<span dir="ltr">${SUGGEST_EMAIL}</span>`;
+ if(kind==="terms")return `<p class="muted small">آخر تحديث: 6 أكتوبر 2026</p>
+<h3>1. القبول</h3><p>باستخدامك كلمات أو إنشاء حساب فيها فإنك توافق على هذه الشروط وعلى سياسة الخصوصية. كلمات نسخة تجريبية قيد التطوير، وقد تتغير ميزاتها.</p>
+<h3>2. الحساب</h3><ul><li>يجب ألا يقل عمرك عن 13 سنة.</li><li>أدخل بيانات صحيحة، وأنت مسؤول عن سرية كلمة مرورك وعن كل ما يتم عبر حسابك.</li><li>تحتاج الحسابات الجديدة إلى تأكيد البريد الإلكتروني.</li></ul>
+<h3>3. السلوك المقبول</h3><p>يُمنع في كلمات:</p><ul><li>التهديد والتحرش والتنمر والإساءة للآخرين.</li><li>خطاب الكراهية والتحريض على العنف.</li><li>المحتوى الجنسي أو أي محتوى يستغل القاصرين.</li><li>انتحال شخصية الآخرين.</li><li>الرسائل المزعجة والروابط الاحتيالية.</li><li>نشر معلومات خاصة بالآخرين دون إذنهم.</li><li>نشر محتوى تملك حقوقه جهة أخرى دون إذن.</li><li>محاولة اختراق المنصة أو تعطيلها.</li></ul>
+<h3>4. محتواك</h3><p>تبقى ملكية ما تنشره لك، وتأذن لكلمات بتخزينه وعرضه داخل المنصة لتشغيلها. منشوراتك وتعليقاتك وملفك الشخصي ظاهرة لأعضاء المنصة، وأنت مسؤول عما تنشره.</p>
+<h3>5. الإشراف</h3><p>يحق لإدارة المنصة حذف أي محتوى مخالف، وتقييد الحسابات المخالفة أو إغلاقها. للإبلاغ عن مخالفة راسلنا على ${mail}.</p>
+<h3>6. تحكمك بحسابك</h3><p>يمكنك حذف منشوراتك، وحظر أي عضو، وتحميل بياناتك، وحذف حسابك نهائيًا من «مركز الإعدادات».</p>
+<h3>7. إخلاء المسؤولية</h3><p>تُقدَّم الخدمة مجانًا «كما هي» دون ضمان لاستمرارها أو خلوها من الأخطاء، وقد تتغير أو تتوقف. لا نتحمل مسؤولية محتوى الأعضاء. ننصحك بالاحتفاظ بنسخة من بياناتك المهمة.</p>
+<h3>8. التعديلات</h3><p>قد نعدّل هذه الشروط، واستمرارك في الاستخدام بعد التعديل يعني قبولك لها.</p>
+<h3>9. التواصل</h3><p>${mail}</p>`;
+ return `<p class="muted small">آخر تحديث: 6 أكتوبر 2026</p>
+<h3>1. البيانات التي نحتفظ بها</h3><ul><li><strong>الحساب:</strong> الاسم والبريد الإلكتروني وكلمة المرور. يديرها نظام الدخول من Google Firebase، ولا نرى كلمة مرورك. بريدك لا يظهر في ملفك العام.</li><li><strong>الملف الشخصي:</strong> الصورة (تُضغط تلقائيًا) والنبذة وقائمة الأصدقاء وقائمة المحظورين.</li><li><strong>ما تنشره:</strong> المنشورات والصور والتعليقات والإعجابات وطلبات الصداقة والإشعارات.</li><li><strong>الرسائل:</strong> محادثاتك الخاصة مع أصدقائك.</li></ul>
+<h3>2. من يرى بياناتك</h3><ul><li>اسمك وصورتك ونبذتك ومنشوراتك وتعليقاتك: أعضاء كلمات.</li><li>رسائلك الخاصة: أنت والطرف الآخر داخل التطبيق.</li></ul><p class="legal-note">تنبيه: الرسائل مخزّنة نصًّا دون تشفير من طرف إلى طرف، ويمكن تقنيًا لمشرف قاعدة البيانات الاطلاع عليها. لا نطّلع على المحادثات الخاصة إلا عند الضرورة القصوى، كالتحقيق في بلاغ عن مخالفة جسيمة أو بطلب قانوني.</p>
+<h3>3. أين تُحفظ البيانات</h3><p>على خوادم Google Firebase (قاعدة بيانات Firestore). تُستضاف صفحة التطبيق على GitHub Pages، وتُحمَّل الأيقونات والمكتبات من شبكات توصيل المحتوى (CDN) التي قد ترى عنوان الاتصال الخاص بك كأي موقع آخر.</p>
+<h3>4. التخزين على جهازك</h3><p>نحفظ على جهازك نسخة من آخر المنشورات وملفات بعض الأعضاء ليعمل التطبيق دون اتصال، وتُحذف المنشورات المحفوظة عند تسجيل الخروج. كما نحفظ تفضيلات بسيطة مثل المظهر.</p>
+<h3>5. ما لا نفعله</h3><p>لا نعرض إعلانات، ولا نبيع بياناتك، ولا نستخدم أدوات تتبع أو تحليل سلوك.</p>
+<h3>6. حقوقك</h3><ul><li>تعديل ملفك ومنشوراتك وحذفها.</li><li>حظر أي عضو.</li><li>تحميل بياناتك: «مركز الإعدادات» ← «بياناتي».</li><li>حذف حسابك نهائيًا من المكان نفسه.</li></ul>
+<h3>7. عند حذف الحساب</h3><p>يُحذف ملفك ومنشوراتك وإشعاراتك وحساب الدخول. تبقى تعليقاتك على منشورات الآخرين، ورسائلك المرسلة في محادثاتهم، وقد تبقى آثار مؤقتة لدى مزودي الخدمة التقنيين بحسب سياساتهم.</p>
+<h3>8. الأطفال</h3><p>كلمات غير موجهة لمن هم دون 13 سنة.</p>
+<h3>9. التعديل والتواصل</h3><p>قد نحدّث هذه السياسة عند تطوير المنصة. للاستفسار: ${mail}</p>`;
+}
+function openLegal(kind,fromSettings){
+ showModal(kind==="terms"?"شروط الاستخدام":"سياسة الخصوصية",`<div class="legal-body">${legalHtml(kind)}</div>${fromSettings?'<button class="btn secondary" id="legal-back" type="button" style="margin-top:12px">رجوع للإعدادات</button>':""}`);
+ if(fromSettings)$("legal-back").onclick=openSettings;
+}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-legal]");if(b){e.preventDefault();openLegal(b.dataset.legal,false)}});
+
+const plainData=v=>{
+ if(v&&typeof v.toMillis==="function")return new Date(v.toMillis()).toISOString();
+ if(Array.isArray(v))return v.map(plainData);
+ if(v&&typeof v==="object"){const o={};for(const[k,x]of Object.entries(v))o[k]=plainData(x);return o}
+ return v;
+};
+async function exportMyData(){
+ if(needOnline())return;
+ const btn=$("settings-export");btn.disabled=true;btn.textContent="جارٍ التجهيز…";
+ try{
+  const uid=currentUser.uid;
+  const us=await getDocFromServer(doc(db,"users",uid));
+  const ps=await getDocs(query(collection(db,"posts"),where("uid","==",uid),limit(200)));
+  const cs=await getDocs(query(collection(db,"chats"),where("members","array-contains",uid)));
+  const chats=[];
+  for(const c of cs.docs){
+   const ms2=await getDocs(query(collection(db,"chats",c.id,"messages"),orderBy("createdAt","desc"),limit(500)));
+   chats.push({with:asArray(c.data().members).find(x=>x!==uid)||"",messages:ms2.docs.map(d=>plainData(d.data())).reverse()});
+  }
+  const out={exportedAt:new Date().toISOString(),note:"حتى 200 منشور وحتى 500 رسالة لكل محادثة.",email:currentUser.email,profile:plainData(us.exists()?us.data():{}),posts:ps.docs.map(d=>({id:d.id,...plainData(d.data())})),chats};
+  const blob=new Blob([JSON.stringify(out,null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="kalimat-my-data.json";document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),10000);
+  toast("تم تجهيز ملف بياناتك.");
+ }catch(e){showError(e)}
+ finally{btn.disabled=false;btn.textContent="تحميل"}
+}
+async function clearOfflineAll(){const d=await idb();if(!d)return;try{const tx=d.transaction(["posts","profiles"],"readwrite");tx.objectStore("posts").clear();tx.objectStore("profiles").clear();await txDone(tx)}catch{}}
+async function deleteAllByQuery(q,limitN){
+ for(;;){
+  const s=await getDocs(q);if(s.empty)return;
+  const b=writeBatch(db);s.docs.forEach(d=>b.delete(d.ref));await b.commit();
+  if(s.size<limitN)return;
+ }
+}
+async function deleteAccountData(){
+ const uid=currentUser.uid;
+ /* إزالة اسمي من قوائم أصدقائي (محاولة؛ لا توقف الحذف إن لم تُسمح) */
+ for(const f of asArray(currentUserData.friends)){try{await updateDoc(doc(db,"users",f),{friends:arrayRemove(uid)})}catch(e){console.warn(e)}}
+ /* منشوراتي: إلزامي */
+ await deleteAllByQuery(query(collection(db,"posts"),where("uid","==",uid),limit(400)),400);
+ /* الإشعارات وطلبات الصداقة: محاولة */
+ try{await deleteAllByQuery(query(collection(db,"users",uid,"notifications"),limit(400)),400)}catch(e){console.warn(e)}
+ try{await deleteAllByQuery(query(collection(db,"friendRequests"),where("from","==",uid),limit(400)),400)}catch(e){console.warn(e)}
+ try{await deleteAllByQuery(query(collection(db,"friendRequests"),where("to","==",uid),limit(400)),400)}catch(e){console.warn(e)}
+ /* ملفي الشخصي: إلزامي */
+ await deleteDoc(doc(db,"users",uid));
+}
+function openDeleteAccount(){
+ showModal("حذف الحساب",`<form id="delete-form" class="post"><p style="margin:0"><strong style="color:var(--danger)">تنبيه: الحذف نهائي ولا يمكن التراجع عنه.</strong></p><p class="muted small" style="margin:0">سيُحذف ملفك ومنشوراتك وإشعاراتك وحساب الدخول. تبقى تعليقاتك على منشورات الآخرين ورسائلك المرسلة في محادثاتهم. يمكنك تحميل بياناتك قبل الحذف من الإعدادات.</p><label>اكتب كلمة «حذف» للتأكيد<input class="field" name="word" autocomplete="off"></label><label>كلمة المرور<input class="field" name="pw" type="password" autocomplete="current-password"></label><button class="btn danger" id="delete-confirm" type="submit">حذف حسابي نهائيًا</button><button class="btn secondary" id="delete-back" type="button">رجوع للإعدادات</button></form>`);
+ $("delete-back").onclick=openSettings;
+ $("delete-form").onsubmit=async e=>{
+  e.preventDefault();
+  const f=e.currentTarget,pw=f.elements.pw.value,btn=$("delete-confirm");
+  if(f.elements.word.value.trim()!=="حذف")return toast("اكتب كلمة «حذف» للتأكيد.");
+  if(!pw)return toast("أدخل كلمة المرور.");
+  if(needOnline())return;
+  btn.disabled=true;btn.textContent="جارٍ الحذف…";
+  try{
+   await reauthenticateWithCredential(currentUser,EmailAuthProvider.credential(currentUser.email,pw));
+   await deleteAccountData();
+   await clearOfflineAll();
+   const u=currentUser;
+   await closeModal();
+   await deleteUser(u);
+   toast("تم حذف حسابك نهائيًا.");
+  }catch(err){showError(err);btn.disabled=false;btn.textContent="حذف حسابي نهائيًا"}
+ };
 }
 
 async function installApp(){
@@ -1024,4 +1134,4 @@ window.addEventListener("unhandledrejection",e=>console.warn("وعد مرفوض:
 setAuthMode("login");
 </script>
 </body>
-                          </html>
+                                                                                                                                                                                                                                                                                                                   </html>
