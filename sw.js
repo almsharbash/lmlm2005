@@ -1,8 +1,8 @@
 /* =========================================================
-   Service Worker - كلمات | الواحة الفكرية العالمية
+   Service Worker - كلمات
    ========================================================= */
 
-const VERSION = "kalimat-v7";
+const VERSION = "kalimat-v8";
 const BASE = "/lmlm2005/";
 
 const SHELL = [
