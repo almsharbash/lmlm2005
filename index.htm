@@ -97,7 +97,7 @@ body.dark{--p:#38bdf8;--p-bright:#7dd3fc;--p-soft:#123448;--bg:#0b1720;--s:#1426
 <input id="post-media-file" class="hidden" type="file" accept="image/*"><div class="row between wrap"><button id="attach-media-trigger" class="btn secondary" type="button"><i class="fa-regular fa-image"></i> إرفاق صورة</button><button id="publish-post-btn" class="btn" type="submit">نشر</button></div><p class="muted small" style="margin:0">الصور فقط؛ تُضغط الصورة تلقائيًا قبل الحفظ.</p></form>
 <div id="posts-feed" class="main-column"><div class="skeleton"></div><div class="skeleton"></div></div></section>
 <section id="page-chat" class="page hidden"><h2 class="page-title">المحادثات</h2><div class="card chat-layout"><div class="chat-rooms"><strong>المحادثات</strong><div id="chat-rooms-list" style="margin-top:8px"></div></div><div class="chat-box"><div id="chat-heading" class="muted">اختر صديقًا لبدء المحادثة</div><div id="chat-messages"><div class="feed-empty">لا توجد محادثة محددة.</div></div><form id="chat-form" class="chat-form"><input id="chat-input" class="field" maxlength="2000" placeholder="اكتب رسالة..." disabled><button id="chat-send-btn" class="btn" type="submit" disabled aria-label="إرسال"><i class="fa-solid fa-paper-plane"></i></button></form></div></div></section>
-<section id="page-friends" class="page hidden"><h2 class="page-title">الأصدقاء والطلبات</h2><div class="card" style="margin-bottom:14px"><h3 style="margin-top:0">طلبات الصداقة</h3><div id="friend-requests-list"><div class="feed-empty">جارٍ التحميل...</div></div></div><div class="card"><h3 style="margin-top:0">قائمة الأصدقاء</h3><div id="friends-list"><div class="feed-empty">جارٍ التحميل...</div></div></div></section>
+<section id="page-friends" class="page hidden"><h2 class="page-title">الأصدقاء والطلبات</h2><div class="card" style="margin-bottom:14px"><h3 style="margin-top:0">طلبات الصداقة</h3><div id="friend-requests-list"><div class="feed-empty">جارٍ التحميل...</div></div></div><div class="card"><h3 style="margin-top:0">قائمة الأصدقاء</h3><div class="setting-row" style="margin-bottom:10px"><div><strong>ظهور قائمة أصدقائك</strong><p id="hide-friends-state"></p></div><button id="hide-friends-btn" class="btn secondary" type="button">إخفاء القائمة</button></div><div id="friends-list"><div class="feed-empty">جارٍ التحميل...</div></div></div></section>
 <section id="page-notifications" class="page hidden"><h2 class="page-title">الإشعارات</h2><div id="notifications-list" class="card"><div class="feed-empty">لا توجد إشعارات.</div></div></section>
 <section id="page-profile" class="page hidden"><div class="card profile-head"><img id="profile-view-avatar" class="avatar big" alt=""><h2 id="profile-view-name" style="margin:0"></h2><div id="profile-view-meta" class="muted small"></div><p id="profile-view-bio" class="profile-bio"></p><div id="profile-actions" class="row wrap" style="justify-content:center"></div></div><h3>منشورات العضو</h3><div id="user-profile-posts-feed" class="main-column"></div></section>
 </main>
@@ -324,6 +324,7 @@ function updateAccountUI(){
  const u=currentUserData;
  $("menu-profile-name").textContent=nameOf(u);
  ["menu-user-avatar","header-user-avatar","post-user-avatar"].forEach(id=>{$(id).src=rawAvatar(u)});
+ updateFriendsPrivacyUI();
 }
 function subscribe(fn){if(typeof fn==="function")unsubs.push(fn)}
 function clearSubs(){
@@ -635,7 +636,13 @@ async function openUserProfile(uid){
   if(!own&&(isBlocked(uid)||blockedBy(currentUser.uid,u)))return toast("لا يمكن عرض الملف بسبب إعدادات الحظر.");
   viewedProfile=u;showPage("profile",true);
   $("profile-view-avatar").src=rawBigAvatar(u);$("profile-view-name").textContent=nameOf(u);
-  $("profile-view-meta").textContent=u.missing?"":"عدد الأصدقاء: "+asArray(u.friends).length;
+  const meta=$("profile-view-meta");
+  if(u.missing)meta.textContent="";
+  else{
+   const n=asArray(u.friends).length,canSee=own||!u.hideFriends;
+   meta.innerHTML=canSee?`<button type="button" class="link-btn" id="profile-friends-link" style="color:var(--p);text-decoration:underline">عدد الأصدقاء: ${n}</button>`:`عدد الأصدقاء: ${n} · القائمة مخفية`;
+   if(canSee)$("profile-friends-link").onclick=()=>openFriendsOf(u);
+  }
   $("profile-view-bio").textContent=u.missing?"لم يُكمل هذا العضو إعداد ملفه بعد.":(u.bio||"لم يضف نبذة شخصية بعد.");
   const actions=$("profile-actions");
   if(own){
@@ -970,6 +977,32 @@ function openSuggest(fromSettings){
  if(fromSettings)$("sg-back").onclick=openSettings;
 }
 
+/* ============ قائمة الأصدقاء: العرض والإخفاء ============ */
+function updateFriendsPrivacyUI(){
+ const hid=!!currentUserData.hideFriends,s=$("hide-friends-state"),b=$("hide-friends-btn");
+ if(s)s.textContent=hid?"قائمة أصدقائك مخفية عن الأعضاء.":"قائمة أصدقائك ظاهرة للأعضاء.";
+ if(b)b.textContent=hid?"إظهار القائمة":"إخفاء القائمة";
+}
+function toggleHideFriends(){
+ if(needOnline())return;
+ const v=!currentUserData.hideFriends;
+ currentUserData.hideFriends=v;updateFriendsPrivacyUI();
+ updateDoc(doc(db,"users",currentUser.uid),{hideFriends:v})
+  .then(()=>toast(v?"تم إخفاء قائمة أصدقائك عن الأعضاء.":"أصبحت قائمة أصدقائك ظاهرة للأعضاء."))
+  .catch(e=>{currentUserData.hideFriends=!v;updateFriendsPrivacyUI();showError(e)});
+}
+$("hide-friends-btn").onclick=toggleHideFriends;
+async function openFriendsOf(u){
+ const own=u.uid===currentUser.uid;
+ if(!own&&u.hideFriends)return toast("هذا العضو أخفى قائمة أصدقائه.");
+ if(needOnline())return;
+ const ids=asArray(u.friends),MAX=60;
+ showModal(own?"أصدقائي":"أصدقاء "+nameOf(u),'<div id="fl-box"><div class="feed-empty">جارٍ التحميل...</div></div>');
+ const us=(await Promise.all(ids.slice(0,MAX).map(fetchUser))).filter(x=>x&&!isBlocked(x.uid)&&!blockedBy(currentUser.uid,x));
+ const box=$("fl-box");if(!box)return;
+ box.innerHTML=(us.length?us.map(x=>`<div class="person-row"><img class="avatar" src="${avatarOf(x)}" alt=""><div class="person-info"><strong>${esc(nameOf(x))}</strong></div><button class="btn secondary friend-profile" data-uid="${esc(x.uid)}" type="button">الملف</button></div>`).join(""):'<div class="feed-empty">لا يوجد أصدقاء لعرضهم.</div>')+(ids.length>MAX?`<p class="muted small">يُعرض أول ${MAX} صديقًا.</p>`:"");
+}
+
 /* ============ الشروط والخصوصية وبيانات الحساب ============ */
 function legalHtml(kind){
  const mail=`<span dir="ltr">${SUGGEST_EMAIL}</span>`;
@@ -985,7 +1018,7 @@ function legalHtml(kind){
 <h3>9. التواصل</h3><p>${mail}</p>`;
  return `<p class="muted small">آخر تحديث: 6 أكتوبر 2026</p>
 <h3>1. البيانات التي نحتفظ بها</h3><ul><li><strong>الحساب:</strong> الاسم والبريد الإلكتروني وكلمة المرور. يديرها نظام الدخول من Google Firebase، ولا نرى كلمة مرورك. بريدك لا يظهر في ملفك العام.</li><li><strong>الملف الشخصي:</strong> الصورة (تُضغط تلقائيًا) والنبذة وقائمة الأصدقاء وقائمة المحظورين.</li><li><strong>ما تنشره:</strong> المنشورات والصور والتعليقات والإعجابات وطلبات الصداقة والإشعارات.</li><li><strong>الرسائل:</strong> محادثاتك الخاصة مع أصدقائك.</li></ul>
-<h3>2. من يرى بياناتك</h3><ul><li>اسمك وصورتك ونبذتك ومنشوراتك وتعليقاتك: أعضاء كلمات.</li><li>رسائلك الخاصة: أنت والطرف الآخر داخل التطبيق.</li><li>قائمة أصدقائك وقائمة المحظورين مخزّنة في ملفك، وهي قابلة للقراءة تقنيًا لأعضاء المنصة لأن التطبيق يحتاجها لتطبيق الصداقة والحظر، ولا يعرض التطبيق منها سوى عدد الأصدقاء.</li></ul><p class="legal-note">تنبيه: الرسائل مخزّنة نصًّا دون تشفير من طرف إلى طرف، ويمكن تقنيًا لمشرف قاعدة البيانات الاطلاع عليها. لا نطّلع على المحادثات الخاصة إلا عند الضرورة القصوى، كالتحقيق في بلاغ عن مخالفة جسيمة أو بطلب قانوني.</p>
+<h3>2. من يرى بياناتك</h3><ul><li>اسمك وصورتك ونبذتك ومنشوراتك وتعليقاتك: أعضاء كلمات.</li><li>رسائلك الخاصة: أنت والطرف الآخر داخل التطبيق.</li><li>قائمة أصدقائك وقائمة المحظورين مخزّنة في ملفك، وهي قابلة للقراءة تقنيًا لأعضاء المنصة لأن التطبيق يحتاجها لتطبيق الصداقة والحظر. يعرض التطبيق قائمة أصدقائك للأعضاء ما لم تخفِها من صفحة «الأصدقاء»؛ والإخفاء يمنع عرضها داخل التطبيق ولا يمنع قراءتها تقنيًا.</li></ul><p class="legal-note">رسائلك الخاصة محمية بقواعد وصول صارمة: لا يستطيع أي عضو آخر قراءتها، وتُنقل وتُخزَّن مشفّرة لدى Google Firebase. وهي ليست مشفّرة من طرف إلى طرف، أي أن مدير قاعدة البيانات يملك تقنيًا صلاحية الوصول إليها. نلتزم بعدم الاطلاع على المحادثات الخاصة إلا عند الضرورة القصوى، كالتحقيق في بلاغ عن مخالفة جسيمة أو بطلب قانوني.</p>
 <h3>3. أين تُحفظ البيانات</h3><p>على خوادم Google Firebase (قاعدة بيانات Firestore). تُستضاف صفحة التطبيق على GitHub Pages، وتُحمَّل الأيقونات والمكتبات من شبكات توصيل المحتوى (CDN) التي قد ترى عنوان الاتصال الخاص بك كأي موقع آخر.</p>
 <h3>4. التخزين على جهازك</h3><p>نحفظ على جهازك نسخة من آخر المنشورات وملفات بعض الأعضاء ليعمل التطبيق دون اتصال، وتُحذف المنشورات المحفوظة عند تسجيل الخروج. كما نحفظ تفضيلات بسيطة مثل المظهر.</p>
 <h3>5. ما لا نفعله</h3><p>لا نعرض إعلانات، ولا نبيع بياناتك، ولا نستخدم أدوات تتبع أو تحليل سلوك.</p>
