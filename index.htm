@@ -10,9 +10,9 @@
 <meta name="description" content="كلمات، منصة عربية للتواصل ومشاركة الأفكار والمعرفة وبناء مجتمع فكري.">
 <title>كلمات | الواحة الفكرية العالمية</title>
 <link rel="manifest" href="./manifest.json">
-<link rel="icon" type="image/png" sizes="256x256" href="./images/kalimat_256x256.png">
-<link rel="shortcut icon" href="./images/kalimat_256x256.png">
-<link rel="apple-touch-icon" href="./images/kalimat_180x180.png">
+<link rel="icon" type="image/png" sizes="256x256" href="./kalimat_256x256-1.png">
+<link rel="shortcut icon" href="./kalimat_256x256-1.png">
+<link rel="apple-touch-icon" href="./kalimat_180x180.png">
 <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 <link rel="modulepreload" href="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js">
@@ -45,6 +45,8 @@ body.dark{--p:#38bdf8;--p-bright:#7dd3fc;--p-soft:#123448;--bg:#0b1720;--s:#1426
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#0c2736;color:white;padding:11px 16px;border-radius:11px;z-index:200;max-width:90vw;box-shadow:var(--shadow)}.bottom-nav{display:none}
 @media(max-width:1000px){.app-layout{grid-template-columns:190px minmax(0,1fr)}.right-column{display:none}}
 @media(max-width:680px){.app-layout{min-height:calc(100dvh - 145px)}.topbar-inner{gap:7px;padding:8px}.brand{font-size:19px}.search-wrap{max-width:none}.app-layout{display:block;margin:12px auto;padding:0 9px 78px}.sidebar,.right-column{display:none}.bottom-nav{display:flex;position:fixed;z-index:25;bottom:0;right:0;left:0;justify-content:space-around;background:var(--s);border-top:1px solid var(--b);padding:5px 2px env(safe-area-inset-bottom);transition:transform .12s ease;will-change:transform}.keyboard-open .bottom-nav{transform:translateY(110%);pointer-events:none}.bottom-nav .nav-btn{width:auto;padding:6px 8px;flex-direction:column;gap:1px;font-size:10px}.bottom-nav .nav-btn i{font-size:16px}.bottom-nav .nbadge{position:absolute;top:0;right:4px}.chat-layout{grid-template-columns:100px minmax(0,1fr);gap:6px}.chat-rooms{padding-left:5px}.chat-room{padding:6px 3px;font-size:11px}.card{padding:12px}}
+.install-banner{position:fixed;z-index:150;right:10px;left:10px;bottom:12px;max-width:520px;margin:auto;display:flex;align-items:center;gap:10px;background:var(--s);color:var(--t);border:1px solid var(--b);border-radius:14px;padding:10px 12px;box-shadow:0 8px 28px #0003}.install-banner img{width:40px;height:40px;border-radius:10px;flex-shrink:0}.install-banner .ib-text{flex:1;min-width:0;font-size:13px;line-height:1.5}.install-banner .ib-text strong{display:block;font-size:14px}.install-banner .btn{padding:7px 12px;white-space:nowrap}.install-banner .ib-close{border:0;background:none;color:var(--m);font-size:20px;line-height:1;padding:4px 6px}
+@media(max-width:680px){.install-banner{bottom:76px}}
 </style>
 </head>
 <body>
@@ -87,7 +89,8 @@ body.dark{--p:#38bdf8;--p-bright:#7dd3fc;--p-soft:#123448;--bg:#0b1720;--s:#1426
 </div>
 <nav class="bottom-nav"><button class="nav-btn active" data-page="home"><i class="fa-solid fa-house"></i> الرئيسية</button><button class="nav-btn" data-page="chat"><i class="fa-solid fa-comments"></i> الرسائل</button><button class="nav-btn" data-page="friends"><i class="fa-solid fa-user-group"></i> الأصدقاء</button><button class="nav-btn" data-page="notifications"><i class="fa-solid fa-bell"></i> التنبيهات <em class="nbadge hidden"></em></button><button class="nav-btn" data-page="profile"><i class="fa-solid fa-user"></i> ملفي</button></nav>
 </div>
-<div id="modal-root" class="hidden"></div><div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+<div id="modal-root" class="hidden"></div><div id="install-banner" class="install-banner hidden" role="dialog" aria-label="تثبيت كلمات"><img src="./kalimat_192x192-1.png" alt=""><div class="ib-text"><strong>ثبّت كلمات على شاشتك</strong>افتحها كتطبيق بضغطة واحدة دون المتصفح.</div><button id="install-banner-btn" class="btn" type="button">تثبيت</button><button id="install-banner-close" class="ib-close" type="button" aria-label="إغلاق">×</button></div>
+<div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -893,8 +896,16 @@ async function openBlockedList(){
  document.querySelectorAll(".unblock-user").forEach(b=>b.onclick=()=>{unblockUser(b.dataset.uid);openBlockedList()});
  $("blocked-back").onclick=openSettings;
 }
-window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installPrompt=e});
-window.addEventListener("appinstalled",()=>{installPrompt=null;toast("تم تثبيت كلمات بنجاح.")});
+const INSTALL_KEY="kalimat-install-dismissed",INSTALL_SNOOZE=7*864e5;
+const isStandalone=()=>matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+const installSnoozed=()=>{try{return Date.now()-Number(localStorage.getItem(INSTALL_KEY)||0)<INSTALL_SNOOZE}catch(e){return false}};
+function showInstallBanner(){if(isStandalone()||installSnoozed())return;setTimeout(()=>{if(!isStandalone()&&!installSnoozed())$("install-banner").classList.remove("hidden")},3500)}
+function hideInstallBanner(snooze){$("install-banner").classList.add("hidden");if(snooze)try{localStorage.setItem(INSTALL_KEY,String(Date.now()))}catch(e){}}
+$("install-banner-btn").onclick=async()=>{await installApp();if(!installPrompt)hideInstallBanner(false)};
+$("install-banner-close").onclick=()=>hideInstallBanner(true);
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installPrompt=e;showInstallBanner()});
+window.addEventListener("appinstalled",()=>{installPrompt=null;hideInstallBanner(false);toast("تم تثبيت كلمات بنجاح.")});
+if(/iphone|ipad|ipod/i.test(navigator.userAgent))showInstallBanner();
 async function installApp(){
  if(matchMedia("(display-mode: standalone)").matches)return toast("كلمات مثبت بالفعل.");
  if(installPrompt){installPrompt.prompt();const c=await installPrompt.userChoice;installPrompt=null;toast(c?.outcome==="accepted"?"تم قبول طلب التثبيت.":"لم يتم إكمال التثبيت.");return}
