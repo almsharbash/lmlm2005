@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="كلمات">
 <meta name="description" content="كلمات، منصة عربية للتواصل ومشاركة الأفكار والمعرفة وبناء مجتمع فكري.">
-<title>كلمات | الواحة الفكرية العالمية</title>
+<title>كلمات</title>
 <link rel="manifest" href="./manifest.json">
 <link rel="icon" type="image/png" sizes="256x256" href="./kalimat_256x256-1.png">
 <link rel="shortcut icon" href="./kalimat_256x256-1.png">
@@ -54,7 +54,7 @@ body.dark{--p:#38bdf8;--p-bright:#7dd3fc;--p-soft:#123448;--bg:#0b1720;--s:#1426
 
 <section id="auth-screen" class="auth-screen hidden">
 <form id="auth-form" class="card auth-card">
-<div class="brand">كلمات</div><h1 id="auth-title">مرحبًا بك في كلمات</h1><p class="muted" style="text-align:center;margin:0">الواحة الفكرية العالمية</p>
+<div class="brand">كلمات</div><h1 id="auth-title">مرحبًا بك في كلمات</h1>
 <label id="name-field" class="hidden">الاسم<input id="auth-name" class="field" maxlength="60" autocomplete="name" placeholder="اسمك"></label>
 <label>البريد الإلكتروني<input id="auth-email" class="field" type="email" required autocomplete="email" placeholder="name@example.com"></label>
 <label>كلمة المرور<input id="auth-password" class="field" type="password" required minlength="6" autocomplete="current-password" placeholder="6 أحرف على الأقل"></label>
@@ -62,6 +62,16 @@ body.dark{--p:#38bdf8;--p-bright:#7dd3fc;--p-soft:#123448;--bg:#0b1720;--s:#1426
 <button id="auth-reset" type="button" class="link-btn small muted" style="text-align:center">نسيت كلمة المرور؟</button>
 <p style="text-align:center;margin:0"><span id="auth-switch-text">ليس لديك حساب؟</span> <button id="auth-switch" type="button" class="btn secondary">إنشاء حساب</button></p>
 </form></section>
+
+<section id="verify-screen" class="auth-screen hidden">
+<div class="card auth-card" style="text-align:center">
+<div class="brand">كلمات</div><h1>أكّد بريدك الإلكتروني</h1>
+<p class="muted" style="margin:0">أرسلنا رابط التأكيد إلى:</p><strong id="verify-email" dir="ltr" style="overflow-wrap:anywhere"></strong>
+<p class="muted small" style="margin:0">افتح الرسالة واضغط على الرابط، ثم عد إلى هنا. إن لم تجدها فتفقّد مجلد البريد المزعج (Spam).</p>
+<button id="verify-check" class="btn full" type="button">تحققتُ من البريد</button>
+<button id="verify-resend" class="btn secondary full" type="button">إعادة إرسال الرابط</button>
+<button id="verify-logout" class="link-btn small muted" type="button" style="text-align:center">تسجيل الخروج أو تغيير البريد</button>
+</div></section>
 
 <div id="app" class="hidden">
 <header class="topbar"><div class="topbar-inner">
@@ -71,10 +81,10 @@ body.dark{--p:#38bdf8;--p-bright:#7dd3fc;--p-soft:#123448;--bg:#0b1720;--s:#1426
 <button id="header-profile-btn" class="btn secondary icon-btn" title="ملفي الشخصي" aria-label="ملفي الشخصي"><img id="header-user-avatar" class="avatar" alt="صورتي" style="width:28px;height:28px"></button>
 </div><div id="offline-bar" class="offline-bar hidden">أنت غير متصل بالإنترنت — تُعرض آخر المنشورات المحفوظة، وستُرسل تغييراتك عند عودة الاتصال.</div></header>
 <div class="app-layout">
-<aside class="sidebar"><div class="card" style="margin-bottom:12px"><div class="row"><img id="menu-user-avatar" class="avatar" alt=""><div style="min-width:0"><strong id="menu-profile-name"></strong><div id="menu-profile-email" class="muted small"></div></div></div></div>
+<aside class="sidebar"><div class="card" style="margin-bottom:12px"><div class="row"><img id="menu-user-avatar" class="avatar" alt=""><div style="min-width:0"><strong id="menu-profile-name"></strong></div></div></div>
 <nav class="card nav-list"><button class="nav-btn active" data-page="home"><i class="fa-solid fa-house"></i> الرئيسية</button><button class="nav-btn" data-page="chat"><i class="fa-solid fa-comments"></i> المحادثات</button><button class="nav-btn" data-page="friends"><i class="fa-solid fa-user-group"></i> الأصدقاء</button><button class="nav-btn" data-page="notifications"><i class="fa-solid fa-bell"></i> الإشعارات <em class="nbadge hidden"></em></button><button class="nav-btn" data-page="profile"><i class="fa-solid fa-user"></i> ملفي الشخصي</button><button class="nav-btn" id="sidebar-settings-btn"><i class="fa-solid fa-gear"></i> الإعدادات</button></nav></aside>
 <main class="main-column">
-<section id="page-home" class="page"><h2 class="page-title">الواحة الفكرية</h2>
+<section id="page-home" class="page"><h2 class="page-title">الرئيسية</h2>
 <form id="new-post-form" class="card post" style="margin-bottom:14px"><div class="row"><img id="post-user-avatar" class="avatar" alt=""><strong>ماذا يدور في فكرك؟</strong></div>
 <textarea id="new-post-text" class="field" rows="3" maxlength="5000" placeholder="شارك فكرة أو خاطرة أو سؤالًا..."></textarea>
 <div id="media-preview-container" class="hidden"><img id="media-preview-content" class="post-image" alt="معاينة الصورة"><button id="remove-media-btn" class="btn secondary" type="button">إزالة الصورة</button></div>
@@ -83,7 +93,7 @@ body.dark{--p:#38bdf8;--p-bright:#7dd3fc;--p-soft:#123448;--bg:#0b1720;--s:#1426
 <section id="page-chat" class="page hidden"><h2 class="page-title">المحادثات</h2><div class="card chat-layout"><div class="chat-rooms"><strong>المحادثات</strong><div id="chat-rooms-list" style="margin-top:8px"></div></div><div class="chat-box"><div id="chat-heading" class="muted">اختر صديقًا لبدء المحادثة</div><div id="chat-messages"><div class="feed-empty">لا توجد محادثة محددة.</div></div><form id="chat-form" class="chat-form"><input id="chat-input" class="field" maxlength="2000" placeholder="اكتب رسالة..." disabled><button id="chat-send-btn" class="btn" type="submit" disabled aria-label="إرسال"><i class="fa-solid fa-paper-plane"></i></button></form></div></div></section>
 <section id="page-friends" class="page hidden"><h2 class="page-title">الأصدقاء والطلبات</h2><div class="card" style="margin-bottom:14px"><h3 style="margin-top:0">طلبات الصداقة</h3><div id="friend-requests-list"><div class="feed-empty">جارٍ التحميل...</div></div></div><div class="card"><h3 style="margin-top:0">قائمة الأصدقاء</h3><div id="friends-list"><div class="feed-empty">جارٍ التحميل...</div></div></div></section>
 <section id="page-notifications" class="page hidden"><h2 class="page-title">الإشعارات</h2><div id="notifications-list" class="card"><div class="feed-empty">لا توجد إشعارات.</div></div></section>
-<section id="page-profile" class="page hidden"><div class="card profile-head"><img id="profile-view-avatar" class="avatar big" alt=""><h2 id="profile-view-name" style="margin:0"></h2><div id="profile-view-email" class="muted small"></div><div id="profile-view-meta" class="muted small"></div><p id="profile-view-bio" class="profile-bio"></p><div id="profile-actions" class="row wrap" style="justify-content:center"></div></div><h3>منشورات العضو</h3><div id="user-profile-posts-feed" class="main-column"></div></section>
+<section id="page-profile" class="page hidden"><div class="card profile-head"><img id="profile-view-avatar" class="avatar big" alt=""><h2 id="profile-view-name" style="margin:0"></h2><div id="profile-view-meta" class="muted small"></div><p id="profile-view-bio" class="profile-bio"></p><div id="profile-actions" class="row wrap" style="justify-content:center"></div></div><h3>منشورات العضو</h3><div id="user-profile-posts-feed" class="main-column"></div></section>
 </main>
 <aside class="right-column"><div class="card"><h3 style="margin-top:0">مرحبًا بك في كلمات</h3><p class="muted small">مساحة عربية للفكر والمعرفة والحوار المحترم.</p><button class="btn secondary" data-page="friends" style="width:100%">اكتشف الأصدقاء</button></div><div class="card"><h3 style="margin-top:0">الخصوصية</h3><p class="muted small">أدر قائمة الحظر من مركز الإعدادات.</p><button class="btn secondary" id="right-settings-btn" style="width:100%">فتح الإعدادات</button></div></aside>
 </div>
@@ -94,7 +104,7 @@ body.dark{--p:#38bdf8;--p-bright:#7dd3fc;--p-soft:#123448;--bg:#0b1720;--s:#1426
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import{getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,updateProfile,sendPasswordResetEmail}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import{getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,updateProfile,sendPasswordResetEmail,sendEmailVerification,reload}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import{initializeFirestore,getFirestore,persistentLocalCache,persistentMultipleTabManager,doc,getDoc,getDocFromServer,setDoc,updateDoc,addDoc,collection,query,where,orderBy,limit,startAfter,startAt,endAt,onSnapshot,serverTimestamp,arrayUnion,arrayRemove,deleteDoc,deleteField,getDocs,writeBatch}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 /* ============ إعدادات Firebase ============ */
@@ -141,7 +151,7 @@ let requestsStarted=false,friendsStarted=false,notificationsStarted=false,chatRo
 const ERR={
  "auth/invalid-credential":"البريد أو كلمة المرور غير صحيحة.","auth/user-not-found":"لا يوجد حساب بهذا البريد.","auth/wrong-password":"كلمة المرور غير صحيحة.",
  "auth/email-already-in-use":"هذا البريد مسجل بالفعل.","auth/weak-password":"كلمة المرور يجب ألا تقل عن 6 أحرف.","auth/invalid-email":"صيغة البريد غير صحيحة.",
- "auth/too-many-requests":"محاولات كثيرة؛ حاول لاحقًا.","auth/network-request-failed":"تعذر الاتصال بالإنترنت.",
+ "auth/too-many-requests":"محاولات كثيرة؛ حاول لاحقًا.","auth/requires-recent-login":"سجّل الدخول من جديد ثم أعد المحاولة.","auth/network-request-failed":"تعذر الاتصال بالإنترنت.",
  "permission-denied":"لا توجد صلاحية لهذا الإجراء. راجع قواعد Firestore.","unavailable":"تعذر الاتصال؛ تحقق من الإنترنت.",
  "resource-exhausted":"انتهت الحصة اليومية المجانية للخدمة؛ ستعود غدًا.","failed-precondition":"يلزم إنشاء فهرس في Firestore (راجع Console).",
  "unauthenticated":"انتهت الجلسة؛ سجّل الدخول مجددًا.","not-found":"العنصر غير موجود.","deadline-exceeded":"استغرق الطلب وقتًا طويلًا؛ حاول مجددًا."
@@ -217,8 +227,34 @@ const blockedBy=(uid,u)=>asArray(u?.blockedUsers).includes(uid);
 const newUserDoc=(uid,name)=>({uid,name,displayName:name,nameLower:name.toLowerCase(),photoURL:"",thumb:"",bio:"",friends:[],blockedUsers:[],createdAt:serverTimestamp()});
 
 /* ============ الشاشات والتنقل ============ */
-function showAuth(){$("boot-screen").classList.add("hidden");$("auth-screen").classList.remove("hidden");$("app").classList.add("hidden")}
-function showApp(){$("boot-screen").classList.add("hidden");$("auth-screen").classList.add("hidden");$("app").classList.remove("hidden")}
+function showAuth(){$("boot-screen").classList.add("hidden");$("verify-screen").classList.add("hidden");$("auth-screen").classList.remove("hidden");$("app").classList.add("hidden")}
+function showApp(){$("boot-screen").classList.add("hidden");$("auth-screen").classList.add("hidden");$("verify-screen").classList.add("hidden");$("app").classList.remove("hidden")}
+/* تأكيد البريد: يُطلب من الحسابات الجديدة فقط (المنشأة بعد هذا التاريخ)؛ الحسابات القديمة تبقى تعمل. ضع 0 لإلزام الجميع */
+const VERIFY_FROM=Date.parse("2026-10-06T07:00:00Z");
+const needsVerify=u=>!!u&&!u.emailVerified&&new Date(u.metadata?.creationTime).getTime()>=VERIFY_FROM;
+function showVerify(u){
+ $("boot-screen").classList.add("hidden");$("auth-screen").classList.add("hidden");$("app").classList.add("hidden");
+ $("verify-email").textContent=u.email||"";$("verify-screen").classList.remove("hidden");
+}
+let resendUntil=0,verifyBusy=false;
+async function checkVerified(silent){
+ const u=auth.currentUser;if(!u||verifyBusy)return;verifyBusy=true;
+ try{
+  await reload(u);
+  if(u.emailVerified){await u.getIdToken(true);location.reload();return}
+  if(!silent)toast("لم يتم التأكيد بعد. اضغط الرابط في رسالة البريد ثم حاول مجددًا.");
+ }catch(e){if(!silent)showError(e)}
+ finally{verifyBusy=false}
+}
+$("verify-check").onclick=()=>checkVerified(false);
+$("verify-resend").onclick=async()=>{
+ const u=auth.currentUser;if(!u)return;
+ const wait=Math.ceil((resendUntil-Date.now())/1000);
+ if(wait>0)return toast("انتظر "+wait+" ثانية قبل إعادة الإرسال.");
+ try{await sendEmailVerification(u);resendUntil=Date.now()+60000;toast("تم إرسال رابط جديد إلى بريدك.")}catch(e){showError(e)}
+};
+$("verify-logout").onclick=()=>signOut(auth).catch(showError);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&!$("verify-screen").classList.contains("hidden"))checkVerified(true)});
 setTimeout(()=>{if(!$("boot-screen").classList.contains("hidden")&&!currentUser)showAuth()},8000);
 function updateNet(){$("offline-bar").classList.toggle("hidden",online())}
 addEventListener("online",updateNet);addEventListener("offline",updateNet);updateNet();
@@ -249,8 +285,9 @@ $("auth-form").addEventListener("submit",async e=>{
    registering=true;
    const c=await createUserWithEmailAndPassword(auth,email,password);
    try{await updateProfile(c.user,{displayName:name})}catch(x){console.warn(x)}
+   try{await sendEmailVerification(c.user);resendUntil=Date.now()+60000}catch(x){console.warn(x)}
    await setDoc(doc(db,"users",c.user.uid),newUserDoc(c.user.uid,name));
-   registering=false;toast("تم إنشاء الحساب.");
+   registering=false;toast("تم إنشاء الحساب. أرسلنا رابط التأكيد إلى بريدك.");
   }else await signInWithEmailAndPassword(auth,email,password);
  }catch(err){registering=false;showError(err)}
  finally{b.disabled=false}
@@ -262,6 +299,7 @@ onAuthStateChanged(auth,async user=>{
   currentUserData={};livePosts=[];olderPosts=[];lastLiveDoc=null;olderCursor=null;feedHasMore=true;profilePosts=[];notifs=[];unreadCount=0;
   postsCache.clear();userCache.clear();profileCache.clear();authorTried.clear();updateBadge();showAuth();return;
  }
+ if(needsVerify(user)){showVerify(user);return}
  currentUserData={uid:user.uid,name:user.displayName||"عضو",displayName:user.displayName||"عضو",photoURL:"",thumb:"",bio:"",friends:[],blockedUsers:[]};
  const [prof,cached]=await Promise.all([getOfflineProfile(user.uid),getOfflinePosts()]);
  if(prof)currentUserData={...currentUserData,...prof,uid:user.uid};
@@ -276,7 +314,7 @@ onAuthStateChanged(auth,async user=>{
 
 function updateAccountUI(){
  const u=currentUserData;
- $("menu-profile-name").textContent=nameOf(u);$("menu-profile-email").textContent=currentUser?.email||"";
+ $("menu-profile-name").textContent=nameOf(u);
  ["menu-user-avatar","header-user-avatar","post-user-avatar"].forEach(id=>{$(id).src=rawAvatar(u)});
 }
 function subscribe(fn){if(typeof fn==="function")unsubs.push(fn)}
@@ -589,7 +627,6 @@ async function openUserProfile(uid){
   if(!own&&(isBlocked(uid)||blockedBy(currentUser.uid,u)))return toast("لا يمكن عرض الملف بسبب إعدادات الحظر.");
   viewedProfile=u;showPage("profile",true);
   $("profile-view-avatar").src=rawBigAvatar(u);$("profile-view-name").textContent=nameOf(u);
-  $("profile-view-email").textContent=own?(currentUser.email||""):"";
   $("profile-view-meta").textContent=u.missing?"":"عدد الأصدقاء: "+asArray(u.friends).length;
   $("profile-view-bio").textContent=u.missing?"لم يُكمل هذا العضو إعداد ملفه بعد.":(u.bio||"لم يضف نبذة شخصية بعد.");
   const actions=$("profile-actions");
@@ -878,7 +915,7 @@ applyTheme(savedTheme());
 matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change",()=>{if(savedTheme()==="system")applyTheme("system")});
 function openSettings(){
  const blocked=asArray(currentUserData.blockedUsers);
- showModal("مركز الإعدادات",`<div class="setting-section"><div class="setting-row"><div><strong>الحساب</strong><p>إدارة ملفك وتسجيل الخروج.</p></div><button class="btn secondary" id="settings-profile">تعديل الملف</button></div><div class="setting-row"><div><strong>تسجيل الخروج</strong><p>الخروج من الحساب الحالي.</p></div><button class="btn danger" id="settings-logout">خروج</button></div></div><div class="setting-section"><strong><i class="fa-solid fa-display"></i> المظهر</strong><div class="setting-row"><div><strong>الوضع الليلي</strong><p>تبديل ألوان المنصة.</p></div><button class="btn secondary" id="settings-theme">${document.body.classList.contains("dark")?"الوضع الفاتح":"الوضع الداكن"}</button></div><div class="setting-row"><div><strong>مظهر الجهاز</strong><p>اتباع إعداد الجهاز.</p></div><button class="btn secondary" id="settings-system">تلقائي</button></div></div><div class="setting-section"><div class="setting-row"><div><strong><i class="fa-solid fa-download"></i> تثبيت التطبيق</strong><p>إضافة كلمات إلى الشاشة الرئيسية.</p></div><button class="btn gold" id="settings-install">تثبيت</button></div><p class="muted small">يحتاج التثبيت إلى HTTPS ومتصفح يدعم تطبيقات الويب.</p></div><div class="setting-section"><div class="setting-row"><div><strong><i class="fa-solid fa-shield-halved"></i> الخصوصية والحظر</strong><p>${blocked.length} عضوًا محظورًا.</p></div><button class="btn secondary" id="settings-blocked">إدارة الحظر</button></div></div><div class="setting-section"><strong>الإشعارات</strong><p class="muted small">الإشعارات الحالية داخل المنصة. إشعارات الهاتف تحتاج إعدادًا إضافيًا.</p><button class="btn secondary" id="settings-notifications">عرض الإشعارات</button></div><div class="setting-section"><strong>حول كلمات</strong><p class="muted small">الواحة الفكرية العالمية — نسخة تجريبية قيد التطوير.</p></div>`);
+ showModal("مركز الإعدادات",`<div class="setting-section"><div class="setting-row"><div><strong>الحساب</strong><p>إدارة ملفك وتسجيل الخروج.</p></div><button class="btn secondary" id="settings-profile">تعديل الملف</button></div><div class="setting-row"><div><strong>تسجيل الخروج</strong><p>الخروج من الحساب الحالي.</p></div><button class="btn danger" id="settings-logout">خروج</button></div></div><div class="setting-section"><strong><i class="fa-solid fa-display"></i> المظهر</strong><div class="setting-row"><div><strong>الوضع الليلي</strong><p>تبديل ألوان المنصة.</p></div><button class="btn secondary" id="settings-theme">${document.body.classList.contains("dark")?"الوضع الفاتح":"الوضع الداكن"}</button></div><div class="setting-row"><div><strong>مظهر الجهاز</strong><p>اتباع إعداد الجهاز.</p></div><button class="btn secondary" id="settings-system">تلقائي</button></div></div><div class="setting-section"><div class="setting-row"><div><strong><i class="fa-solid fa-download"></i> تثبيت التطبيق</strong><p>إضافة كلمات إلى الشاشة الرئيسية.</p></div><button class="btn gold" id="settings-install">تثبيت</button></div><p class="muted small">يحتاج التثبيت إلى HTTPS ومتصفح يدعم تطبيقات الويب.</p></div><div class="setting-section"><div class="setting-row"><div><strong><i class="fa-solid fa-shield-halved"></i> الخصوصية والحظر</strong><p>${blocked.length} عضوًا محظورًا.</p></div><button class="btn secondary" id="settings-blocked">إدارة الحظر</button></div></div><div class="setting-section"><strong>الإشعارات</strong><p class="muted small">الإشعارات الحالية داخل المنصة. إشعارات الهاتف تحتاج إعدادًا إضافيًا.</p><button class="btn secondary" id="settings-notifications">عرض الإشعارات</button></div><div class="setting-section"><strong>حول كلمات</strong><p class="muted small">كلمات — نسخة تجريبية قيد التطوير.</p></div>`);
  $("settings-profile").onclick=()=>editOwnProfile();
  $("settings-logout").onclick=async()=>{
   if(!confirm("هل تريد تسجيل الخروج؟"))return;
