@@ -2,7 +2,7 @@
    Service Worker - كلمات
    ========================================================= */
 
-const VERSION = "kalimat-v10";
+const VERSION = "kalimat-v11";
 const BASE = "/lmlm2005/";
 
 const SHELL = [
@@ -133,7 +133,7 @@ async function handleNavigation(request) {
   try {
     const response = await fetch(request);
 
-    if (response && response.ok) {
+   if (response && response.ok && new URL(request.url).pathname.replace(/index\.htm$/, "") === BASE) { {
       await cache.put(BASE + "index.htm", response.clone());
     }
 
