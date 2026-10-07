@@ -1170,4 +1170,130 @@ async function exportMyData(){
    const ms2=await getDocs(query(collection(db,"chats",c.id,"messages"),orderBy("createdAt","desc"),limit(500)));
    chats.push({with:asArray(c.data().members).find(x=>x!==uid)||"",messages:ms2.docs.map(d=>plainData(d.data())).reverse()});
   }
-  const out={exportedAt:new Date().toISOString(),note:"حتى 200
+  const out={exportedAt:new Date().toISOString(),note:"حتى 200 منشور وحتى 500 رسالة لكل محادثة.",email:currentUser.email,profile:plainData(us.exists()?us.data():{}),posts:ps.docs.map(d=>({id:d.id,...plainData(d.data())})),chats};
+  const blob=new Blob([JSON.stringify(out,null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="kalimat-my-data.json";document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),10000);
+  toast("تم تجهيز ملف بياناتك.");
+ }catch(e){showError(e)}
+ finally{btn.disabled=false;btn.textContent="تحميل"}
+}
+async function clearOfflineAll(){const d=await idb();if(!d)return;try{const tx=d.transaction(["posts","profiles"],"readwrite");tx.objectStore("posts").clear();tx.objectStore("profiles").clear();await txDone(tx)}catch{}}
+async function deleteAllByQuery(q,limitN){
+ for(;;){
+  const s=await getDocs(q);if(s.empty)return;
+  const b=writeBatch(db);s.docs.forEach(d=>b.delete(d.ref));await b.commit();
+  if(s.size<limitN)return;
+ }
+}
+async function deleteAccountData(){
+ const uid=currentUser.uid;
+ /* إزالة اسمي من قوائم أصدقائي (محاولة؛ لا توقف الحذف إن لم تُسمح) */
+ for(const f of asArray(currentUserData.friends)){try{await updateDoc(doc(db,"users",f),{friends:arrayRemove(uid)})}catch(e){console.warn(e)}}
+ /* منشوراتي: إلزامي */
+ for(;;){
+  const s=await getDocs(query(collection(db,"posts"),where("uid","==",uid),limit(100)));
+  if(s.empty)break;
+  for(const d of s.docs){try{await deleteAllByQuery(query(collection(db,"posts",d.id,"comments"),limit(400)),400)}catch(e){console.warn(e)}}
+  const b=writeBatch(db);s.docs.forEach(d=>b.delete(d.ref));await b.commit();
+  if(s.size<100)break;
+ }
+ /* الإشعارات وطلبات الصداقة: محاولة */
+ try{await deleteAllByQuery(query(collection(db,"users",uid,"notifications"),limit(400)),400)}catch(e){console.warn(e)}
+ try{await deleteAllByQuery(query(collection(db,"friendRequests"),where("from","==",uid),limit(400)),400)}catch(e){console.warn(e)}
+ try{await deleteAllByQuery(query(collection(db,"friendRequests"),where("to","==",uid),limit(400)),400)}catch(e){console.warn(e)}
+ /* ملفي الشخصي: إلزامي */
+ await deleteDoc(doc(db,"users",uid));
+}
+function openDeleteAccount(){
+ showModal("حذف الحساب",`<form id="delete-form" class="post"><p style="margin:0"><strong style="color:var(--danger)">تنبيه: الحذف نهائي ولا يمكن التراجع عنه.</strong></p><p class="muted small" style="margin:0">سيُحذف ملفك ومنشوراتك وإشعاراتك وحساب الدخول. تبقى تعليقاتك على منشورات الآخرين ورسائلك المرسلة في محادثاتهم. يمكنك تحميل بياناتك قبل الحذف من الإعدادات.</p><label>اكتب كلمة «حذف» للتأكيد<input class="field" name="word" autocomplete="off"></label><label>كلمة المرور<input class="field" name="pw" type="password" autocomplete="current-password"></label><button class="btn danger" id="delete-confirm" type="submit">حذف حسابي نهائيًا</button><button class="btn secondary" id="delete-back" type="button">رجوع للإعدادات</button></form>`);
+ $("delete-back").onclick=openSettings;
+ $("delete-form").onsubmit=async e=>{
+  e.preventDefault();
+  const f=e.currentTarget,pw=f.elements.pw.value,btn=$("delete-confirm");
+  if(f.elements.word.value.trim()!=="حذف")return toast("اكتب كلمة «حذف» للتأكيد.");
+  if(!pw)return toast("أدخل كلمة المرور.");
+  if(needOnline())return;
+  btn.disabled=true;btn.textContent="جارٍ الحذف…";
+  try{
+   await reauthenticateWithCredential(currentUser,EmailAuthProvider.credential(currentUser.email,pw));
+   await deleteAccountData();
+   await clearOfflineAll();
+   const u=currentUser;
+   await closeModal();
+   await deleteUser(u);
+   toast("تم حذف حسابك نهائيًا.");
+  }catch(err){showError(err);btn.disabled=false;btn.textContent="حذف حسابي نهائيًا"}
+ };
+}
+
+async function installApp(){
+ if(matchMedia("(display-mode: standalone)").matches)return toast("كلمات مثبت بالفعل.");
+ if(installPrompt){installPrompt.prompt();const c=await installPrompt.userChoice;installPrompt=null;toast(c?.outcome==="accepted"?"تم قبول طلب التثبيت.":"لم يتم إكمال التثبيت.");return}
+ const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
+ showModal("تثبيت كلمات",ios?'<ol><li>افتح الموقع في Safari.</li><li>اضغط زر المشاركة.</li><li>اختر «إضافة إلى الشاشة الرئيسية».</li><li>اضغط «إضافة».</li></ol>':'<p>لم يوفّر المتصفح نافذة التثبيت حاليًا.</p><ol><li>تأكد من فتح الموقع عبر HTTPS.</li><li>افتح قائمة المتصفح (⋮).</li><li>اختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية» إن ظهرت.</li></ol>');
+}
+
+/* ============ أزرار الواجهة والنقر المفوّض ============ */
+$("logo-main-btn").onclick=()=>{
+ showModal("كلمات",`<div style="text-align:center;padding:18px 8px 10px"><div style="font-size:27px;font-weight:900;color:var(--p);margin-bottom:14px">كلمات</div><p style="font-size:18px;line-height:2;margin:0 0 20px">«دائماً هناك كلمات لا يجيد كتابتها القلم، تغوص في قعر النفس ولا تطفو»</p><button id="slogan-home-btn" class="btn" type="button">العودة إلى الرئيسية</button></div>`);
+ $("slogan-home-btn").onclick=async()=>{await closeModal();showPage("home")};
+};
+$("header-profile-btn").onclick=()=>showPage("profile");
+$("settings-open-btn").onclick=openSettings;$("sidebar-settings-btn").onclick=openSettings;$("right-settings-btn").onclick=openSettings;
+
+document.addEventListener("click",async e=>{
+ const t=e.target;
+ const op=t.closest(".open-profile");if(op){if(op.dataset.uid)openUserProfile(op.dataset.uid);return}
+ if(t.closest("#load-more-btn")){loadMore();return}
+ const acc=t.closest(".accept-request");if(acc){acceptRequest(acc.dataset.id,acc.dataset.uid);return}
+ const rej=t.closest(".reject-request");if(rej){rejectRequest(rej.dataset.id);return}
+ const fp=t.closest(".friend-profile");if(fp){openUserProfile(fp.dataset.uid);return}
+ const fc=t.closest(".friend-chat");if(fc){const u=await fetchUser(fc.dataset.uid);if(u)openChatWith(u);return}
+ const nr=t.closest(".notif-row");if(nr){openNotification(nr.dataset.nid);return}
+ const mn=t.closest(".mark-notification");if(mn){markNotification(mn.dataset.id);return}
+ if(t.closest("#mark-all-read")){markAllRead();return}
+ const a=t.closest("article[data-post-id]");if(!a)return;
+ const id=a.dataset.postId;
+ if(t.closest(".like-post"))toggleLike(id);
+ else if(t.closest(".show-likers"))openLikers(id);
+ else if(t.closest(".delete-post"))deletePost(id);
+ else if(t.closest(".edit-post"))openEditPost(id);
+ else if(t.closest(".edit-comment"))openEditComment(id,t.closest("[data-cid]").dataset.cid);
+ else if(t.closest(".delete-comment"))deleteComment(id,t.closest("[data-cid]").dataset.cid);
+ else if(t.closest(".focus-comment")){
+  if(openComments.has(id)){openComments.delete(id);stopComments(id)}else{openComments.add(id);startComments(id)}
+  const p=postsCache.get(id);if(p)setPostLocal(p);
+  if(openComments.has(id))setTimeout(()=>document.querySelector(`article[data-post-id="${CSS.escape(id)}"] .comment-input`)?.focus(),60);
+ }
+ else if(t.closest(".share-post"))openShareOptions(id);
+ else if(t.closest(".toggle-comments")){expandedComments.has(id)?expandedComments.delete(id):expandedComments.add(id);const p=postsCache.get(id);if(p)setPostLocal(p)}
+});
+document.addEventListener("submit",e=>{
+ const f=e.target.closest(".comment-form");if(!f)return;
+ e.preventDefault();
+ const a=f.closest("article[data-post-id]");
+ if(a)addComment(a.dataset.postId,f.querySelector(".comment-input"));
+});
+
+/* ============ لوحة المفاتيح والتثبيت وعامل الخدمة ============ */
+if("serviceWorker" in navigator&&location.protocol.startsWith("http"))addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(console.warn));
+const NON_TEXT=["file","checkbox","radio","button","submit","range","color"];
+const isTyping=()=>{const f=document.activeElement;return !!f&&(f.tagName==="TEXTAREA"||(f.tagName==="INPUT"&&!NON_TEXT.includes(f.type)))};
+function updateKeyboardState(){
+ const vv=window.visualViewport,shrunk=!!vv&&(window.innerHeight-vv.height)>140;
+ document.body.classList.toggle("keyboard-open",window.innerWidth<900&&(isTyping()||shrunk));
+}
+document.addEventListener("focusin",()=>{
+ updateKeyboardState();
+ setTimeout(()=>{const f=document.activeElement;if(isTyping()&&f.scrollIntoView&&window.innerWidth<900)f.scrollIntoView({block:"center",behavior:"smooth"})},350);
+});
+document.addEventListener("focusout",()=>setTimeout(updateKeyboardState,150));
+if(window.visualViewport){window.visualViewport.addEventListener("resize",updateKeyboardState);window.visualViewport.addEventListener("scroll",updateKeyboardState)}
+window.addEventListener("resize",updateKeyboardState);updateKeyboardState();
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
+window.addEventListener("unhandledrejection",e=>console.warn("وعد مرفوض:",e.reason));
+setAuthMode("login");
+</script>
+</body>
+                         </html>
