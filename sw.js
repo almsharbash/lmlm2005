@@ -2,7 +2,7 @@
    Service Worker - كلمات
    ========================================================= */
 
-const VERSION = "kalimat-v12";
+const VERSION = "kalimat-v13";
 const BASE = "/lmlm2005/";
 
 const SHELL = [
@@ -16,9 +16,15 @@ const SHELL = [
   BASE + "kalimat_512x512-1.png"
 ];
 
+const FIREBASE = "https://www.gstatic.com/firebasejs/10.8.0/";
+const FIREBASE_FILES = [
+  FIREBASE + "firebase-app.js",
+  FIREBASE + "firebase-auth.js",
+  FIREBASE + "firebase-firestore.js"
+];
+
 const CDN_HOSTS = [
-  "www.gstatic.com",
-  "cdnjs.cloudflare.com"
+  "www.gstatic.com"
 ];
 
 /* =========================================================
@@ -29,6 +35,10 @@ self.addEventListener("install", event => {
   event.waitUntil(
     (async () => {
       const cache = await caches.open(VERSION);
+
+      await Promise.allSettled(
+        FIREBASE_FILES.map(url => cache.add(url))
+      );
 
       await Promise.allSettled(
         SHELL.map(url =>
@@ -81,10 +91,7 @@ self.addEventListener("fetch", event => {
 
   const firebaseOrFontAwesome =
     CDN_HOSTS.includes(url.hostname) &&
-    (
-      url.pathname.startsWith("/firebasejs/") ||
-      url.pathname.startsWith("/ajax/libs/font-awesome/")
-    );
+    url.pathname.startsWith("/firebasejs/");
 
   /*
     لا نتدخل في طلبات Firebase الخاصة بالمصادقة
@@ -104,7 +111,7 @@ self.addEventListener("fetch", event => {
   }
 
   /*
-    مكتبات Firebase وFont Awesome:
+    مكتبات Firebase:
     Cache First
   */
   if (firebaseOrFontAwesome) {
@@ -133,7 +140,10 @@ async function handleNavigation(request) {
   try {
     const response = await fetch(request);
 
-   if (response && response.ok && new URL(request.url).pathname.replace(/index\.htm$/, "") === BASE) { {
+    const path = new URL(request.url).pathname;
+    const isEntry = path === BASE || path === BASE + "index.htm" || path === BASE + "index.html";
+
+    if (response && response.ok && isEntry) {
       await cache.put(BASE + "index.htm", response.clone());
     }
 
