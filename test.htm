@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover,interactive-widget=resizes-content">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
 <meta name="theme-color" content="#0284c7">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -133,6 +133,12 @@ body.dark{--p:#38bdf8;--p-bright:#7dd3fc;--p-soft:#123448;--bg:#0b1720;--s:#1426
 .liker-emo{margin-inline-start:auto;font-size:20px}.likers-sum{display:flex;gap:6px;flex-wrap:wrap;padding:0 4px 8px}
 
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+/* سبب تكبير/توسّع الشاشة: عنصر طويل يوسّع العمود أكثر من عرض الهاتف */
+.app-layout>*,.main-column,.page,.main-column>*,.card,.post,.post>*,.row>*,.comment-main,.person-info,.setting-row>*{min-width:0}
+.card,.post,.page-title{max-width:100%}
+.link-btn,.person-info strong,.notif-row strong,.chat-room,.liker-row strong{overflow-wrap:anywhere;word-break:break-word;white-space:normal}
+.row.wrap,.row{min-width:0}
+img,video,canvas,svg{max-width:100%}
 button,a,.btn,.nav-btn,.action-btn,.field{touch-action:manipulation}
 input,textarea,select{font-size:16px}
 body{-webkit-tap-highlight-color:transparent}
