@@ -2,27 +2,26 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
 <script>
-/* تجربة التكبير: ?nz=1 يمنع التكبير بإصبعين، و?debug=1 يعرض أرقام التشخيص */
+/* تجارب التكبير (للتشخيص فقط): ?nz=1 إعداد الصفحة، ?ta=1 touch-action، ?js=1 حجب لمس إصبعين، ?debug=1 شريط الأرقام */
 (function(){
- var q=location.search;
- if(/[?&]nz=1/.test(q)){
-  var m=document.querySelector('meta[name=viewport]');
-  m.setAttribute('content','width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover,interactive-widget=resizes-content');
-  document.addEventListener('gesturestart',function(e){e.preventDefault()});
- }
- if(/[?&]debug=1/.test(q)){
+ var q=location.search,nz=/[?&]nz=1/.test(q),ta=/[?&]ta=1/.test(q),js=/[?&]js=1/.test(q),dbg=/[?&]debug=1/.test(q);
+ var c='width=device-width,initial-scale=1'+(nz?',maximum-scale=1,user-scalable=no':'')+',viewport-fit=cover,interactive-widget=resizes-content';
+ document.write('<meta name="viewport" content="'+c+'">');
+ if(ta)document.write('<style>html,body{touch-action:pan-x pan-y}</style>');
+ if(nz||js)document.addEventListener('gesturestart',function(e){e.preventDefault()});
+ if(js)document.addEventListener('touchstart',function(e){if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
+ if(dbg){
   addEventListener('DOMContentLoaded',function(){
    var d=document.createElement('div');
    d.style.cssText='position:fixed;z-index:99999;top:0;left:0;right:0;background:rgba(0,0,0,.8);color:#0f0;font:11px/1.4 monospace;padding:3px 6px;direction:ltr;pointer-events:none;white-space:pre-wrap';
    document.body.appendChild(d);
+   var modes=(nz?'nz ':'')+(ta?'ta ':'')+(js?'js ':'')||'none';
    var upd=function(){
     var vv=window.visualViewport,W=document.documentElement.clientWidth,wide='';
     var all=document.body.querySelectorAll('*');
     for(var i=0;i<all.length;i++){var e=all[i],r=e.getBoundingClientRect();if(r.width>W+1&&getComputedStyle(e).position!=='fixed'){wide=e.tagName+'.'+String(e.className).slice(0,28)+' w='+Math.round(r.width);break}}
-    var meta=document.querySelector('meta[name=viewport]').content.indexOf('user-scalable=no')>-1?'NOZOOM':'default';
-    d.textContent='meta='+meta+' innerW='+innerWidth+' clientW='+W+' scrollW='+document.documentElement.scrollWidth+' scale='+(vv?vv.scale.toFixed(2):'?')+' dpr='+devicePixelRatio+' x='+Math.round(scrollX)+' y='+Math.round(scrollY)+'\nwide: '+(wide||'none')+'\n'+navigator.userAgent.slice(-70);
+    d.textContent='modes='+modes+' innerW='+innerWidth+' scrollW='+document.documentElement.scrollWidth+' scale='+(vv?vv.scale.toFixed(2):'?')+' dpr='+devicePixelRatio+' y='+Math.round(scrollY)+'\nwide: '+(wide||'none')+' | ta='+getComputedStyle(document.body).touchAction;
    };
    setInterval(upd,600);addEventListener('scroll',upd,{passive:true});if(window.visualViewport)visualViewport.addEventListener('resize',upd);upd();
   });
@@ -1761,4 +1760,4 @@ window.addEventListener("unhandledrejection",e=>console.warn("وعد مرفوض:
 setAuthMode("login");
 </script>
 </body>
-                          </html>
+ </html>
