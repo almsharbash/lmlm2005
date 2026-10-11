@@ -132,11 +132,10 @@ body.dark{--p:#38bdf8;--p-bright:#7dd3fc;--p-soft:#123448;--bg:#0b1720;--s:#1426
 .flag-note .btn{margin-top:6px;padding:5px 10px;font-size:13px}
 .liker-emo{margin-inline-start:auto;font-size:20px}.likers-sum{display:flex;gap:6px;flex-wrap:wrap;padding:0 4px 8px}
 
-html,body{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100%;overflow-x:hidden;max-width:100vw}
-button,a,.btn,.nav-btn,.action-btn{touch-action:manipulation}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+button,a,.btn,.nav-btn,.action-btn,.field{touch-action:manipulation}
 input,textarea,select{font-size:16px}
-body{-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
-.post-body,.comment-bubble,.profile-bio,input,textarea{-webkit-touch-callout:default;-webkit-user-select:text;user-select:text}
+body{-webkit-tap-highlight-color:transparent}
 </style>
 </head>
 <body>
@@ -1727,9 +1726,9 @@ if(window.visualViewport){window.visualViewport.addEventListener("resize",update
 window.addEventListener("resize",updateKeyboardState);updateKeyboardState();
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
 window.addEventListener("unhandledrejection",e=>console.warn("وعد مرفوض:",e.reason));
-["gesturestart","gesturechange","gestureend"].forEach(ev=>document.addEventListener(ev,e=>e.preventDefault(),{passive:false}));
-document.addEventListener("touchmove",e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
+/* آيفون فقط: منع تكبير القرص */
+document.addEventListener("gesturestart",e=>e.preventDefault());
 setAuthMode("login");
 </script>
 </body>
-                          </html>
+ </html>
