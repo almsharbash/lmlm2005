@@ -2,14 +2,13 @@
    Service Worker - كلمات
    ========================================================= */
 
-const VERSION = "kalimat-v15";
+const VERSION = "kalimat-v14";
 const BASE = "/lmlm2005/";
 
 const SHELL = [
   BASE,
   BASE + "index.htm",
   BASE + "manifest.json",
-  BASE + "home-plus.js",
   BASE + "favicon.svg",
   BASE + "kalimat_180x180.png",
   BASE + "kalimat_192x192-1.png",
@@ -112,15 +111,6 @@ self.addEventListener("fetch", event => {
   }
 
   /*
-    ملحق الواجهة home-plus.js:
-    الشبكة أولًا (لتصل التعديلات فورًا)، والمخزَّن عند انقطاع الاتصال.
-  */
-  if (sameOrigin && url.pathname === BASE + "home-plus.js") {
-    event.respondWith(networkFirst(request));
-    return;
-  }
-
-  /*
     مكتبات Firebase:
     Cache First
   */
@@ -207,27 +197,6 @@ async function staleWhileRevalidate(request) {
 }
 
 /* =========================================================
-   NETWORK FIRST
-   ========================================================= */
-
-async function networkFirst(request) {
-  const cache = await caches.open(VERSION);
-
-  try {
-    const response = await fetch(request);
-
-    if (response && response.ok) {
-      await cache.put(request, response.clone());
-    }
-
-    return response;
-  } catch (error) {
-    const cached = await cache.match(request);
-    return cached || Response.error();
-  }
-}
-
-/* =========================================================
    CACHE FIRST
    ========================================================= */
 
@@ -253,4 +222,4 @@ async function cacheFirst(request) {
   } catch {
     return Response.error();
   }
-}
+   }
