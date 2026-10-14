@@ -418,7 +418,7 @@ body.sp-open{overflow:hidden}
 </script>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import{getAuth,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,updateProfile,sendPasswordResetEmail,sendEmailVerification,reload,deleteUser,reauthenticateWithCredential,EmailAuthProvider}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import{getAuth,initializeAuth,indexedDBLocalPersistence,browserLocalPersistence,browserSessionPersistence,onAuthStateChanged,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,updateProfile,sendPasswordResetEmail,sendEmailVerification,reload,deleteUser,reauthenticateWithCredential,EmailAuthProvider}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import{initializeFirestore,getFirestore,persistentLocalCache,persistentMultipleTabManager,doc,getDoc,getDocFromServer,setDoc,updateDoc,addDoc,collection,query,where,orderBy,limit,startAfter,startAt,endAt,onSnapshot,serverTimestamp,arrayUnion,arrayRemove,deleteDoc,deleteField,getDocs,writeBatch,increment,getCountFromServer}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 /* ============ إعدادات Firebase ============ */
@@ -454,10 +454,12 @@ function onFatal(m){
 addEventListener("error",e=>onFatal(e.message||e.error?.message));
 addEventListener("unhandledrejection",e=>onFatal(e.reason?.message||e.reason));
 const fb=initializeApp(firebaseConfig);
-const auth=getAuth(fb);
+let auth;
+try{auth=initializeAuth(fb,{persistence:[indexedDBLocalPersistence,browserLocalPersistence,browserSessionPersistence]})}catch(e){console.warn("auth init",e);auth=getAuth(fb)}
+try{navigator.storage?.persist?.().catch(()=>{})}catch{}
 let db;
 try{
-  db=initializeFirestore(fb,{localCache:persistentLocalCache({tabManager:persistentMultipleTabManager()})});
+  db=initializeFirestore(fb,{localCache:persistentLocalCache({tabManager:persistentMultipleTabManager()}),experimentalAutoDetectLongPolling:true});
 }catch(e){
   console.warn("التخزين المحلي الدائم غير متاح، سيُستخدم الوضع العادي",e);
   db=getFirestore(fb);
@@ -610,7 +612,7 @@ const newUserDoc=(uid,name)=>({uid,name,displayName:name,nameLower:name.toLowerC
 
 /* ============ الشاشات والتنقل ============ */
 function showAuth(){$("boot-screen").classList.add("hidden");$("verify-screen").classList.add("hidden");$("auth-screen").classList.remove("hidden");$("app").classList.add("hidden")}
-function showApp(){$("boot-screen").classList.add("hidden");$("auth-screen").classList.add("hidden");$("verify-screen").classList.add("hidden");$("app").classList.remove("hidden")}
+function showApp(){try{document.activeElement?.blur?.()}catch{}document.body.classList.remove("keyboard-open");setTimeout(()=>{try{updateKeyboardState()}catch{}},400);$("boot-screen").classList.add("hidden");$("auth-screen").classList.add("hidden");$("verify-screen").classList.add("hidden");$("app").classList.remove("hidden")}
 /* تأكيد البريد: يُطلب من الحسابات الجديدة فقط (المنشأة بعد هذا التاريخ)؛ الحسابات القديمة تبقى تعمل. ضع 0 لإلزام الجميع */
 const VERIFY_FROM=Date.parse("2026-10-06T07:00:00Z");
 const needsVerify=u=>!!u&&!u.emailVerified&&new Date(u.metadata?.creationTime).getTime()>=VERIFY_FROM;
@@ -1087,6 +1089,29 @@ function openPublishModal(){
  setTimeout(()=>$("new-post-text")?.focus({preventScroll:true}),80);
 }
 
+/* صندوق المنشورات غير المرسلة: نسخة احتياطية على الجهاز حتى يتأكد وصول المنشور للسحابة */
+const OB_KEY="kalimat-outbox-v1";
+function obLoad(){try{return JSON.parse(localStorage.getItem(OB_KEY)||"[]")}catch{return[]}}
+function obSave(a){try{localStorage.setItem(OB_KEY,JSON.stringify(a.slice(-5)))}catch{try{localStorage.setItem(OB_KEY,JSON.stringify(a.map(x=>({...x,image:""})).slice(-5)))}catch{}}}
+function obAdd(d){const id="ob"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);obSave([...obLoad(),{id,uid:currentUser?.uid,t:Date.now(),...d}]);return id}
+function obDone(id){obSave(obLoad().filter(x=>x.id!==id))}
+const obSession=Date.now();
+function obCheck(){
+ if(!currentUser||$("ob-banner"))return;
+ const list=obLoad().filter(x=>x.uid===currentUser.uid&&x.t<obSession-20000);
+ if(!list.length)return;
+ const it=list[0],d=document.createElement("div");d.id="ob-banner";d.className="heal-banner";
+ d.innerHTML='لديك منشور لم يتأكد وصوله: «'+esc((it.text||"").slice(0,40))+'…» <button class="btn" type="button" id="ob-resend">إعادة النشر</button> <button class="btn secondary" type="button" id="ob-drop">تجاهل</button>';
+ document.body.appendChild(d);
+ $("ob-drop").onclick=()=>{obDone(it.id);d.remove()};
+ $("ob-resend").onclick=()=>{
+  if(it.text)$("new-post-text").value=it.text;
+  if(it.videoUrl)$("new-post-video-url").value=it.videoUrl;
+  if(it.image){selectedImage=it.image;$("media-preview-content").src=it.image;$("media-preview-container").classList.remove("hidden")}
+  obDone(it.id);d.remove();$("new-post-form").requestSubmit();
+ };
+}
+setTimeout(obCheck,6000);
 $("new-post-form").addEventListener("submit",e=>{
  e.preventDefault();
  if(checkBan())return;
@@ -1097,10 +1122,13 @@ $("new-post-form").addEventListener("submit",e=>{
  if(!text&&!selectedImage&&!videoUrl)return toast("اكتب نصًا أو أرفق صورة أو أضف رابط فيديو أولًا.");
  if(Date.now()-lastPostAt<3000)return toast("انتظر لحظات قبل النشر مجددًا.");
  lastPostAt=Date.now();
- const vis=$("new-post-vis").value;const data={uid:currentUser.uid,author:myAuthor(),text,image:selectedImage||"",videoUrl,likes:[],comments:[],reactions:{},visibility:["public","friends","me"].includes(vis)?vis:"public",commentsOff:false,createdAt:serverTimestamp()};
+ const selectedImageCopy=selectedImage||"";const vis=$("new-post-vis").value;const data={uid:currentUser.uid,author:myAuthor(),text,image:selectedImage||"",videoUrl,likes:[],comments:[],reactions:{},visibility:["public","friends","me"].includes(vis)?vis:"public",commentsOff:false,createdAt:serverTimestamp()};
  $("new-post-text").value="";$("new-post-video-url").value="";selectedImage="";$("media-preview-container").classList.add("hidden");$("media-preview-content").src="";$("post-media-file").value="";$("composer-options").classList.add("hidden");$("composer-options-toggle").setAttribute("aria-expanded","false");$("publish-post-btn").innerHTML='<i class="fa-solid fa-paper-plane"></i> نشر';
- addDoc(collection(db,"posts"),data).catch(showError);
- toast(online()?"تم نشر المنشور.":"سيُنشر المنشور عند عودة الاتصال.");
+ const obId=obAdd({text,image:selectedImageCopy,videoUrl,visibility:data.visibility});
+ let settled=false;
+ const slow=setTimeout(()=>{if(!settled)toast("الاتصال ضعيف؛ المنشور محفوظ على جهازك وسيُرسل تلقائيًا عند تحسّن الاتصال.")},6000);
+ addDoc(collection(db,"posts"),data).then(()=>{settled=true;clearTimeout(slow);obDone(obId);toast("تم نشر المنشور ✓")}).catch(e=>{settled=true;clearTimeout(slow);obDone(obId);showError(e)});
+ if(!online())toast("لا يوجد اتصال؛ المنشور محفوظ وسيُنشر عند عودة الاتصال.");
 });
 $("composer-options-toggle").onclick=()=>{const box=$("composer-options"),opening=box.classList.contains("hidden");box.classList.toggle("hidden");$("composer-options-toggle").setAttribute("aria-expanded",String(opening));if(opening)box.scrollIntoView({behavior:"smooth",block:"nearest"});};
 $("attach-media-trigger").onclick=()=>{$("composer-options").classList.remove("hidden");$("composer-options-toggle").setAttribute("aria-expanded","true");$("post-media-file").click();};
@@ -2160,10 +2188,11 @@ document.addEventListener("submit",e=>{
 /* ============ لوحة المفاتيح والتثبيت وعامل الخدمة ============ */
 if("serviceWorker" in navigator&&location.protocol.startsWith("http"))addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(console.warn));
 const NON_TEXT=["file","checkbox","radio","button","submit","range","color"];
+let userTouched=false;["pointerdown","touchstart","keydown"].forEach(ev=>addEventListener(ev,()=>{userTouched=true},{capture:true,passive:true,once:true}));
 const isTyping=()=>{const f=document.activeElement;return !!f&&(f.tagName==="TEXTAREA"||(f.tagName==="INPUT"&&!NON_TEXT.includes(f.type)))};
 function updateKeyboardState(){
  const vv=window.visualViewport,shrunk=!!vv&&(window.innerHeight-vv.height)>140;
- document.body.classList.toggle("keyboard-open",window.innerWidth<900&&(isTyping()||shrunk));
+ document.body.classList.toggle("keyboard-open",window.innerWidth<900&&userTouched&&(isTyping()||shrunk));
 }
 document.addEventListener("focusin",()=>{
  updateKeyboardState();
@@ -2171,7 +2200,7 @@ document.addEventListener("focusin",()=>{
 });
 document.addEventListener("focusout",()=>setTimeout(updateKeyboardState,150));
 if(window.visualViewport){window.visualViewport.addEventListener("resize",updateKeyboardState);window.visualViewport.addEventListener("scroll",updateKeyboardState)}
-window.addEventListener("resize",updateKeyboardState);updateKeyboardState();
+window.addEventListener("resize",updateKeyboardState);addEventListener("pageshow",updateKeyboardState);document.addEventListener("visibilitychange",()=>{if(!document.hidden)setTimeout(updateKeyboardState,200)});updateKeyboardState();
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
 window.addEventListener("unhandledrejection",e=>console.warn("وعد مرفوض:",e.reason));
 setAuthMode("login");
