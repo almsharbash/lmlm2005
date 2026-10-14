@@ -2,7 +2,7 @@
    ملف مستقل: لا يغيّر index.htm إلا بسطر واحد في آخره. */
 import{getApps,getApp}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import{getAuth,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import{getFirestore,doc,getDoc,setDoc,addDoc,collection,query,where,orderBy,limit,getDocs,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import{getFirestore,doc,getDoc,setDoc,addDoc,collection,query,where,orderBy,limit,getDocs,serverTimestamp,startAfter,getCountFromServer}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const MAX_SECTIONS=12,MAX_SITES=60,PEOPLE_TTL=30*60*1000,SITES_TTL=10*60*1000;
 const Q=s=>document.querySelector(s);
@@ -19,6 +19,7 @@ const lsGet=k=>{try{return JSON.parse(localStorage.getItem(k)||"null")}catch{ret
 const lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
 
 let auth,db,user=null,injected=false,tab="people",isAdmin=false,myName="عضو";
+let myHide=!!lsGet("kp-hideact"),touched=false;
 let people=null,peopleAt=0,cfg=null,cfgAt=0,cfgNoRules=false,adminUid="";
 
 /* ---------------- التشغيل ---------------- */
@@ -34,7 +35,7 @@ function boot(){
 function waitApp(){
  let n=0;const t=setInterval(()=>{
   const app=Q("#app");n++;
-  if(app&&!app.classList.contains("hidden")){clearInterval(t);init();checkAdmin()}
+  if(app&&!app.classList.contains("hidden")){clearInterval(t);init();checkAdmin();setTimeout(touchActive,4000)}
   else if(n>120)clearInterval(t);
  },500);
 }
@@ -53,6 +54,10 @@ const CSS=`
 :root{--kp-search:${IC_SEARCH};--kp-star:${IC_STAR}}
 .kp-ic{display:inline-block;width:1.1em;height:1.1em;vertical-align:-.17em;background-color:currentColor;-webkit-mask:var(--ic) center/contain no-repeat;mask:var(--ic) center/contain no-repeat;flex:none}
 .kp-ic.kp-search{--ic:var(--kp-search)}.kp-ic.kp-star{--ic:var(--kp-star)}
+.kp-logo{display:block;width:26px;height:26px;border-radius:7px;object-fit:cover;flex:none;filter:grayscale(1);opacity:.62;transition:opacity .15s,filter .15s}
+.nav-btn[data-kp].active .kp-logo{filter:none;opacity:1}
+.sidebar .nav-btn[data-kp]{display:flex;align-items:center;gap:8px}.sidebar .kp-logo{width:22px;height:22px;border-radius:6px}
+.kp-act{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;color:var(--muted,#65676b)}.kp-act:before{content:"";width:8px;height:8px;border-radius:50%;background:#9aa0a6}.kp-act.on:before{background:#31a24c}
 .bottom-nav .kp-lbl{display:none}
 .kp-tabs{display:flex;gap:8px;margin:0 0 12px;overflow-x:auto;padding-bottom:2px}
 .kp-tab{border:0;border-radius:999px;padding:9px 16px;background:var(--s);color:var(--t);border:1px solid var(--b);white-space:nowrap;font-weight:bold}
@@ -120,7 +125,7 @@ function init(){
   },250));
  }
  /* أزرار التنقل */
- const mk=()=>{const b=document.createElement("button");b.className="nav-btn";b.dataset.kp="suggest";b.setAttribute("aria-label","اقتراحات");b.title="اقتراحات";b.innerHTML='<i class="kp-ic kp-star"></i><span class="kp-lbl"> اقتراحات</span>';b.onclick=showSuggest;return b};
+ const mk=()=>{const b=document.createElement("button");b.className="nav-btn";b.dataset.kp="suggest";b.setAttribute("aria-label","اقتراحات");b.title="اقتراحات";b.innerHTML='<img class="kp-logo" src="./kalimat_180x180.png" alt="" width="26" height="26" decoding="async"><span class="kp-lbl"> اقتراحات</span>';b.onclick=showSuggest;return b};
  bn.appendChild(mk());
  sb.insertBefore(mk(),sb.children[4]||null);
  bn.querySelectorAll(".nav-btn").forEach(b=>{if(!b.getAttribute("aria-label"))b.setAttribute("aria-label",b.textContent.trim())});
@@ -144,7 +149,7 @@ const skel='<div class="skeleton"></div>';
 const hidKey=()=>"kp-hid-"+user.uid,pplKey=()=>"kp-people-"+user.uid;
 async function loadPeople(){
  const me=(await getDoc(doc(db,"users",user.uid))).data()||{};
- myName=me.displayName||me.name||user.displayName||"عضو";
+ myName=me.displayName||me.name||user.displayName||"عضو";myHide=!!me.hideActive;lsSet("kp-hideact",myHide);
  const mine=new Set(arr(me.friends)),blocked=new Set(arr(me.blockedUsers)),hid=new Set(arr(lsGet(hidKey())));
  let pending=new Set();
  try{const s=await getDocs(query(collection(db,"friendRequests"),where("from","==",user.uid),where("status","==","pending")));s.docs.forEach(d=>pending.add(d.data().to))}catch{}
@@ -162,7 +167,7 @@ async function loadPeople(){
  const add=(id,d,n)=>{
   if(!d||arr(d.blockedUsers).includes(user.uid))return;
   const th=safeImg(d.thumb)||safeImg(d.photoURL);
-  out.push({uid:id,name:d.displayName||d.name||"عضو",thumb:th&&th.length<12000?th:"",mutual:n,sent:pending.has(id)});
+  out.push({act:d.hideActive?0:tsMs(d.lastActive),uid:id,name:d.displayName||d.name||"عضو",thumb:th&&th.length<12000?th:"",mutual:n,sent:pending.has(id)});
  };
  const got=await Promise.all(ids.map(id=>getDoc(doc(db,"users",id)).catch(()=>null)));
  got.forEach((s,i)=>{if(s&&s.exists())add(ids[i],s.data(),mutual.get(ids[i]))});
@@ -190,7 +195,7 @@ async function renderPeople(force){
  }
  if(tab!=="people")return;
  const list=people.filter(p=>!arr(lsGet(hidKey())).includes(p.uid));
- b.innerHTML=(list.length?`<div class="kp-grid">${list.map(p=>`<div class="kp-card"><button type="button" class="kp-x" data-act="hide" data-uid="${esc(p.uid)}" aria-label="إخفاء الاقتراح">×</button><button type="button" class="open-profile kp-pa" data-uid="${esc(p.uid)}" aria-label="${esc(p.name)}"><img src="${esc(p.thumb||DEF)}" alt="" loading="lazy" decoding="async"></button><div class="kp-nm">${esc(p.name)}</div><div class="kp-sub">${p.mutual?esc(p.mutual+" "+(p.mutual===1?"صديق مشترك":"أصدقاء مشتركين")):"عضو في كلمات"}</div><button type="button" class="btn kp-add ${p.sent?"secondary":""}" data-act="add" data-uid="${esc(p.uid)}" ${p.sent?"disabled":""}>${p.sent?"تم الإرسال ✓":"إضافة"}</button></div>`).join("")}</div>`:'<div class="kp-empty">لا توجد اقتراحات الآن. أضف أصدقاء أكثر وستظهر هنا اقتراحات جديدة.</div>')+'<div style="text-align:center;margin-top:12px"><button type="button" class="btn secondary" data-act="refresh">تحديث الاقتراحات</button></div>';
+ b.innerHTML=(list.length?`<div class="kp-grid">${list.map(p=>`<div class="kp-card"><button type="button" class="kp-x" data-act="hide" data-uid="${esc(p.uid)}" aria-label="إخفاء الاقتراح">×</button><button type="button" class="open-profile kp-pa" data-uid="${esc(p.uid)}" aria-label="${esc(p.name)}"><img src="${esc(p.thumb||DEF)}" alt="" loading="lazy" decoding="async"></button><div class="kp-nm">${esc(p.name)}</div>${actHtml(p.act)}<div class="kp-sub">${p.mutual?esc(p.mutual+" "+(p.mutual===1?"صديق مشترك":"أصدقاء مشتركين")):"عضو في كلمات"}</div><button type="button" class="btn kp-add ${p.sent?"secondary":""}" data-act="add" data-uid="${esc(p.uid)}" ${p.sent?"disabled":""}>${p.sent?"تم الإرسال ✓":"إضافة"}</button></div>`).join("")}</div>`:'<div class="kp-empty">لا توجد اقتراحات الآن. أضف أصدقاء أكثر وستظهر هنا اقتراحات جديدة.</div>')+'<div style="text-align:center;margin-top:12px"><button type="button" class="btn secondary" data-act="refresh">تحديث الاقتراحات</button> <button type="button" class="btn secondary" data-act="hideact">${myHide?"وقت نشاطي: مخفي":"وقت نشاطي: ظاهر"}</button></div>';
 }
 async function addFriend(id,btn){
  if(!online())return toast("هذا الإجراء يحتاج إلى اتصال بالإنترنت.");
@@ -237,7 +242,7 @@ async function renderSites(force){
  let h="";
  if(isAdmin){
   if(cfgNoRules)h+='<div class="kp-warn">تعذّر قراءة الإعدادات: أضف قاعدة <b>config</b> في قواعد Firestore ثم أعد المحاولة.</div>';
-  h+=`<div class="kp-adm" style="margin-bottom:10px"><button type="button" data-act="secAdd" style="padding:8px 14px;font-size:14px">+ قسم جديد</button><span class="muted small" style="align-self:center">${cfg.sections.length}/${MAX_SECTIONS} أقسام · ${totalSites()}/${MAX_SITES} موقعًا</span></div>`;
+  h+=`<div class="kp-adm" style="margin-bottom:10px"><button type="button" data-act="secAdd" style="padding:8px 14px;font-size:14px">+ قسم جديد</button><button type="button" data-act="backup" style="padding:8px 14px;font-size:14px">نسخة احتياطية</button><span class="muted small" style="align-self:center">${cfg.sections.length}/${MAX_SECTIONS} أقسام · ${totalSites()}/${MAX_SITES} موقعًا</span></div>`;
  }
  if(!secs.length)h+='<div class="kp-empty">'+(isAdmin?"لم تُضف أقسامًا بعد. اضغط «قسم جديد» للبدء.":"لا توجد مواقع بعد. ستضيفها الإدارة قريبًا.")+"</div>";
  h+=secs.map(s=>{
@@ -278,9 +283,63 @@ function openSite(sec,x){
 }
 
 /* ---------------- النقرات ---------------- */
+/* ---------------- نشط منذ ---------------- */
+function tsMs(v){if(!v)return 0;if(typeof v.toMillis==="function")return v.toMillis();if(v.seconds)return v.seconds*1000;return 0}
+function actHtml(t){
+ if(!t)return"";const m=(Date.now()-t)/60000;let l="",on=0;
+ if(m<5){l="نشط الآن";on=1}else if(m<60)l="نشط منذ "+Math.round(m)+" د";
+ else if(m<1440)l="نشط منذ "+Math.round(m/60)+" س";else if(m<10080)l="نشط منذ "+Math.round(m/1440)+" يوم";
+ return l?'<div class="kp-act'+(on?" on":"")+'">'+l+"</div>":"";
+}
+async function touchActive(){
+ if(!user||touched||!online()||myHide)return;touched=true;
+ const k="kp-touch-"+user.uid,last=+(lsGet(k)||0);
+ if(Date.now()-last<20*60*1000)return;
+ try{await setDoc(doc(db,"users",user.uid),{lastActive:serverTimestamp()},{merge:true});lsSet(k,Date.now())}catch(e){console.warn("lastActive",e)}
+}
+async function toggleHide(){
+ if(!online())return toast("يحتاج اتصالًا بالإنترنت.");
+ const v=!myHide;
+ try{await setDoc(doc(db,"users",user.uid),{hideActive:v},{merge:true});myHide=v;lsSet("kp-hideact",v);toast(v?"أُخفي وقت نشاطك عن الأعضاء.":"سيظهر وقت نشاطك للأعضاء.");if(tab==="people")renderPeople(false)}
+ catch(e){console.warn(e);toast("تعذّر الحفظ الآن.")}
+}
+
+/* ---------------- نسخة احتياطية (للمدير) ---------------- */
+async function doBackup(btn){
+ if(!online())return toast("يحتاج اتصالًا بالإنترنت.");
+ const cols=["users","posts","config","moderation","reports"],MAXD=15000;
+ let counts={},total=0;
+ try{for(const c of cols){const n=(await getCountFromServer(collection(db,c))).data().count;counts[c]=n;total+=n}}catch(e){console.warn(e);return toast("تعذّر عدّ البيانات الآن.")}
+ if(!confirm("سيتم تحميل "+total+" سجلًا (أعضاء "+counts.users+"، منشورات "+counts.posts+") إلى ملف على جهازك. هذا يستهلك نحو "+total+" قراءة من حصتك اليومية. صور المنشورات والصور الشخصية الكبيرة لا تُحفظ في النسخة. متابعة؟"))return;
+ if(total>MAXD)return toast("البيانات كبيرة ("+total+"). سنقسّم النسخة لاحقًا لتبقى ضمن الحصة المجانية.");
+ const old=btn.textContent;btn.disabled=true;
+ try{
+  const out={app:"kalimat",exportedAt:new Date().toISOString(),counts,collections:{}};
+  const strip=d=>{const o={...d};if(typeof o.image==="string"&&o.image.length>2000)o.image="[مقتطع]";if(typeof o.photoURL==="string"&&o.photoURL.length>2000)o.photoURL="[مقتطع]";return o};
+  for(const c of cols){
+   out.collections[c]={};let last=null,n=0;
+   for(;;){
+    const q=last?query(collection(db,c),orderBy("__name__"),startAfter(last),limit(300)):query(collection(db,c),orderBy("__name__"),limit(300));
+    const s=await getDocs(q);if(s.empty)break;
+    s.docs.forEach(d=>{out.collections[c][d.id]=strip(d.data())});
+    n+=s.size;last=s.docs[s.docs.length-1];btn.textContent=c+" "+n;
+    if(s.size<300)break;
+   }
+  }
+  const json=JSON.stringify(out,function(k,v){const o=this[k];return o&&typeof o.toMillis==="function"?{"$ts":o.toMillis()}:v});
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([json],{type:"application/json"}));
+  a.download="kalimat-backup-"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000);
+  toast("تم تنزيل النسخة الاحتياطية. احفظها في Google Drive.");
+ }catch(e){console.warn(e);toast("تعذّر إكمال النسخة: "+(e&&e.code||"خطأ"))}
+ finally{btn.disabled=false;btn.textContent=old}
+}
+
 function onClick(e){
  const t=e.target.closest("[data-act]");if(!t)return;
  const act=t.dataset.act,sid=t.dataset.s,xid=t.dataset.x;
+ if(act==="hideact"){toggleHide();return}
+ if(act==="backup"){if(isAdmin)doBackup(t);return}
  if(act==="add")return addFriend(t.dataset.uid,t);
  if(act==="hide"){const h=arr(lsGet(hidKey()));h.push(t.dataset.uid);lsSet(hidKey(),h.slice(-200));renderPeople(false);return}
  if(act==="refresh"){if(!online())return toast("يحتاج اتصالًا بالإنترنت.");renderPeople(true);return}
