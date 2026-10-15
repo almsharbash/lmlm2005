@@ -2,7 +2,7 @@
    Service Worker - كلمات
    ========================================================= */
 
-const VERSION = "kalimat-v15";
+const VERSION = "kalimat-v14";
 const BASE = "/lmlm2005/";
 
 const SHELL = [
