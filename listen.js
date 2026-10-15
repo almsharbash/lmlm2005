@@ -23,6 +23,7 @@ export function parse(raw){
   const list=u.searchParams.get("list");
   if(/^[\w-]{11}$/.test(id))return{k:"video",site:"YouTube",src:`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&playsinline=1${list&&/^[\w-]{10,60}$/.test(list)?"&list="+encodeURIComponent(list):""}`,thumb:`https://i.ytimg.com/vi/${id}/hqdefault.jpg`};
   if(list&&/^[\w-]{10,60}$/.test(list))return{k:"video",site:"YouTube",src:`https://www.youtube-nocookie.com/embed/videoseries?list=${encodeURIComponent(list)}&autoplay=1&rel=0&playsinline=1`};
+  if((m=p.match(/^\/channel\/UC([\w-]{22})(?:\/|$)/)))return{k:"video",site:"قناة يوتيوب",src:`https://www.youtube-nocookie.com/embed/videoseries?list=UU${m[1]}&autoplay=1&rel=0&playsinline=1`};
   return null;
  }
  if(h==="vimeo.com"||h==="player.vimeo.com"){m=p.match(/(\d{6,12})/);if(m)return{k:"video",site:"Vimeo",src:`https://player.vimeo.com/video/${m[1]}?autoplay=1`}}
@@ -58,6 +59,7 @@ const CSS=`
 .kl-bar .btn{padding:7px 12px}
 .kl-note{font-size:12px;color:var(--m)}.kl-note a{color:var(--p)}
 .kl-list{display:grid;gap:8px}
+#kl-day{margin-bottom:12px}.kl-dayc{border-color:var(--p);background:var(--p-soft)}
 .kl-card{display:flex;gap:10px;align-items:center;background:var(--s);border:1px solid var(--b);border-radius:12px;padding:8px}
 .kl-card.cur{border-color:var(--p);background:var(--p-soft)}
 .kl-th{flex:none;width:72px;height:54px;border-radius:9px;background:var(--bg);display:grid;place-items:center;font-size:24px;overflow:hidden}.kl-th img{width:100%;height:100%;object-fit:cover}
@@ -99,6 +101,20 @@ async function save(){
 }
 
 /* ---------- العرض ---------- */
+const dayKey=()=>{const d=new Date();return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()};
+const hash=str=>{let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0};
+function dayPick(){
+ const l=filtered();if(!l.length)return null;
+ const sorted=l.slice().sort((a,b)=>a.id<b.id?-1:1);
+ return sorted[hash(dayKey()+"|"+[...S.moods].sort().join(","))%sorted.length];
+}
+function drawDay(){
+ const d=S.box&&S.box.querySelector("#kl-day");if(!d)return;
+ const it=dayPick();
+ if(!it){d.innerHTML="";return}
+ const e=parse(it.url),ic=e?(e.k==="audio"?"🎧":"🎬"):"🔗";
+ d.innerHTML=`<div class="kl-card kl-dayc"><button type="button" class="kl-th" data-l="play" data-id="${esc(it.id)}" aria-label="تشغيل">${e&&e.thumb?`<img src="${esc(e.thumb)}" alt="" loading="lazy" decoding="async">`:ic}</button><div class="kl-ci"><span>✨ اختيار اليوم</span><strong>${esc(it.title)}</strong></div><button type="button" class="btn" data-l="play" data-id="${esc(it.id)}" style="padding:8px 14px">▶</button></div>`;
+}
 const typeOf=it=>{const e=parse(it.url);return e?e.k:"link"};
 function filtered(){
  return arr(S.items).filter(it=>{
@@ -115,6 +131,7 @@ function drawChips(){
 }
 function drawList(){
  const l=S.box&&S.box.querySelector("#kl-list");if(!l)return;
+ drawDay();
  const admin=S.ctx.isAdmin,list=filtered();
  let w="";
  if(admin&&S.noRules)w='<div class="kl-warn">تعذّرت القراءة: أضف قاعدة <b>config/listen</b> في قواعد Firestore (القواعد v7) ثم أعد المحاولة.</div>';
@@ -185,7 +202,7 @@ const moodBoxes=sel=>`<div class="kl-mchips">${MOODS.map(m=>`<label><input type=
 const pickedMoods=f=>[...f.querySelectorAll("input[name=m]:checked")].map(x=>x.value).slice(0,3);
 function editItem(it){
  if(!it&&arr(S.items).length>=MAX_ITEMS)return S.ctx.toast("وصلت إلى الحد الأقصى ("+MAX_ITEMS+").");
- modal(`<h2>${it?"تعديل":"إضافة"}</h2><label>العنوان<input class="field" name="t" maxlength="80" required value="${esc(it?it.title:"")}"></label><label>الرابط العادي (https://...)<input class="field" name="u" type="url" inputmode="url" dir="ltr" maxlength="500" required value="${esc(it?it.url:"")}" placeholder="الصق رابط يوتيوب أو ساوندكلاود أو سبوتيفاي"></label><div>المزاج (حتى ثلاثة)</div>${moodBoxes(it?it.moods:[])}`,f=>{
+ modal(`<h2>${it?"تعديل":"إضافة"}</h2><label>العنوان<input class="field" name="t" maxlength="80" required value="${esc(it?it.title:"")}"></label><label>الرابط العادي (https://...)<input class="field" name="u" type="url" inputmode="url" dir="ltr" maxlength="500" required value="${esc(it?it.url:"")}" placeholder="فيديو أو قائمة تشغيل أو قناة (youtube.com/channel/UC...) أو ساوندكلاود أو سبوتيفاي"></label><div>المزاج (حتى ثلاثة)</div>${moodBoxes(it?it.moods:[])}`,f=>{
   const t=f.elements.t.value.trim(),u=safeUrl(f.elements.u.value);
   if(!t||!u){S.ctx.toast("اكتب العنوان ورابطاً يبدأ بـ https://");return false}
   const moods=pickedMoods(f);
@@ -242,7 +259,7 @@ export async function mount(box,ctx){
  await load(false);
  if(!box.isConnected)return;
  const admin=ctx.isAdmin;
- box.innerHTML=`<div class="kl-top"><div class="kl-h">ماذا يناسب مزاجك اليوم؟</div><div class="kl-chips" id="kl-chips"></div><div class="kl-row"><button type="button" class="btn" data-l="rand">🎲 فاجئني</button><button type="button" class="btn secondary" data-l="mix">▶ تشغيل المزيج</button><span class="kl-types" id="kl-types"></span></div>${admin?'<div class="kl-adm"><button type="button" data-l="add" style="padding:8px 14px;font-size:14px">+ إضافة</button><button type="button" data-l="bulk" style="padding:8px 14px;font-size:14px">إضافة جماعية</button></div>':""}</div><div class="kl-player hidden" id="kl-player"></div><div class="kl-list" id="kl-list"></div>`;
+ box.innerHTML=`<div class="kl-top"><div class="kl-h">ماذا يناسب مزاجك اليوم؟</div><div class="kl-chips" id="kl-chips"></div><div class="kl-row"><button type="button" class="btn" data-l="rand">🎲 فاجئني</button><button type="button" class="btn secondary" data-l="mix">▶ تشغيل المزيج</button><span class="kl-types" id="kl-types"></span></div>${admin?'<div class="kl-adm"><button type="button" data-l="add" style="padding:8px 14px;font-size:14px">+ إضافة</button><button type="button" data-l="bulk" style="padding:8px 14px;font-size:14px">إضافة جماعية</button></div>':""}</div><div id="kl-day"></div><div class="kl-player hidden" id="kl-player"></div><div class="kl-list" id="kl-list"></div>`;
  box.onclick=onClick;
  drawChips();drawList();drawPlayer();
 }
