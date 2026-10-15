@@ -42,7 +42,7 @@ function waitApp(){
 async function checkAdmin(){
  if(!user||adminUid===user.uid)return;
  adminUid=user.uid;
- try{const s=await getDoc(doc(db,"admins",user.uid));isAdmin=s.exists();if(isAdmin&&tab==="sites"&&pageVisible())render()}catch{isAdmin=false}
+ try{const s=await getDoc(doc(db,"admins",user.uid));isAdmin=s.exists();if(isAdmin&&(tab==="sites"||tab==="listen")&&pageVisible())render()}catch{isAdmin=false}
 }
 const pageVisible=()=>{const p=Q("#page-suggest");return p&&!p.classList.contains("hidden")};
 
@@ -131,7 +131,7 @@ function init(){
  bn.querySelectorAll(".nav-btn").forEach(b=>{if(!b.getAttribute("aria-label"))b.setAttribute("aria-label",b.textContent.trim())});
  /* الصفحة */
  const pg=document.createElement("section");pg.id="page-suggest";pg.className="page hidden";
- pg.innerHTML='<h2 class="page-title kp-title">اقتراحات</h2><div class="kp-tabs"><button type="button" class="kp-tab on" data-t="people">أشخاص قد تعرفهم</button><button type="button" class="kp-tab" data-t="sites">مواقع ومنصات</button></div><div id="kp-body"></div>';
+ pg.innerHTML='<h2 class="page-title kp-title">اقتراحات</h2><div class="kp-tabs"><button type="button" class="kp-tab on" data-t="people">أشخاص قد تعرفهم</button><button type="button" class="kp-tab" data-t="sites">مواقع ومنصات</button><button type="button" class="kp-tab" data-t="listen">🎧 استماع ومشاهدة</button></div><div id="kp-body"></div>';
  main.appendChild(pg);
  new MutationObserver(()=>{if(pg.classList.contains("hidden"))document.querySelectorAll('[data-kp]').forEach(b=>b.classList.remove("active"))}).observe(pg,{attributes:true,attributeFilter:["class"]});
  pg.querySelector(".kp-tabs").addEventListener("click",e=>{const b=e.target.closest(".kp-tab");if(!b)return;tab=b.dataset.t;pg.querySelectorAll(".kp-tab").forEach(x=>x.classList.toggle("on",x===b));render()});
@@ -142,7 +142,16 @@ function showSuggest(){
  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.kp==="suggest"));
  window.scrollTo(0,0);checkAdmin();render();
 }
-function render(){tab==="people"?renderPeople(false):renderSites(false)}
+function render(){tab==="people"?renderPeople(false):tab==="listen"?renderListen():renderSites(false)}
+async function renderListen(){
+ const b=Q("#kp-body");if(!b)return;
+ b.innerHTML=skel;
+ try{
+  const m=await import("./listen.js");
+  if(tab!=="listen")return;
+  await m.mount(b,{db,isAdmin,toast,esc});
+ }catch(e){console.warn(e);if(tab==="listen")b.innerHTML='<div class="kp-empty">تعذّر تحميل القسم الآن. حاول لاحقًا.</div>'}
+}
 const skel='<div class="skeleton"></div>';
 
 /* ---------------- أشخاص قد تعرفهم ---------------- */
@@ -279,7 +288,7 @@ function ask(title,fields,ok){
 function openSite(sec,x){
  if(!x.embed){window.open(x.url,"_blank","noopener,noreferrer");return}
  const v=document.createElement("div");v.className="kp-view";
- v.innerHTML=`<div class="kp-vh"><strong>${esc(x.name)}</strong><a class="btn secondary" href="${esc(x.url)}" target="_blank" rel="noopener noreferrer" style="padding:7px 12px">فتح في المتصفح</a><button type="button" class="btn" data-x style="padding:7px 12px">إغلاق</button></div><div class="kp-vn">إن بقيت الصفحة فارغة فالموقع يمنع العرض داخل التطبيق؛ افتحه في المتصفح.</div><iframe src="${esc(x.url)}" title="${esc(x.name)}" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"></iframe>`;
+ v.innerHTML=`<div class="kp-vh"><strong>${esc(x.name)}</strong><a class="btn secondary" href="${esc(x.url)}" target="_blank" rel="noopener noreferrer" style="padding:7px 12px">فتح في المتصفح</a><button type="button" class="btn" data-x style="padding:7px 12px">إغلاق</button></div><div class="kp-vn">إن بقيت الصفحة فارغة فالموقع يمنع العرض داخل التطبيق؛ افتحه في المتصفح.</div><iframe src="${esc(x.url)}" title="${esc(x.name)}" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"></iframe>`;
  document.body.appendChild(v);
  v.addEventListener("click",e=>{if(e.target.closest("[data-x]"))v.remove()});
 }
