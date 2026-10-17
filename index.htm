@@ -1619,11 +1619,11 @@ function openSettings(){
  const blocked=asArray(currentUserData.blockedUsers);
  showModal("مركز الإعدادات",`<div class="setting-section"><div class="setting-row"><div><strong>الحساب</strong><p>إدارة ملفك وتسجيل الخروج.</p></div><button class="btn secondary" id="settings-profile">تعديل الملف</button></div><div class="setting-row"><div><strong>تسجيل الخروج</strong><p>الخروج من الحساب الحالي.</p></div><button class="btn danger" id="settings-logout">خروج</button></div></div><div class="setting-section"><strong><i class="fa-solid fa-display"></i> المظهر</strong><div class="setting-row"><div><strong>الوضع الليلي</strong><p>تبديل ألوان المنصة.</p></div><button class="btn secondary" id="settings-theme">${document.body.classList.contains("dark")?"الوضع الفاتح":"الوضع الداكن"}</button></div><div class="setting-row"><div><strong>مظهر الجهاز</strong><p>اتباع إعداد الجهاز.</p></div><button class="btn secondary" id="settings-system">تلقائي</button></div></div><div class="setting-section"><div class="setting-row"><div><strong><i class="fa-solid fa-download"></i> تثبيت التطبيق</strong><p>إضافة كلمات إلى الشاشة الرئيسية.</p></div><button class="btn gold" id="settings-install">تثبيت</button></div><p class="muted small">يحتاج التثبيت إلى HTTPS ومتصفح يدعم تطبيقات الويب.</p></div><div class="setting-section"><div class="setting-row"><div><strong><i class="fa-solid fa-shield-halved"></i> الخصوصية والحظر</strong><p>${blocked.length} عضوًا محظورًا.</p></div><button class="btn secondary" id="settings-blocked">إدارة الحظر</button></div></div><div class="setting-section"><strong>الإشعارات</strong><p class="muted small">الإشعارات الحالية داخل المنصة. إشعارات الهاتف تحتاج إعدادًا إضافيًا.</p><button class="btn secondary" id="settings-notifications">عرض الإشعارات</button></div><div class="setting-section"><strong><i class="fa-solid fa-scale-balanced"></i> المساعدة والقانونية</strong><div class="setting-row"><div><strong>شروط الاستخدام</strong></div><button class="btn secondary" id="settings-terms" type="button">عرض</button></div><div class="setting-row"><div><strong>سياسة الخصوصية</strong></div><button class="btn secondary" id="settings-privacy" type="button">عرض</button></div></div><div class="setting-section"><strong><i class="fa-solid fa-database"></i> بياناتي</strong><div class="setting-row"><div><strong>تحميل بياناتي</strong><p>ملف يضم ملفك ومنشوراتك ومحادثاتك.</p></div><button class="btn secondary" id="settings-export" type="button">تحميل</button></div><div class="setting-row"><div><strong>حذف حسابي</strong><p>حذف نهائي لا يمكن التراجع عنه.</p></div><button class="btn danger" id="settings-delete" type="button">حذف</button></div></div><div class="setting-section"><strong>حول كلمات</strong><p class="muted small">كلمات — نسخة تجريبية قيد التطوير.</p><p class="muted small" dir="ltr" style="text-align:right;margin:0;overflow-wrap:anywhere">${SUGGEST_EMAIL}</p><button class="btn secondary" id="settings-suggest" type="button">أرسل اقتراحك</button></div>`);
  $("settings-suggest").onclick=()=>openSuggest(true);
- if(isAdmin){const sec=document.createElement("div");sec.className="setting-section";sec.innerHTML='<div class="setting-row"><div><strong>لوحة الإشراف <em class="nbadge admin-badge hidden"></em></strong><p>مراجعة البلاغات والاعتراضات وتطبيق الإنذارات والحظر.</p></div><button class="btn" id="settings-admin" type="button">فتح</button></div>';const m=document.querySelector("#modal-root .modal");if(m){m.appendChild(sec);$("settings-admin").onclick=openAdminPanel;updateAdminBadge()}}
+ if(isAdmin){{const dl=$("settings-delete"),rw=dl&&dl.closest(".setting-row");if(rw)rw.innerHTML='<div><strong>حذف الحساب</strong><p>حساب المشرف محمي من الحذف، ويُدار من لوحة Firebase فقط.</p></div>'}const sec=document.createElement("div");sec.className="setting-section";sec.innerHTML='<div class="setting-row"><div><strong>لوحة الإشراف <em class="nbadge admin-badge hidden"></em></strong><p>مراجعة البلاغات والاعتراضات وتطبيق الإنذارات والحظر.</p></div><button class="btn" id="settings-admin" type="button">فتح</button></div>';const m=document.querySelector("#modal-root .modal");if(m){m.appendChild(sec);$("settings-admin").onclick=openAdminPanel;updateAdminBadge()}}
  $("settings-terms").onclick=()=>openLegal("terms",true);
  $("settings-privacy").onclick=()=>openLegal("privacy",true);
  $("settings-export").onclick=exportMyData;
- $("settings-delete").onclick=openDeleteAccount;
+ {const dBtn=$("settings-delete");if(dBtn)dBtn.onclick=openDeleteAccount}
  $("settings-profile").onclick=()=>editOwnProfile();
  $("settings-logout").onclick=async()=>{
   if(!confirm("هل تريد تسجيل الخروج؟"))return;
@@ -2073,7 +2073,14 @@ async function deleteAccountData(){
  /* ملفي الشخصي: إلزامي */
  await deleteDoc(doc(db,"users",uid));
 }
-function openDeleteAccount(){
+async function openDeleteAccount(){
+ try{
+  const s=await getDoc(doc(db,"admins",currentUser.uid));
+  if(s.exists()||isAdmin){toast("حساب المشرف محمي من الحذف. يُدار من لوحة Firebase فقط.");return}
+ }catch(e){
+  if(isAdmin){toast("حساب المشرف محمي من الحذف. يُدار من لوحة Firebase فقط.");return}
+  toast("تعذّر التحقق من صلاحيتك الآن. حاول لاحقًا.");return;
+ }
  showModal("حذف الحساب",`<form id="delete-form" class="post"><p style="margin:0"><strong style="color:var(--danger)">تنبيه: الحذف نهائي ولا يمكن التراجع عنه.</strong></p><p class="muted small" style="margin:0">سيُحذف ملفك ومنشوراتك وإشعاراتك وحساب الدخول. تبقى تعليقاتك على منشورات الآخرين ورسائلك المرسلة في محادثاتهم. يمكنك تحميل بياناتك قبل الحذف من الإعدادات.</p><label>اكتب كلمة «حذف» للتأكيد<input class="field" name="word" autocomplete="off"></label><label>كلمة المرور<input class="field" name="pw" type="password" autocomplete="current-password"></label><button class="btn danger" id="delete-confirm" type="submit">حذف حسابي نهائيًا</button><button class="btn secondary" id="delete-back" type="button">رجوع للإعدادات</button></form>`);
  $("delete-back").onclick=openSettings;
  $("delete-form").onsubmit=async e=>{
@@ -2206,5 +2213,21 @@ window.addEventListener("unhandledrejection",e=>console.warn("وعد مرفوض:
 setAuthMode("login");
 </script>
 <script type="module" src="./home-plus.js"></script>
+<script>
+/* إظهار وإخفاء كلمة المرور (مستقل، لا يؤثر في بقية الشيفرة) */
+(function(){try{
+ function add(inp){
+  if(!inp||inp.dataset.eye)return;inp.dataset.eye="1";
+  var w=document.createElement("span");w.style.cssText="position:relative;display:block";
+  inp.parentNode.insertBefore(w,inp);w.appendChild(inp);
+  inp.style.paddingInlineEnd="46px";
+  var b=document.createElement("button");b.type="button";b.setAttribute("aria-label","إظهار كلمة المرور");b.textContent="\uD83D\uDC41";
+  b.style.cssText="position:absolute;inset-inline-end:6px;top:50%;transform:translateY(-50%);border:0;background:transparent;font-size:20px;line-height:1;padding:8px;cursor:pointer;color:inherit;opacity:.75";
+  b.onclick=function(e){e.preventDefault();var show=inp.type==="password";inp.type=show?"text":"password";b.textContent=show?"\uD83D\uDE48":"\uD83D\uDC41";b.setAttribute("aria-label",show?"إخفاء كلمة المرور":"إظهار كلمة المرور");inp.focus()};
+  w.appendChild(b);
+ }
+ add(document.getElementById("auth-password"));
+}catch(e){console.warn(e)}})();
+</script>
 </body>
                           </html>
