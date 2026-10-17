@@ -2,13 +2,13 @@
    Service Worker - كلمات
    ========================================================= */
 
-const VERSION = "kalimat-v17";
+const VERSION = "kalimat-v18";
 const BASE = "/lmlm2005/";
 
 const SHELL = [
   BASE,
   BASE + "index.htm",
-  BASE + "home-plus.js", BASE + "listen.js",
+  BASE + "home-plus.js", BASE + "listen.js", BASE + "today.js",
   BASE + "manifest.json",
   BASE + "favicon.svg",
   BASE + "kalimat_180x180.png",
