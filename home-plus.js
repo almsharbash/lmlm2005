@@ -42,7 +42,7 @@ function waitApp(){
 async function checkAdmin(){
  if(!user||adminUid===user.uid)return;
  adminUid=user.uid;
- try{const s=await getDoc(doc(db,"admins",user.uid));isAdmin=s.exists();if(isAdmin&&(tab==="sites"||tab==="listen")&&pageVisible())render()}catch{isAdmin=false}
+ try{const s=await getDoc(doc(db,"admins",user.uid));isAdmin=s.exists();if(isAdmin&&pageVisible()){renderToday();if(tab==="sites"||tab==="listen")render()}}catch{isAdmin=false}
 }
 const pageVisible=()=>{const p=Q("#page-suggest");return p&&!p.classList.contains("hidden")};
 
@@ -59,7 +59,7 @@ const CSS=`
 .sidebar .nav-btn[data-kp]{display:flex;align-items:center;gap:8px}.sidebar .kp-logo{width:22px;height:22px;border-radius:6px}
 .kp-act{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;color:var(--muted,#65676b)}.kp-act:before{content:"";width:8px;height:8px;border-radius:50%;background:#9aa0a6}.kp-act.on:before{background:#31a24c}
 .bottom-nav .kp-lbl{display:none}
-.kp-tabs{display:flex;gap:8px;margin:0 0 12px;overflow-x:auto;padding-bottom:2px}
+.kp-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px;padding-bottom:2px}
 .kp-tab{border:0;border-radius:999px;padding:9px 16px;background:var(--s);color:var(--t);border:1px solid var(--b);white-space:nowrap;font-weight:bold}
 .kp-tab.on{background:var(--p-soft);color:var(--p);border-color:var(--p-soft)}
 .kp-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
@@ -131,16 +131,24 @@ function init(){
  bn.querySelectorAll(".nav-btn").forEach(b=>{if(!b.getAttribute("aria-label"))b.setAttribute("aria-label",b.textContent.trim())});
  /* الصفحة */
  const pg=document.createElement("section");pg.id="page-suggest";pg.className="page hidden";
- pg.innerHTML='<h2 class="page-title kp-title">اقتراحات</h2><div class="kp-tabs"><button type="button" class="kp-tab on" data-t="people">أشخاص قد تعرفهم</button><button type="button" class="kp-tab" data-t="sites">مواقع ومنصات</button><button type="button" class="kp-tab" data-t="listen">🎧 استماع ومشاهدة</button></div><div id="kp-body"></div>';
+ pg.innerHTML='<h2 class="page-title kp-title">اقتراحات</h2><div id="kp-today"></div><div class="kp-tabs"><button type="button" class="kp-tab on" data-t="people">أشخاص قد تعرفهم</button><button type="button" class="kp-tab" data-t="sites">مواقع ومنصات</button><button type="button" class="kp-tab" data-t="listen">🎧 استماع ومشاهدة</button></div><div id="kp-body"></div>';
  main.appendChild(pg);
  new MutationObserver(()=>{if(pg.classList.contains("hidden"))document.querySelectorAll('[data-kp]').forEach(b=>b.classList.remove("active"))}).observe(pg,{attributes:true,attributeFilter:["class"]});
  pg.querySelector(".kp-tabs").addEventListener("click",e=>{const b=e.target.closest(".kp-tab");if(!b)return;tab=b.dataset.t;pg.querySelectorAll(".kp-tab").forEach(x=>x.classList.toggle("on",x===b));render()});
  pg.addEventListener("click",onClick);
 }
+let todayMod=null;
+async function renderToday(){
+ const b=Q("#kp-today");if(!b||!user)return;
+ try{
+  todayMod=todayMod||await import("./today.js");
+  await todayMod.mount(b,{db,user,isAdmin:()=>isAdmin,toast,esc});
+ }catch(e){console.warn("today",e);b.innerHTML=""}
+}
 function showSuggest(){
  document.querySelectorAll(".page").forEach(p=>p.classList.toggle("hidden",p.id!=="page-suggest"));
  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.kp==="suggest"));
- window.scrollTo(0,0);checkAdmin();render();
+ window.scrollTo(0,0);checkAdmin();renderToday();render();
 }
 function render(){tab==="people"?renderPeople(false):tab==="listen"?renderListen():renderSites(false)}
 async function renderListen(){
