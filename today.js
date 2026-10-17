@@ -1,12 +1,12 @@
 /* كلمات — «اليوم لك»: تحية الوقت، المزاج، اقتباس اليوم، توفير البيانات
    ملف مستقل يُحمَّل عند فتح الاقتراحات. إن تعطّل لا يتأثر شيء آخر. */
-import{doc,getDoc,setDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import{doc,getDoc,setDoc,updateDoc,arrayRemove,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const MOODS=[["happy","😊","سعيد"],["calm","🌿","هادئ"],["energy","⚡","نشيط"],["fun","😄","مرِح"],["spirit","🕌","روحاني"],["think","📚","متأمل"],["tired","😴","متعب"],["busy","💼","مشغول"]];
 const MOOD=Object.fromEntries(MOODS.map(m=>[m[0],m]));
 const TO_LISTEN={calm:"calm",energy:"energy",fun:"fun",spirit:"spirit",think:"think"};
 const FRESH=24*3600*1000,TTL=10*60*1000,MAXQ=60;
-const S={uid:"",ctx:null,box:null,me:null,quotes:null,qAt:0,fr:null,frAt:0,css:false,open:null,top:false,noRules:false};
+const S={saved:null,uid:"",ctx:null,box:null,me:null,quotes:null,qAt:0,fr:null,frAt:0,css:false,open:null,top:false,noRules:false};
 const arr=v=>Array.isArray(v)?v:[];
 const lsGet=k=>{try{return JSON.parse(localStorage.getItem(k)||"null")}catch{return null}};
 const lsSet=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
@@ -91,6 +91,32 @@ async function loadFriends(){
  S.fr=out;S.frAt=Date.now();
 }
 
+async function loadSaved(){
+ const {db,user}=S.ctx;
+ await loadMe();
+ const ids=arr(S.me&&S.me.saved).filter(x=>typeof x==="string").slice(-30).reverse();
+ if(window.__kalimat&&window.__kalimat.setSaved)window.__kalimat.setSaved(arr(S.me&&S.me.saved));
+ if(!navigator.onLine){S.saved=S.saved||[];return}
+ const got=await Promise.all(ids.map(id=>getDoc(doc(db,"posts",id)).catch(()=>null)));
+ const out=[],gone=[];
+ got.forEach((s,i)=>{
+  if(!s)return;
+  if(!s.exists()){gone.push(ids[i]);return}
+  const p=s.data();
+  if(p.visibility==="me"&&p.uid!==user.uid)return;
+  const a=p.author||{};
+  const kind=p.text?String(p.text).slice(0,90):(p.repostOf?"(إعادة نشر)":(p.image?"📷 صورة":(p.videoUrl?"🎬 فيديو":"(منشور)")));
+  out.push({id:ids[i],name:a.displayName||a.name||"عضو",t:kind});
+ });
+ S.saved=out;
+ for(const id of gone){try{await updateDoc(doc(db,"users",user.uid),{saved:arrayRemove(id)})}catch{}}
+}
+function savedBlock(){
+ if(S.saved===null)return'<div class="kt-note">جارٍ التحميل…</div>';
+ if(!S.saved.length)return'<div class="kt-note">لا توجد محفوظات. اضغط زر 📑 تحت أي منشور لحفظه هنا.</div>';
+ return S.saved.map(x=>`<div class="ks" style="padding:8px 10px"><div class="kt-by">${esc(x.name)}</div><div style="overflow-wrap:anywhere;margin:2px 0 6px">${esc(x.t)}</div><div class="kt-row"><button type="button" data-t="openpost" data-id="${esc(x.id)}">فتح</button><button type="button" data-t="unsave" data-id="${esc(x.id)}">إزالة</button></div></div>`).join("");
+}
+
 /* ---------- العرض ---------- */
 function summary(){
  const [ic,txt]=greet(),n=(S.me&&(S.me.displayName||S.me.name))||S.ctx.user.displayName||"";
@@ -119,7 +145,7 @@ function saverBlock(){
  const on=!!lsGet("kp-datasaver");
  return`<label class="kt-sw"><input type="checkbox" data-t="saver" ${on?"checked":""}><span>توفير البيانات</span></label><div class="kt-note">يوقف الصور المصغّرة في قسم «استماع ومشاهدة» ولا يشغّل شيئًا إلا بضغطتك. لا يغيّر صور المنشورات.</div>`;
 }
-const SECS=[["mood","🎭","مزاجي اليوم",moodBlock],["quote","✨","اقتباس اليوم",quoteBlock],["saver","📉","توفير البيانات",saverBlock]];
+const SECS=[["saved","🔖","المحفوظات",savedBlock],["mood","🎭","مزاجي اليوم",moodBlock],["quote","✨","اقتباس اليوم",quoteBlock],["saver","📉","توفير البيانات",saverBlock]];
 function draw(){
  const box=S.box;if(!box)return;
  box.innerHTML=`<div class="kt ${S.top?"open":""}"><button type="button" class="kt-h" data-t="top" aria-expanded="${S.top}">${summary()}</button><div class="kt-body">${SECS.map(s=>`<div class="ks ${S.open===s[0]?"open":""}" data-s="${s[0]}"><button type="button" class="ks-h" data-t="sec" data-k="${s[0]}" aria-expanded="${S.open===s[0]}"><span>${s[1]} ${s[2]}</span><span class="kt-ar">▾</span></button><div class="ks-b">${S.open===s[0]?s[3]():""}</div></div>`).join("")}</div></div>`;
@@ -176,6 +202,17 @@ async function onClick(e){
   try{await navigator.clipboard.writeText(txt);S.ctx.toast("تم نسخ الاقتباس.")}catch{S.ctx.toast("تعذّر النسخ.")}
  }
  else if(a==="editq"&&S.ctx.isAdmin())editQuotes();
+ else if(a==="openpost"){if(window.__kalimat&&window.__kalimat.openPost)window.__kalimat.openPost(t.dataset.id)}
+ else if(a==="unsave"){
+  const id=t.dataset.id;
+  try{
+   await updateDoc(doc(S.ctx.db,"users",S.ctx.user.uid),{saved:arrayRemove(id)});
+   S.me=Object.assign({},S.me,{saved:arr(S.me&&S.me.saved).filter(x=>x!==id)});
+   S.saved=arr(S.saved).filter(x=>x.id!==id);
+   if(window.__kalimat&&window.__kalimat.setSaved)window.__kalimat.setSaved(S.me.saved);
+   draw();
+  }catch(e){console.warn(e);S.ctx.toast("تعذّرت الإزالة الآن.")}
+ }
 }
 function onChange(e){
  const t=e.target.closest("[data-t=saver]");if(!t)return;
@@ -184,6 +221,7 @@ function onChange(e){
 async function openSec(k){
  S.open=k;lsSet("kt-open",k);draw();
  if(k==="quote"&&!S.quotes){await loadQuotes(false);if(S.open==="quote")draw()}
+ if(k==="saved"){await loadSaved().catch(e=>{console.warn(e);S.saved=[]});if(S.open==="saved")draw()}
  if(k==="mood"&&!S.fr){await loadFriends().catch(()=>{S.fr=[]});if(S.open==="mood")draw()}
 }
 
@@ -192,7 +230,7 @@ export async function mount(box,ctx){
  injectCss();
  if(ctx.esc)esc=ctx.esc;
  const fresh=S.box!==box;
- if(S.uid!==ctx.user.uid){S.uid=ctx.user.uid;S.me=null;S.fr=null;S.quotes=null}
+ if(S.uid!==ctx.user.uid){S.uid=ctx.user.uid;S.me=null;S.fr=null;S.quotes=null;S.saved=null}
  S.ctx=ctx;S.box=box;
  if(fresh){
   S.top=!!lsGet("kt-top");S.open=lsGet("kt-open")||"";
