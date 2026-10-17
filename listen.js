@@ -113,8 +113,9 @@ function drawDay(){
  const it=dayPick();
  if(!it){d.innerHTML="";return}
  const e=parse(it.url),ic=e?(e.k==="audio"?"🎧":"🎬"):"🔗";
- d.innerHTML=`<div class="kl-card kl-dayc"><button type="button" class="kl-th" data-l="play" data-id="${esc(it.id)}" aria-label="تشغيل">${e&&e.thumb?`<img src="${esc(e.thumb)}" alt="" loading="lazy" decoding="async">`:ic}</button><div class="kl-ci"><span>✨ اختيار اليوم</span><strong>${esc(it.title)}</strong></div><button type="button" class="btn" data-l="play" data-id="${esc(it.id)}" style="padding:8px 14px">▶</button></div>`;
+ d.innerHTML=`<div class="kl-card kl-dayc"><button type="button" class="kl-th" data-l="play" data-id="${esc(it.id)}" aria-label="تشغيل">${thumbOf(e)?`<img src="${esc(thumbOf(e))}" alt="" loading="lazy" decoding="async">`:ic}</button><div class="kl-ci"><span>✨ اختيار اليوم</span><strong>${esc(it.title)}</strong></div><button type="button" class="btn" data-l="play" data-id="${esc(it.id)}" style="padding:8px 14px">▶</button></div>`;
 }
+const thumbOf=e=>(e&&e.thumb&&!lsGet("kp-datasaver"))?e.thumb:"";
 const typeOf=it=>{const e=parse(it.url);return e?e.k:"link"};
 function filtered(){
  return arr(S.items).filter(it=>{
@@ -140,7 +141,7 @@ function drawList(){
  w+=list.map(it=>{
   const e=parse(it.url),ic=e?(e.k==="audio"?"🎧":"🎬"):"🔗";
   const ms=it.moods.map(k=>MOOD[k][2]+" "+MOOD[k][1]).join(" · ");
-  return `<div class="kl-card ${S.cur&&S.cur.id===it.id?"cur":""}"><button type="button" class="kl-th" data-l="play" data-id="${esc(it.id)}" aria-label="تشغيل">${e&&e.thumb?`<img src="${esc(e.thumb)}" alt="" loading="lazy" decoding="async">`:ic}</button><div class="kl-ci"><strong>${esc(it.title)}</strong><span>${esc((e?e.site:"رابط")+(ms?" · "+ms:""))}</span></div><button type="button" class="btn" data-l="play" data-id="${esc(it.id)}" style="padding:8px 14px">▶</button>${admin?`<div class="kl-adm" style="flex-basis:100%"><button type="button" data-l="edit" data-id="${esc(it.id)}">تعديل</button><button type="button" data-l="del" data-id="${esc(it.id)}">حذف</button></div>`:""}</div>`;
+  return `<div class="kl-card ${S.cur&&S.cur.id===it.id?"cur":""}"><button type="button" class="kl-th" data-l="play" data-id="${esc(it.id)}" aria-label="تشغيل">${thumbOf(e)?`<img src="${esc(thumbOf(e))}" alt="" loading="lazy" decoding="async">`:ic}</button><div class="kl-ci"><strong>${esc(it.title)}</strong><span>${esc((e?e.site:"رابط")+(ms?" · "+ms:""))}</span></div><button type="button" class="btn" data-l="play" data-id="${esc(it.id)}" style="padding:8px 14px">▶</button>${admin?`<div class="kl-adm" style="flex-basis:100%"><button type="button" data-l="edit" data-id="${esc(it.id)}">تعديل</button><button type="button" data-l="del" data-id="${esc(it.id)}">حذف</button></div>`:""}</div>`;
  }).join("");
  l.innerHTML=w;
 }
