@@ -1,0 +1,57 @@
+{
+  "id": "/lmlm2005/",
+  "name": "كلمات",
+  "short_name": "كلمات",
+  "description": "كلمات: مساحة للجميع للمشاركة والحوار والاستماع والمشاهدة",
+  "start_url": "/lmlm2005/",
+  "scope": "/lmlm2005/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#0284c7",
+  "dir": "rtl",
+  "lang": "ar",
+  "icons": [
+    {
+      "src": "/lmlm2005/kalimat_180x180.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/lmlm2005/kalimat_192x192-1.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/lmlm2005/kalimat_256x256-1.png",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/lmlm2005/kalimat_512x512-1.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "categories": [
+    "social"
+  ],
+  "shortcuts": [
+    {
+      "name": "كلمات",
+      "short_name": "كلمات",
+      "url": "/lmlm2005/",
+      "icons": [
+        {
+          "src": "/lmlm2005/kalimat_192x192-1.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}
